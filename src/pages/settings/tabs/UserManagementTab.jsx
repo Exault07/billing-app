@@ -116,7 +116,7 @@ export default function UserManagementTab() {
         <HiOutlineExclamationCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
         <div className="text-sm">
           <p className="font-bold mb-1">About User Management</p>
-          <p>Real Supabase Auth invitations require a secure backend Edge Function with the Service Role Key. The "Invite" action here currently registers the profile in the database. To fully onboard users, please use your Supabase Dashboard -> Authentication -> Add User -> Send Invite.</p>
+          <p>Real Supabase Auth invitations require a secure backend Edge Function with the Service Role Key. The "Invite" action here currently registers the profile in the database. To fully onboard users, please use your Supabase Dashboard -{'>'} Authentication -{'>'} Add User -{'>'} Send Invite.</p>
         </div>
       </div>
 

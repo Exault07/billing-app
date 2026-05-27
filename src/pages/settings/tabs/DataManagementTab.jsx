@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../../../supabaseClient';
-import { HiOutlineDownload, HiOutlineUpload, HiOutlineExclamationTriangle } from 'react-icons/hi2';
+import { HiOutlineDownload, HiOutlineUpload, HiOutlineExclamation } from 'react-icons/hi';
 import * as XLSX from 'xlsx';
 
 export default function DataManagementTab() {
@@ -184,7 +184,7 @@ export default function DataManagementTab() {
       {/* DANGER ZONE */}
       <div>
         <h2 className="text-xl font-bold text-red-600 mb-4 flex items-center gap-2">
-          <HiOutlineExclamationTriangle className="w-6 h-6" /> Danger Zone
+          <HiOutlineExclamation className="w-6 h-6" /> Danger Zone
         </h2>
         <div className="bg-red-50 border border-red-200 rounded-xl p-6">
           <h3 className="font-bold text-red-900 mb-2">Clear All Data</h3>
