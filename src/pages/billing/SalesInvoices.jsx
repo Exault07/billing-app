@@ -303,48 +303,52 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
     <div className="max-w-[1400px] mx-auto px-4 pb-16 bg-surface-50 min-h-screen">
 
       {/* Page Header */}
-      <div className="flex items-center justify-between py-3 mb-4 mt-2">
+      <div className="flex items-center justify-between mb-6 pt-4">
         <div className="flex items-center gap-3">
-          <button onClick={onClose} className="text-surface-500 hover:text-surface-800 p-1">
+          <button onClick={onClose} className="p-2 text-surface-500 hover:bg-surface-100 hover:text-surface-800 rounded-full transition-colors">
             <HiOutlineArrowLeft className="w-5 h-5" />
           </button>
-          <h2 className="text-[17px] font-bold text-surface-800">Create Sales Invoice</h2>
+          <div>
+            <h1 className="text-2xl font-bold text-surface-900">Create Sales Invoice</h1>
+            <p className="text-sm text-surface-500 mt-1">Fill in the details below to generate an invoice</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1 px-3 py-1.5 text-[13px] font-bold border border-surface-200 rounded text-surface-600 bg-white hover:bg-surface-50">
-            <HiOutlineCog className="w-4 h-4" /> Settings
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border border-surface-200 rounded-xl text-surface-600 bg-white hover:bg-surface-50 shadow-sm transition-colors">
+            <HiOutlineCog className="w-5 h-5" /> Settings
           </button>
-          <button className="px-4 py-1.5 text-[13px] font-bold border border-surface-200 rounded text-surface-600 bg-white hover:bg-surface-50">
+          <button className="px-5 py-2.5 text-sm font-semibold border border-surface-200 rounded-xl text-surface-600 bg-white hover:bg-surface-50 shadow-sm transition-colors">
             Save &amp; New
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-1.5 text-[13px] font-bold bg-[#7c3aed] hover:bg-[#6d28d9] text-white rounded disabled:opacity-50"
+            className="px-6 py-2.5 text-sm font-bold bg-[#4f46e5] hover:bg-[#4338ca] text-white rounded-xl shadow-sm transition-colors disabled:opacity-50"
           >
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? 'Saving...' : 'Save Invoice'}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-[13px] rounded">
-          {error}
+        <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-start gap-2">
+          <span className="mt-0.5 text-red-400">âš </span>
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="bg-white rounded-md shadow-sm border border-surface-200 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-surface-200 p-6 md:p-8">
 
         {/* Top: Party + Invoice Meta */}
         <div className="flex flex-col lg:flex-row justify-between gap-8 mb-8">
 
           {/* Bill To */}
-          <div className="w-full lg:w-[380px] relative">
-            <label className="block text-[12px] font-bold text-surface-600 mb-1.5">Bill To</label>
+          <div className="w-full lg:w-[400px] relative">
+            <label className="block text-sm font-bold text-surface-700 mb-2">Bill To</label>
             {!selectedCustomer ? (
               <div
                 onClick={() => setShowPartyDropdown(true)}
-                className="w-full h-24 border-2 border-dashed border-blue-300 bg-blue-50/30 rounded flex items-center justify-center cursor-pointer hover:bg-blue-50 text-blue-600 font-bold text-[14px]"
+                className="w-full h-28 border-2 border-dashed border-[#4f46e5]/40 bg-[#4f46e5]/5 rounded-xl flex items-center justify-center cursor-pointer hover:bg-[#4f46e5]/10 text-[#4f46e5] font-bold text-sm transition-colors"
               >
                 + Add Party
               </div>
@@ -404,47 +408,47 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
           </div>
 
           {/* Invoice Meta */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4 bg-surface-50/50 p-4 rounded-xl border border-surface-100">
             <div className="flex gap-4 flex-wrap">
               <div>
-                <label className="block text-[11px] font-medium text-surface-500 mb-1">Sales Invoice No:</label>
+                <label className="block text-xs font-semibold text-surface-500 mb-1 uppercase tracking-wide">Invoice No:</label>
                 <input
                   value={billNo}
                   onChange={e => setBillNo(e.target.value)}
-                  className="w-28 px-3 py-1.5 border border-surface-200 rounded text-[13px] bg-surface-50"
+                  className="w-32 px-3 py-2 border border-surface-200 rounded-lg text-sm bg-surface-50 focus:outline-none focus:border-[#4f46e5]"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-surface-500 mb-1">Sales Invoice Date:</label>
+                <label className="block text-xs font-semibold text-surface-500 mb-1 uppercase tracking-wide">Invoice Date:</label>
                 <input
                   type="date"
                   value={date}
                   onChange={e => setDate(e.target.value)}
-                  className="w-36 px-3 py-1.5 border border-surface-200 rounded text-[13px]"
+                  className="w-40 px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:border-[#4f46e5]"
                 />
               </div>
             </div>
             <div className="flex gap-4 flex-wrap">
               <div>
-                <label className="block text-[11px] font-medium text-surface-500 mb-1">Payment Terms:</label>
+                <label className="block text-xs font-semibold text-surface-500 mb-1 uppercase tracking-wide">Payment Terms:</label>
                 <div className="flex">
                   <input
                     value={paymentTerms}
                     onChange={e => setPaymentTerms(e.target.value)}
-                    className="w-14 px-2 py-1.5 border border-r-0 border-surface-200 rounded-l text-[13px] text-right"
+                    className="w-16 px-3 py-2 border border-r-0 border-surface-200 rounded-l-lg text-sm text-right focus:outline-none focus:border-[#4f46e5]"
                   />
-                  <span className="px-2 py-1.5 border border-surface-200 rounded-r bg-surface-50 text-[12px] text-surface-500">
+                  <span className="px-3 py-2 border border-surface-200 rounded-r-lg bg-surface-50 text-sm text-surface-500 font-medium">
                     days
                   </span>
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-surface-500 mb-1">Due Date:</label>
+                <label className="block text-xs font-semibold text-surface-500 mb-1 uppercase tracking-wide">Due Date:</label>
                 <input
                   type="date"
                   value={dueDate}
                   onChange={e => setDueDate(e.target.value)}
-                  className="w-36 px-3 py-1.5 border border-surface-200 rounded text-[13px]"
+                  className="w-40 px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:border-[#4f46e5]"
                 />
               </div>
             </div>
@@ -459,13 +463,13 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
               value={carpenterId} 
               onChange={(e) => {
                 setCarpenterId(e.target.value);
-                const selected = carpentersfind(c => c.id === e.target.value);
+                const selected = carpenters.find(c => c.id === e.target.value);
                 if (selected) setCommissionRate(selected.default_commission_rate);
               }}
               className="w-64 px-3 py-1.5 border border-surface-200 rounded text-[13px] bg-white outline-none focus:border-[#7c3aed]"
             >
               <option value="">-- No Referrer --</option>
-              {carpentersmap(c => (
+              {carpenters.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
@@ -807,99 +811,100 @@ export default function SalesInvoices() {
     <div className="max-w-[1400px] mx-auto px-4 pb-16 animate-fade-in bg-surface-50 min-h-screen">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-2 mt-2">
-        <h1 className="text-lg font-bold text-surface-800">Sales Invoices</h1>
+      <div className="flex items-center justify-between mb-6 pt-4">
+        <div>
+          <h1 className="text-2xl font-bold text-surface-900">Sales Invoices</h1>
+          <p className="text-sm text-surface-500 mt-1">Manage and track your sales invoices</p>
+        </div>
         <div className="flex items-center gap-2">
-          <button className="px-4 py-1.5 text-[13px] font-semibold border border-surface-200 rounded text-blue-600 flex items-center gap-1 hover:bg-surface-50 bg-white">
+          <button className="px-4 py-2.5 text-sm font-semibold border border-surface-200 rounded-xl text-blue-600 flex items-center gap-2 hover:bg-surface-50 bg-white shadow-sm transition-colors">
             <HiOutlineDocumentText className="w-4 h-4" /> Reports
           </button>
-          <button className="p-1.5 border border-surface-200 rounded text-surface-500 hover:bg-surface-50 bg-white">
-            <HiOutlineCog className="w-4 h-4" />
+          <button className="p-2.5 border border-surface-200 rounded-xl text-surface-500 hover:bg-surface-50 bg-white shadow-sm transition-colors">
+            <HiOutlineCog className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* Main Container */}
-      <div className="bg-white border-y sm:border sm:rounded-xl border-surface-200 shadow-sm flex flex-col flex-1 overflow-hidden min-h-0">
-        
-        {error && (
-          <div className="m-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
-            <span className="mt-0.5 text-red-400">âš </span>
-            <span>{error}</span>
-          </div>
-        )}
+      {error && (
+        <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-start gap-2">
+          <span className="mt-0.5 text-red-400">âš </span>
+          <span>{error}</span>
+        </div>
+      )}
 
-        {/* Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 border-b border-surface-200">
-          <div className="border-2 border-[#e0e7ff] bg-[#f5f3ff] rounded-md p-3">
-            <div className="flex items-center gap-1 mb-1 text-[#7c3aed]">
-              <HiOutlineCash className="w-4 h-4" />
-              <span className="text-[12px] font-semibold">Total Sales</span>
-            </div>
-            <div className="text-[18px] font-bold text-surface-900">
-              ₹ {totalSales.toLocaleString('en-IN', { minimumFractionDigits: 1 })}
-            </div>
+      {/* Metrics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#e0e7ff] bg-[#f8f7ff] flex flex-col justify-center">
+          <div className="flex items-center gap-2 mb-2 text-[#7c3aed]">
+            <HiOutlineCash className="w-5 h-5" />
+            <span className="text-sm font-bold uppercase tracking-wider">Total Sales</span>
           </div>
-          <div className="border border-surface-200 rounded-md p-3">
-            <div className="flex items-center gap-1 mb-1 text-green-600">
-              <HiOutlineCheckCircle className="w-4 h-4" />
-              <span className="text-[12px] font-semibold">Paid</span>
-            </div>
-            <div className="text-[18px] font-bold text-surface-900">
-              ₹ {totalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-            </div>
-          </div>
-          <div className="border border-surface-200 rounded-md p-3">
-            <div className="flex items-center gap-1 mb-1 text-red-600">
-              <HiOutlineExclamationCircle className="w-4 h-4" />
-              <span className="text-[12px] font-semibold">Unpaid</span>
-            </div>
-            <div className="text-[18px] font-bold text-surface-900">
-              ₹ {totalUnpaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-            </div>
-          </div>
-          <div className="border border-surface-200 rounded-md p-3">
-            <div className="flex items-center gap-1 mb-1 text-surface-500">
-              <HiOutlineXCircle className="w-4 h-4" />
-              <span className="text-[12px] font-semibold">Cancelled</span>
-            </div>
-            <div className="text-[18px] font-bold text-surface-900">-</div>
+          <div className="text-3xl font-black text-surface-900">
+            ₹ {totalSales.toLocaleString('en-IN', { minimumFractionDigits: 1 })}
           </div>
         </div>
-
-        {/* Filter + Action Bar */}
-        <div className="px-4 py-3 flex flex-wrap gap-3 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="pl-9 pr-3 py-1.5 text-[13px] border border-surface-200 rounded w-56 focus:outline-none focus:border-blue-400"
-              />
-            </div>
-            <select className="px-3 py-1.5 text-[13px] border border-surface-200 rounded bg-white text-surface-600 w-40">
-              <option>Last 365 Days</option>
-              <option>This Month</option>
-              <option>All Time</option>
-            </select>
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-surface-200 flex flex-col justify-center">
+          <div className="flex items-center gap-2 mb-2 text-green-600">
+            <HiOutlineCheckCircle className="w-5 h-5" />
+            <span className="text-sm font-bold uppercase tracking-wider">Paid</span>
           </div>
-          <div className="flex items-center gap-3">
-            <select className="px-3 py-1.5 text-[13px] font-semibold border border-surface-200 rounded bg-white text-surface-700">
-              <option>Bulk Actions</option>
-            </select>
-            <button
-              onClick={() => setShowForm(true)}
-              className="px-5 py-1.5 text-[13px] font-bold bg-[#7c3aed] hover:bg-[#6d28d9] text-white rounded shadow-sm"
-            >
-              Create Sales Invoice
-            </button>
+          <div className="text-3xl font-black text-surface-900">
+            ₹ {totalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
         </div>
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-surface-200 flex flex-col justify-center">
+          <div className="flex items-center gap-2 mb-2 text-red-600">
+            <HiOutlineExclamationCircle className="w-5 h-5" />
+            <span className="text-sm font-bold uppercase tracking-wider">Unpaid</span>
+          </div>
+          <div className="text-3xl font-black text-surface-900">
+            ₹ {totalUnpaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-surface-200 flex flex-col justify-center">
+          <div className="flex items-center gap-2 mb-2 text-surface-500">
+            <HiOutlineXCircle className="w-5 h-5" />
+            <span className="text-sm font-bold uppercase tracking-wider">Cancelled</span>
+          </div>
+          <div className="text-3xl font-black text-surface-900">-</div>
+        </div>
+      </div>
 
-        {/* Invoices Table */}
+      {/* Filter + Action Bar */}
+      <div className="bg-white p-4 rounded-t-2xl border border-surface-200 border-b-0 flex flex-wrap gap-4 items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="relative w-72">
+            <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+            <input
+              type="text"
+              placeholder="Search invoices..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 text-sm border border-surface-200 rounded-xl focus:outline-none focus:border-[#4f46e5] focus:ring-1 focus:ring-[#4f46e5]"
+            />
+          </div>
+          <select className="px-3 py-2 text-sm border border-surface-200 rounded-xl bg-white text-surface-600 focus:outline-none focus:border-[#4f46e5]">
+            <option>Last 365 Days</option>
+            <option>This Month</option>
+            <option>All Time</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-3">
+          <select className="px-3 py-2 text-sm font-semibold border border-surface-200 rounded-xl bg-white text-surface-700 focus:outline-none focus:border-[#4f46e5]">
+            <option>Bulk Actions</option>
+          </select>
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-5 py-2.5 text-sm font-bold bg-[#4f46e5] hover:bg-[#4338ca] text-white rounded-xl shadow-sm transition-colors"
+          >
+            + Create Invoice
+          </button>
+        </div>
+      </div>
+
+      {/* Invoices Table */}
+      <div className="bg-white border border-surface-200 rounded-b-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-left border-collapse">
             <thead className="bg-[#f9fafb] border-y border-surface-200 text-[12px] font-bold text-surface-700">

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import {
@@ -47,16 +47,43 @@ export default function Parties() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [partiesRes, categoriesRes] = await Promise.all([
-        supabase.from('parties').select('*, party_categories(name)').order('name'),
-        supabase.from('party_categories').select('*').order('name')
-      ]);
+      // Fetch categories
+      const { data: categoriesData, error: catError } = await supabase
+        .from('party_categories')
+        .select('*')
+        .order('name');
+      
+      if (catError && catError.code !== '42P01') throw catError;
+      setCategories(categoriesData || []);
 
-      if (partiesRes.error && partiesRes.error.code !== '42P01') throw partiesRes.error;
-      if (categoriesRes.error && categoriesRes.error.code !== '42P01') throw categoriesRes.error;
+      // Fetch parties in chunks to bypass the Supabase 1000 row limit
+      let allParties = [];
+      let from = 0;
+      const step = 1000;
+      let fetchMore = true;
 
-      setParties(partiesRes.data || []);
-      setCategories(categoriesRes.data || []);
+      while (fetchMore) {
+        const { data: partiesChunk, error: partiesError } = await supabase
+          .from('parties')
+          .select('*, party_categories(name)')
+          .order('name')
+          .range(from, from + step - 1);
+        
+        if (partiesError && partiesError.code !== '42P01') throw partiesError;
+        
+        if (partiesChunk && partiesChunk.length > 0) {
+          allParties = [...allParties, ...partiesChunk];
+          if (partiesChunk.length < step) {
+            fetchMore = false;
+          } else {
+            from += step;
+          }
+        } else {
+          fetchMore = false;
+        }
+      }
+
+      setParties(allParties);
     } catch (err) {
       setError(err.message || 'Failed to fetch data');
     } finally {
