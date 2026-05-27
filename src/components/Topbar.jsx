@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../supabaseClient';
 import { HiOutlineMenuAlt2, HiOutlineBell, HiOutlineLogout, HiOutlineUser } from 'react-icons/hi';
 
 export default function Topbar({ onToggleSidebar }) {
   const { user, role, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [shopName, setShopName] = useState('Billing App');
+
+  useEffect(() => {
+    supabase.from('shop_settings').select('shop_name').limit(1).maybeSingle().then(({ data }) => {
+      if (data && data.shop_name) setShopName(data.shop_name);
+    });
+  }, []);
 
   const roleLabels = {
     owner: 'Owner',
@@ -22,14 +30,14 @@ export default function Topbar({ onToggleSidebar }) {
     try {
       await logout();
     } catch (err) {
-      console.error('Logout error:', err.message);
+      alert('Logout error: ' + err.message);
     }
   };
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-6 bg-white border-b border-surface-200 shadow-sm">
-      {/* Left: Hamburger + Title */}
-      <div className="flex items-center gap-3">
+      {/* Left: Hamburger only */}
+      <div className="flex items-center">
         <button
           id="sidebar-toggle"
           onClick={onToggleSidebar}
@@ -38,12 +46,6 @@ export default function Topbar({ onToggleSidebar }) {
         >
           <HiOutlineMenuAlt2 className="w-6 h-6" />
         </button>
-        <h1 className="text-lg font-semibold text-surface-800 hidden sm:block">
-          Furniture & Hardware Billing
-        </h1>
-        <h1 className="text-lg font-semibold text-surface-800 sm:hidden">
-          Billing
-        </h1>
       </div>
 
       {/* Right: Notifications + User */}

@@ -1,17 +1,17 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
-// ── Layout ──────────────────────────────────────
+// â”€â”€ Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// ── Pages ───────────────────────────────────────
+// â”€â”€ Pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
 
-// ── Billing (Part 3) ───────────────────────────
+// â”€â”€ Billing (Part 3) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import BillForm from './pages/billing/BillForm';
 import BillView from './pages/billing/BillView';
 import BillsHistory from './pages/billing/BillsHistory';
@@ -24,7 +24,7 @@ import PaymentIn from './pages/billing/PaymentIn';
 import ProformaInvoice from './pages/billing/ProformaInvoice';
 import SaleReturn from './pages/sales/SaleReturn';
 
-// ── Purchases (Part 6) ───────────────────────
+// â”€â”€ Purchases (Part 6) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import PurchaseList from './pages/purchases/PurchaseList';
 import PurchaseDetail from './pages/purchases/PurchaseDetail';
 import PurchaseForm from './pages/purchases/PurchaseForm';
@@ -33,26 +33,32 @@ import PurchaseReturn from './pages/purchases/PurchaseReturn';
 import PaymentOutList from './pages/purchases/PaymentOut';
 import PaymentOutForm from './pages/purchases/PaymentOutForm';
 
+// â”€â”€ Expenses (Part 7) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // ── Expenses (Part 7) ──────────────────────────
 import ExpenseList from './pages/expenses/ExpenseList';
 import ExpenseForm from './pages/expenses/ExpenseForm';
-// ── Inventory (Part 4) ─────────────────────────
+
+// 📈 Reports (Part 10) 📈
+import Reports from './pages/reports/Reports';
+
+// -- Inventory (Part 4) --
 import ProductList from './pages/inventory/ProductList';
-import ProductForm from './pages/inventory/ProductForm';
+import ProductForm from './components/inventory/ProductForm';
 
-// ── Parties / Customers & Suppliers (Part 5) ───
+// 🏢 Parties / customers & suppliers (Part 5) 🏢
 import Parties from './pages/customers/Parties';
-import PartyDetails from './pages/customers/PartyDetails';
+import PartyDetail from './pages/customers/PartyDetail';
+import PartyForm from './pages/customers/PartyForm';
 
-// ── Carpenter / Worker (Part 8) ────────────────
+// â”€â”€ Carpenter / Worker (Part 8) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import CarpenterList from './pages/carpenters/CarpenterList';
 import CarpenterDetail from './pages/carpenters/CarpenterDetail';
 import CarpenterForm from './pages/carpenters/CarpenterForm';
 
-// ── Settings (Part 11) ─────────────────
+// â”€â”€ Settings (Part 11) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import Settings from './pages/settings/Settings';
 
-// ── Placeholder Pages (Parts 5-10) ─────────────
+// â”€â”€ Placeholder Pages (Parts 5-10) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import PlaceholderPage from './pages/PlaceholderPage';
 
 export default function App() {
@@ -86,23 +92,23 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        {/* ── Dashboard ─────────────────────── */}
+        {/* â”€â”€ Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route index element={<Dashboard />} />
 
-        {/* ── Sales Invoices (unified list + form) ── */}
+        {/* â”€â”€ Sales Invoices (unified list + form) â”€â”€ */}
         <Route path="sales/invoices" element={<SalesInvoices />} />
         <Route path="sales/payment-in" element={<ProtectedRoute allowedRoles={['owner', 'staff', 'accountant']}><PaymentIn /></ProtectedRoute>} />
         <Route path="sales/proforma" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><ProformaInvoice /></ProtectedRoute>} />
         <Route path="sales/return" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><SaleReturn /></ProtectedRoute>} />
         <Route path="billing/history" element={<Navigate to="/sales/invoices" replace />} />
-        <Route path="billing/new" element={<Navigate to="/sales/invoices" replace />} />
+        <Route path="billing/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><BillForm /></ProtectedRoute>} />
         <Route path="billing/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><BillForm /></ProtectedRoute>} />
         <Route path="billing/:id" element={<BillView />} />
         
-        {/* ── POS Billing (Part 4.5) ──────────── */}
+        {/* â”€â”€ POS Billing (Part 4.5) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route path="sales/pos" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><POSBilling /></ProtectedRoute>} />
 
-        {/* ── Purchases (Part 6) ────────────── */}
+        {/* â”€â”€ Purchases (Part 6) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route path="purchases" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="invoices" /></ProtectedRoute>} />
         <Route path="purchases/history" element={<Navigate to="/purchases" replace />} />
         <Route path="purchases/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseForm /></ProtectedRoute>} />
@@ -116,77 +122,50 @@ export default function App() {
         <Route path="purchases/payment-out" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><PaymentOutList /></ProtectedRoute>} />
         <Route path="purchases/payment-out/new" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><PaymentOutForm /></ProtectedRoute>} />
 
-        {/* ── Expenses (Part 7) ───────────────── */}
+        {/* â”€â”€ Expenses (Part 7) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route path="expenses" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><ExpenseList /></ProtectedRoute>} />
         <Route path="expenses/new" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><ExpenseForm /></ProtectedRoute>} />
         <Route path="expenses/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><ExpenseForm /></ProtectedRoute>} />
 
-        {/* ── Quotations (Part 3) ─────────────── */}
+        {/* â”€â”€ Quotations (Part 3) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route path="quotations/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><QuotationForm /></ProtectedRoute>} />
         <Route path="quotations/history" element={<QuotationsHistory />} />
         <Route path="quotations/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><QuotationForm /></ProtectedRoute>} />
         <Route path="quotations/:id" element={<QuotationForm />} /> {/* Reusing form as view for now */}
 
-        {/* ── Delivery Challan (Part 3) ───────── */}
+        {/* â”€â”€ Delivery Challan (Part 3) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route path="challan/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><DeliveryChallan /></ProtectedRoute>} />
         <Route path="challan/new/:id" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><DeliveryChallan /></ProtectedRoute>} /> {/* from bill */}
 
-        {/* ── Inventory (Part 4) ──────────────── */}
+        {/* ðŸ“¦ Inventory (Part 4) ðŸ“¦ */}
         <Route path="inventory" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><ProductList /></ProtectedRoute>} />
-        <Route path="inventory/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><ProductForm /></ProtectedRoute>} />
-        <Route path="inventory/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><ProductForm /></ProtectedRoute>} />
 
-        {/* ── Customers & Suppliers (Part 5) ────── */}
-        <Route path="customers" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><Parties /></ProtectedRoute>} />
-        <Route path="customers/:id" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PartyDetails /></ProtectedRoute>} />
-        <Route path="suppliers" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><Parties /></ProtectedRoute>} />
-        <Route path="suppliers/:id" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PartyDetails /></ProtectedRoute>} />
+        {/* ðŸ¢ Parties (Part 5) ðŸ¢ */}
+        <Route path="parties" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><Parties /></ProtectedRoute>} />
+        <Route path="parties/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PartyForm /></ProtectedRoute>} />
+        <Route path="parties/:id" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PartyDetail /></ProtectedRoute>} />
+        <Route path="parties/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PartyForm /></ProtectedRoute>} />
 
-        {/* ── Inventory (Part 6) ────────────── */}
-        <Route
-          path="inventory"
-          element={
-            <ProtectedRoute allowedRoles={['owner', 'staff']}>
-              <PlaceholderPage title="Inventory" part={6} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="inventory/:id"
-          element={
-            <ProtectedRoute allowedRoles={['owner', 'staff']}>
-              <PlaceholderPage title="Product Details" part={6} />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ── Carpenter / Workers (Part 8) ────── */}
+        {/* â”€â”€ Carpenter / Workers (Part 8) â”€â”€â”€â”€â”€â”€ */}
         <Route path="carpenters" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><CarpenterList /></ProtectedRoute>} />
         <Route path="carpenters/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><CarpenterForm /></ProtectedRoute>} />
         <Route path="carpenters/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><CarpenterForm /></ProtectedRoute>} />
         <Route path="carpenters/:id" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><CarpenterDetail /></ProtectedRoute>} />
 
-        {/* ── Expenses (Part 7) ─────────────── */}
-        <Route
-          path="expenses"
-          element={
-            <ProtectedRoute allowedRoles={['owner']}>
-              <PlaceholderPage title="Expenses" part={7} />
-            </ProtectedRoute>
-          }
-        />
+        {/* â”€â”€ Expenses (Part 7) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        <Route path="expenses" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><ExpenseList /></ProtectedRoute>} />
 
-        {/* ── Reports (Part 8) ──────────────── */}
+        {/* ðŸ“Š Reports (Part 8) ðŸ“Š */}
         <Route
           path="reports"
           element={
             <ProtectedRoute allowedRoles={['owner', 'accountant']}>
-              <PlaceholderPage title="Reports" part={8} />
+              <Reports />
             </ProtectedRoute>
           }
         />
 
-        {/* ── Settings (Part 11) ─────────────── */}
+        {/* â”€â”€ Settings (Part 11) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route
           path="settings"
           element={
@@ -196,7 +175,28 @@ export default function App() {
           }
         />
 
-        {/* ── Catch All ─────────────────────── */}
+        {/* â”€â”€ Additional Sidebar Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
+        <Route path="/billing" element={<SalesInvoices />} />
+        <Route path="/billing/quotations" element={<QuotationsHistory />} />
+        <Route path="/billing/proforma" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><ProformaInvoice /></ProtectedRoute>} />
+        <Route path="/billing/challan" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><DeliveryChallan /></ProtectedRoute>} />
+        <Route path="/billing/pos" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><POSBilling /></ProtectedRoute>} />
+        <Route path="/billing/payment-in" element={<ProtectedRoute allowedRoles={['owner', 'staff', 'accountant']}><PaymentIn /></ProtectedRoute>} />
+        <Route path="/sales/returns" element={<PlaceholderPage title="Sale Returns" part={99} />} />
+
+        <Route path="/purchase" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="invoices" /></ProtectedRoute>} />
+        <Route path="/purchase/orders" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="orders" /></ProtectedRoute>} />
+        <Route path="/purchase/returns" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="returns" /></ProtectedRoute>} />
+        <Route path="/purchase/payment-out" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><PaymentOutForm /></ProtectedRoute>} />
+
+        <Route path="/inventory/godown" element={<PlaceholderPage title="Godown Management" part={99} />} />
+
+        <Route path="/staff" element={<PlaceholderPage title="Staff List" part={99} />} />
+        <Route path="/staff/attendance" element={<PlaceholderPage title="Attendance" part={99} />} />
+        <Route path="/staff/payroll" element={<PlaceholderPage title="Payroll" part={99} />} />
+
+        {/* â”€â”€ Catch All â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route path="*" element={<NotFound />} />
       </Route>
 

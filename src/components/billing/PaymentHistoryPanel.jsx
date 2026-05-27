@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -11,11 +11,11 @@ import {
   HiExclamationCircle,
 } from 'react-icons/hi';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function fmtAmt(n) {
   const num = parseFloat(n) || 0;
-  return 'Rs. ' + num.toFixed(2);
+  return '₹ ' + num.toFixed(2);
 }
 
 function todayStr() {
@@ -38,7 +38,7 @@ const PAYMENT_MODES = [
   { value: 'cheque', label: 'Cheque' },
 ];
 
-// ─── Inline Record Payment Form ───────────────────────────────────────────────
+// â”€â”€â”€ Inline Record Payment Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function RecordPaymentForm({ billId, onSave, onCancel, saving }) {
   const [amount, setAmount] = useState('');
@@ -142,7 +142,7 @@ function RecordPaymentForm({ billId, onSave, onCancel, saving }) {
   );
 }
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
+// â”€â”€â”€ MAIN COMPONENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * PaymentHistoryPanel
@@ -170,7 +170,7 @@ export default function PaymentHistoryPanel({ billId, onPaymentAdded }) {
       if (error) throw error;
       setPayments(data || []);
     } catch (err) {
-      console.error('Error fetching payments:', err);
+      showToast('error', 'Error fetching payments: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -228,7 +228,6 @@ export default function PaymentHistoryPanel({ billId, onPaymentAdded }) {
       showToast('success', `Payment of ${fmtAmt(amount)} recorded successfully.`);
       if (onPaymentAdded) onPaymentAdded({ amount, payment_mode, payment_date, notes });
     } catch (err) {
-      console.error('Error saving payment:', err);
       showToast('error', 'Failed to save payment: ' + (err.message || 'Unknown error'));
     } finally {
       setSaving(false);
@@ -333,7 +332,7 @@ export default function PaymentHistoryPanel({ billId, onPaymentAdded }) {
                     </span>
                   </td>
                   <td className="px-4 py-2.5 text-gray-500 text-xs max-w-xs truncate">
-                    {p.notes || '—'}
+                    {p.notes || 'â€”'}
                   </td>
                 </tr>
               ))}
