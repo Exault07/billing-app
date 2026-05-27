@@ -4,7 +4,6 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import {
   HiOutlineHome,
-  HiOutlineDocumentText,
   HiOutlineUserGroup,
   HiOutlineCube,
   HiOutlineChartBar,
@@ -15,11 +14,11 @@ import {
   HiOutlineChevronDown,
   HiOutlineUserCircle,
   HiOutlineBriefcase,
-  HiOutlinePlus
+  HiOutlinePlus,
+  HiOutlineChevronRight,
 } from 'react-icons/hi';
 
 const NAV_ITEMS = [
-  { type: 'header', label: 'GENERAL', roles: ['owner', 'staff', 'accountant'] },
   {
     label: 'Dashboard',
     path: '/',
@@ -91,8 +90,7 @@ const NAV_ITEMS = [
     roles: ['owner', 'accountant'],
     type: 'link',
   },
-
-  { type: 'header', label: 'INTERNAL', roles: ['owner', 'staff', 'accountant'] },
+  { type: 'divider' },
   {
     label: 'Workers / Carpenters',
     icon: HiOutlineBriefcase,
@@ -114,8 +112,6 @@ const NAV_ITEMS = [
       { label: 'Payroll', path: '/staff/payroll', roles: ['owner', 'accountant'] },
     ],
   },
-
-  { type: 'header', label: 'SETTINGS', roles: ['owner', 'staff', 'accountant'] },
   {
     label: 'Settings',
     path: '/settings',
@@ -129,46 +125,50 @@ export default function Sidebar({ isOpen, onClose }) {
   const { role } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [shopName, setShopName] = useState('BillDesk');
+  const [shopName, setShopName] = useState('My Shop');
+  const [shopPhone, setShopPhone] = useState('');
 
-  // Initialize activeGroup based purely on active route on mount
   const [activeGroup, setActiveGroup] = useState(() => {
     let initial = null;
     NAV_ITEMS.forEach((item) => {
       if (item.type === 'group' && item.subItems) {
-        const isActive = item.subItems.some((sub) => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/'));
+        const isActive = item.subItems.some(
+          (sub) => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/')
+        );
         if (isActive) initial = item.label;
       }
     });
     return initial;
   });
 
-  // Keep active group in sync with location (so navigating to Sales auto-opens Sales)
   useEffect(() => {
     NAV_ITEMS.forEach((item) => {
       if (item.type === 'group' && item.subItems) {
-        const isActive = item.subItems.some((sub) => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/'));
-        if (isActive) {
-          setActiveGroup(prev => prev !== item.label ? item.label : prev);
-        }
+        const isActive = item.subItems.some(
+          (sub) => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/')
+        );
+        if (isActive) setActiveGroup((prev) => (prev !== item.label ? item.label : prev));
       }
     });
   }, [location.pathname]);
 
   useEffect(() => {
-    supabase.from('shop_settings').select('shop_name').limit(1).maybeSingle().then(({ data }) => {
-      if (data && data.shop_name) setShopName(data.shop_name);
-    });
+    supabase
+      .from('shop_settings')
+      .select('shop_name, phone')
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          if (data.shop_name) setShopName(data.shop_name);
+          if (data.phone) setShopPhone(data.phone);
+        }
+      });
   }, []);
 
   const handleGroupClick = (item) => {
-    // If it's already active, don't close it according to requirements
-    if (activeGroup !== item.label) {
-      setActiveGroup(item.label);
-    }
-    if (item.path) {
-      navigate(item.path);
-    }
+    setActiveGroup((prev) => (prev === item.label ? null : item.label));
+    if (item.path) navigate(item.path);
   };
 
   const checkIsActive = (path) => {
@@ -176,75 +176,83 @@ export default function Sidebar({ isOpen, onClose }) {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
-  // Filter items based on role
   const visibleItems = role
-    ? NAV_ITEMS.filter((item) => {
-        if (!item.roles) return true; // Headers might not have roles strictly defined if handled above
-        return item.roles.includes(role);
-      })
+    ? NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(role))
     : NAV_ITEMS.filter((item) => item.roles?.includes('staff'));
+
+  const shopInitial = shopName ? shopName[0].toUpperCase() : 'S';
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-surface-900/50 backdrop-blur-sm lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-surface-200 transform transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 left-0 z-50 h-full w-64 flex flex-col transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
+        style={{ background: '#1e2433' }}
       >
-        {/* â”€â”€ Brand Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div className="flex items-center justify-between h-16 px-5 border-b border-surface-200 flex-shrink-0">
+        {/* ── Shop Header ── */}
+        <div className="flex items-center justify-between px-4 pt-5 pb-4 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-md">
-              <HiOutlineDocumentText className="w-5 h-5 text-white" />
+            {/* Avatar circle */}
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
+              style={{ background: '#3d4a6b' }}
+            >
+              {shopInitial}
             </div>
-            <div>
-              <h2 className="text-[15px] font-bold text-surface-800 leading-tight">
+            <div className="overflow-hidden">
+              <p className="text-white font-semibold text-[14px] leading-tight truncate">
                 {shopName}
-              </h2>
-              <p className="text-[10px] text-surface-400 font-medium uppercase tracking-wider">
-                Billing System
               </p>
+              {shopPhone && (
+                <p className="text-[12px] mt-0.5" style={{ color: '#8a95b0' }}>
+                  {shopPhone}
+                </p>
+              )}
             </div>
           </div>
+          {/* Close button (mobile only) */}
           <button
-            id="sidebar-close"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-surface-400 hover:text-surface-700 hover:bg-surface-100 transition-colors lg:hidden"
-            aria-label="Close sidebar"
+            className="lg:hidden p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             <HiOutlineX className="w-5 h-5" />
           </button>
         </div>
 
-        {/* â”€â”€ Create Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div className="px-4 py-4 flex-shrink-0">
-          <button 
-            onClick={() => navigate('/billing/new')}
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition-colors shadow-sm"
+        {/* ── Create Sales Invoice button ── */}
+        <div className="px-3 pb-4 flex-shrink-0">
+          <button
+            onClick={() => { navigate('/billing/new'); window.innerWidth < 1024 && onClose(); }}
+            className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+            style={{ background: '#2d3550', color: '#e2e8f0' }}
+            onMouseEnter={e => e.currentTarget.style.background = '#374166'}
+            onMouseLeave={e => e.currentTarget.style.background = '#2d3550'}
           >
-            <HiOutlinePlus className="w-4 h-4" />
-            + Create Sales Invoice
+            <span className="flex items-center gap-2">
+              <HiOutlinePlus className="w-4 h-4" />
+              + Create Sales Invoice
+            </span>
+            <HiOutlineChevronDown className="w-4 h-4 opacity-60" />
           </button>
         </div>
 
-        {/* â”€â”€ Navigation Links â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 pt-0 scrollbar-thin space-y-1">
+        {/* ── Nav ── */}
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 pb-4 space-y-0.5" style={{ scrollbarWidth: 'thin', scrollbarColor: '#374166 transparent' }}>
           {visibleItems.map((item, index) => {
-            if (item.type === 'header') {
+            if (item.type === 'divider') {
               return (
-                <div key={`header-${index}`} className="text-xs uppercase text-gray-400 tracking-wider mt-4 mb-1 px-3 font-semibold">
-                  {item.label}
-                </div>
+                <div key={`divider-${index}`} className="my-2 mx-2" style={{ borderTop: '1px solid #2d3550' }} />
               );
             }
 
@@ -255,76 +263,67 @@ export default function Sidebar({ isOpen, onClose }) {
                   key={item.label}
                   to={item.path}
                   onClick={() => window.innerWidth < 1024 && onClose()}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-600 font-medium dark:bg-blue-900 dark:text-white'
-                      : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
-                  }`}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group"
+                  style={isActive
+                    ? { background: '#3b82f6', color: '#ffffff' }
+                    : { color: '#a0aec0' }
+                  }
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#2d3550'; e.currentTarget.style.color = '#e2e8f0'; }}
+                  onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#a0aec0'; } }}
                 >
-                  <item.icon
-                    className={`w-5 h-5 flex-shrink-0 transition-colors ${
-                      isActive ? 'text-blue-600 dark:text-white' : 'text-surface-400 group-hover:text-surface-600'
-                    }`}
-                  />
-                  <span className="text-[14px] leading-tight truncate">{item.label}</span>
+                  <item.icon className="w-[18px] h-[18px] flex-shrink-0" />
+                  <span className="text-[13.5px] font-medium leading-tight">{item.label}</span>
                 </NavLink>
               );
             }
 
             if (item.type === 'group') {
-              const isOpenGroup = activeGroup === item.label;
-              // Check if parent group path or any subitem is active
-              const isGroupActive = item.path ? checkIsActive(item.path) : false;
-              const isAnySubActive = item.subItems.some((sub) => checkIsActive(sub.path));
-              const isParentActive = isGroupActive || isAnySubActive;
+              const isOpen = activeGroup === item.label;
+              const isAnySubActive = item.subItems?.some((sub) => checkIsActive(sub.path));
 
               return (
-                <div key={item.label} className="flex flex-col">
+                <div key={item.label}>
                   <button
                     onClick={() => handleGroupClick(item)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors group ${
-                      isParentActive && !isOpenGroup
-                        ? 'bg-blue-50 text-blue-600 font-medium dark:bg-blue-900 dark:text-white' // highlight parent if active and closed
-                        : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
-                    }`}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all"
+                    style={isAnySubActive && !isOpen
+                      ? { background: '#2d3a5c', color: '#93c5fd' }
+                      : { color: '#a0aec0' }
+                    }
+                    onMouseEnter={e => { if (!isAnySubActive || isOpen) { e.currentTarget.style.background = '#2d3550'; e.currentTarget.style.color = '#e2e8f0'; } }}
+                    onMouseLeave={e => { if (!isAnySubActive || isOpen) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = isAnySubActive ? '#93c5fd' : '#a0aec0'; } }}
                   >
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <item.icon
-                        className={`w-5 h-5 flex-shrink-0 transition-colors ${
-                          (isParentActive && activeGroup !== item.label) ? 'text-blue-600 dark:text-white' : 'text-surface-400 group-hover:text-surface-600'
-                        }`}
-                      />
-                      <span className="text-[14px] leading-tight truncate">{item.label}</span>
+                    <div className="flex items-center gap-3">
+                      <item.icon className="w-[18px] h-[18px] flex-shrink-0" />
+                      <span className="text-[13.5px] font-medium leading-tight">{item.label}</span>
                     </div>
-                      <HiOutlineChevronDown
-                        className={`w-4 h-4 ml-auto transition-transform duration-300 ${
-                          activeGroup === item.label ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-surface-400'
-                        }`}
-                      />
+                    <HiOutlineChevronDown
+                      className="w-4 h-4 flex-shrink-0 transition-transform duration-200"
+                      style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', opacity: 0.6 }}
+                    />
                   </button>
 
-                  {/* Dropdown Items */}
+                  {/* Sub items */}
                   <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      activeGroup === item.label ? 'max-h-96 opacity-100 mb-2' : 'max-h-0 opacity-0'
-                    }`}
+                    className="overflow-hidden transition-all duration-250"
+                    style={{ maxHeight: isOpen ? '400px' : '0px', opacity: isOpen ? 1 : 0 }}
                   >
-                    <div className="flex flex-col gap-1 pl-11 pr-2 pb-1 border-l-2 border-surface-100 ml-5">
-                      {item.subItems.map((sub) => {
-                        // Filter subItems based on role
+                    <div className="ml-4 pl-4 mt-0.5 mb-1 space-y-0.5" style={{ borderLeft: '1px solid #2d3550' }}>
+                      {item.subItems?.map((sub) => {
                         if (role && sub.roles && !sub.roles.includes(role)) return null;
-
                         const isSubActive = checkIsActive(sub.path);
                         return (
                           <NavLink
                             key={sub.label}
                             to={sub.path}
                             onClick={() => window.innerWidth < 1024 && onClose()}
-                            className={`px-3 py-2 rounded-lg text-[13px] transition-colors truncate ${
-                              isSubActive
-                                ? 'bg-blue-50 text-blue-600 font-medium dark:bg-blue-900 dark:text-white'
-                                : 'text-surface-500 hover:text-surface-900 hover:bg-surface-50'
-                            }`}
+                            className="block px-3 py-2 rounded-lg text-[13px] transition-all font-medium"
+                            style={isSubActive
+                              ? { background: '#3b82f620', color: '#60a5fa' }
+                              : { color: '#718096' }
+                            }
+                            onMouseEnter={e => { if (!isSubActive) { e.currentTarget.style.background = '#2d3550'; e.currentTarget.style.color = '#e2e8f0'; } }}
+                            onMouseLeave={e => { if (!isSubActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#718096'; } }}
                           >
                             {sub.label}
                           </NavLink>
@@ -335,24 +334,25 @@ export default function Sidebar({ isOpen, onClose }) {
                 </div>
               );
             }
+
             return null;
           })}
         </nav>
 
-        {/* â”€â”€ Sidebar Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div className="px-4 py-4 border-t border-surface-200 flex-shrink-0">
-          <div className="bg-surface-50 rounded-xl p-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-surface-600 truncate mr-2">{shopName} Premium</p>
-              {role && (
-                <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-primary-100 text-primary-700 capitalize">
-                  {role}
-                </span>
-              )}
-            </div>
-            <p className="text-[10px] text-surface-400 mt-0.5">
-              Â© 2026 All rights reserved
+        {/* ── Footer ── */}
+        <div className="px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid #2d3550' }}>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium truncate" style={{ color: '#4a5568' }}>
+              {shopName}
             </p>
+            {role && (
+              <span
+                className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full capitalize"
+                style={{ background: '#2d3a5c', color: '#60a5fa' }}
+              >
+                {role}
+              </span>
+            )}
           </div>
         </div>
       </aside>
