@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabaseClient';
 import { HiOutlineSave } from 'react-icons/hi';
 
@@ -26,7 +26,7 @@ export default function ShopProfileTab() {
 
   const fetchSettings = async () => {
     try {
-      const { data, error } = await supabase.from('shop_settings').select('*').limit(1).single();
+      const { data, error } = await supabase.from('shop_settings').select('*').limit(1).maybeSingle();
       if (error) throw error;
       if (data) {
         setFormData({
@@ -55,22 +55,29 @@ export default function ShopProfileTab() {
     setSaving(true);
     setMessage({ text: '', type: '' });
     try {
-      const { error } = await supabase
-        .from('shop_settings')
-        .update({
-          shop_name: formData.shop_name,
-          owner_name: formData.owner_name,
-          address_line1: formData.address_line1,
-          address_line2: formData.address_line2,
-          city: formData.city,
-          state: formData.state,
-          pincode: formData.pincode,
-          phone: formData.phone,
-          alternate_phone: formData.alternate_phone,
-          email: formData.email,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', formData.id);
+      let error;
+      const payload = {
+        shop_name: formData.shop_name,
+        owner_name: formData.owner_name,
+        address_line1: formData.address_line1,
+        address_line2: formData.address_line2,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        phone: formData.phone,
+        alternate_phone: formData.alternate_phone,
+        email: formData.email,
+        updated_at: new Date().toISOString()
+      };
+
+      if (formData.id) {
+        const { error: updateErr } = await supabase.from('shop_settings').update(payload).eq('id', formData.id);
+        error = updateErr;
+      } else {
+        const { data: newRow, error: insertErr } = await supabase.from('shop_settings').insert([payload]).select().single();
+        error = insertErr;
+        if (newRow) setFormData(prev => ({ ...prev, id: newRow.id }));
+      }
 
       if (error) throw error;
       setMessage({ text: 'Shop profile saved successfully!', type: 'success' });

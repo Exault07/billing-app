@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +11,7 @@ export default function CarpenterDetail() {
   const { id } = useParams();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [carpenter, setCarpenter] = useState(null);
   const [bills, setBills] = useState([]);
   const [payments, setPayments] = useState([]);
@@ -46,7 +47,7 @@ export default function CarpenterDetail() {
       setPayments(paymentsRes.data || []);
 
     } catch (err) {
-      console.error('Error fetching carpenter details:', err);
+      setError(err.message || 'Failed to fetch carpenter details');
     } finally {
       setLoading(false);
     }
@@ -75,8 +76,7 @@ export default function CarpenterDetail() {
       });
       fetchData(); // Refresh data
     } catch (err) {
-      console.error('Error recording payment:', err);
-      alert('Error recording payment');
+      alert('Error recording payment: ' + err.message);
     } finally {
       setSavingPayment(false);
     }
@@ -105,6 +105,12 @@ export default function CarpenterDetail() {
 
   return (
     <div className="max-w-6xl mx-auto pb-12 space-y-6">
+      {error && (
+        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
+          <span className="mt-0.5 text-red-400">âš </span>
+          <span>{error}</span>
+        </div>
+      )}
       <div className="flex items-center gap-4">
         <Link
           to="/carpenters"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { 
@@ -16,6 +16,7 @@ export default function BillsHistory() {
   const navigate = useNavigate();
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Stats
@@ -64,7 +65,7 @@ export default function BillsHistory() {
       setTotalUnpaid(tUnpaid);
 
     } catch (err) {
-      console.error(err);
+      setError(err.message || 'Failed to fetch bills');
     } finally {
       setLoading(false);
     }
@@ -94,6 +95,13 @@ export default function BillsHistory() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 pb-16 animate-fade-in text-surface-900 bg-surface-50 min-h-screen">
       
+      {error && (
+        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2 mt-4">
+          <span className="mt-0.5 text-red-400">âš </span>
+          <span>{error}</span>
+        </div>
+      )}
+
       {/* Top Header */}
       <div className="flex items-center justify-between mb-4 mt-2">
         <h1 className="text-xl font-bold text-surface-800">Sales Invoices</h1>
@@ -169,7 +177,7 @@ export default function BillsHistory() {
               />
             </div>
             <select className="px-3 py-1.5 text-[13px] border border-surface-200 rounded bg-white text-surface-600 w-40">
-              <option>📅 Last 365 Days</option>
+              <option>ðŸ“… Last 365 Days</option>
             </select>
           </div>
           <div className="flex items-center gap-3">
@@ -191,7 +199,7 @@ export default function BillsHistory() {
             <thead className="bg-[#f9fafb] border-y border-surface-200">
               <tr className="text-[12px] font-bold text-surface-700">
                 <th className="py-3 px-4 w-12 text-center"><input type="checkbox" className="rounded border-surface-300" /></th>
-                <th className="py-3 px-4">Date <span className="text-[10px] text-surface-400">↕</span></th>
+                <th className="py-3 px-4">Date <span className="text-[10px] text-surface-400">â†•</span></th>
                 <th className="py-3 px-4">Invoice Number</th>
                 <th className="py-3 px-4">Party Name</th>
                 <th className="py-3 px-4">Due In</th>
@@ -213,7 +221,7 @@ export default function BillsHistory() {
                   return (
                     <tr key={b.id} className="border-b border-surface-100 hover:bg-surface-50 group cursor-pointer" onClick={() => navigate(`/billing/${b.id}`)}>
                       <td className="py-3 px-4 text-center" onClick={e => e.stopPropagation()}>
-                        <input type="checkbox" className="rounded border-surface-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <input type="checkbox" className="rounded border-surface-300  transition-opacity" />
                       </td>
                       <td className="py-3 px-4">{formatDate(b.date)}</td>
                       <td className="py-3 px-4 text-surface-600">{b.bill_no.replace('BILL-', '')}</td>

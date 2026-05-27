@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -23,7 +23,7 @@ const WhatsAppIcon = () => (
 
 const fmt = (n) => Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-// ─── Record Payment Modal ─────────────────────────────────────────────────────
+// â”€â”€â”€ Record Payment Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function RecordPaymentModal({ bill, onClose, onSaved, userId }) {
   const maxAmount = Number(bill.balance_due || 0);
   const [amount, setAmount] = useState(maxAmount.toFixed(2));
@@ -36,7 +36,7 @@ function RecordPaymentModal({ bill, onClose, onSaved, userId }) {
   const handleSave = async () => {
     const amt = Number(amount);
     if (!amt || amt <= 0) return setError('Enter a valid amount.');
-    if (amt > maxAmount) return setError('Amount exceeds balance due of Rs. ' + fmt(maxAmount));
+    if (amt > maxAmount) return setError('Amount exceeds balance due of ₹ ' + fmt(maxAmount));
     setSaving(true);
     setError('');
     try {
@@ -101,11 +101,11 @@ function RecordPaymentModal({ bill, onClose, onSaved, userId }) {
             </div>
             <div className="flex justify-between text-surface-600 mt-1">
               <span>Grand Total:</span>
-              <span className="font-bold">Rs. {fmt(bill.grand_total)}</span>
+              <span className="font-bold">₹ {fmt(bill.grand_total)}</span>
             </div>
             <div className="flex justify-between text-red-600 mt-1">
               <span>Balance Due:</span>
-              <span className="font-black">Rs. {fmt(bill.balance_due)}</span>
+              <span className="font-black">₹ {fmt(bill.balance_due)}</span>
             </div>
           </div>
 
@@ -114,7 +114,7 @@ function RecordPaymentModal({ bill, onClose, onSaved, userId }) {
           <div>
             <label className="block text-[12px] font-bold text-surface-600 mb-1">Amount Received *</label>
             <div className="flex border border-surface-200 rounded-lg overflow-hidden">
-              <span className="px-3 py-2.5 bg-surface-100 text-surface-500 text-[13px] font-medium">Rs.</span>
+              <span className="px-3 py-2.5 bg-surface-100 text-surface-500 text-[13px] font-medium">₹</span>
               <input
                 type="number"
                 value={amount}
@@ -182,7 +182,7 @@ function RecordPaymentModal({ bill, onClose, onSaved, userId }) {
   );
 }
 
-// ─── Payment History Panel ────────────────────────────────────────────────────
+// â”€â”€â”€ Payment History Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PaymentHistoryPanel({ billId }) {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -220,7 +220,7 @@ function PaymentHistoryPanel({ billId }) {
           {payments.map(p => (
             <tr key={p.id} className="border-b border-surface-100">
               <td className="py-2.5 px-4">{new Date(p.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
-              <td className="py-2.5 px-4 font-bold text-green-700">Rs. {fmt(p.amount)}</td>
+              <td className="py-2.5 px-4 font-bold text-green-700">₹ {fmt(p.amount)}</td>
               <td className="py-2.5 px-4">
                 <span className="capitalize bg-surface-100 px-2 py-0.5 rounded text-surface-600">{p.payment_mode}</span>
               </td>
@@ -231,7 +231,7 @@ function PaymentHistoryPanel({ billId }) {
         <tfoot>
           <tr className="bg-green-50">
             <td className="py-2.5 px-4 font-bold text-surface-700">Total Received</td>
-            <td className="py-2.5 px-4 font-black text-green-700">Rs. {fmt(total)}</td>
+            <td className="py-2.5 px-4 font-black text-green-700">₹ {fmt(total)}</td>
             <td colSpan="2"></td>
           </tr>
         </tfoot>
@@ -240,7 +240,7 @@ function PaymentHistoryPanel({ billId }) {
   );
 }
 
-// ─── Audit Trail Panel ────────────────────────────────────────────────────────
+// â”€â”€â”€ Audit Trail Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function AuditTrailPanel({ billId }) {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -281,7 +281,7 @@ function AuditTrailPanel({ billId }) {
                   <div key={i} className="text-[12px] text-surface-600 flex items-center gap-2">
                     <span className="font-bold text-surface-700 min-w-[120px]">{d.field}:</span>
                     <span className="text-red-500 line-through">{String(d.from)}</span>
-                    <span className="text-surface-400">→</span>
+                    <span className="text-surface-400">â†’</span>
                     <span className="text-green-600 font-medium">{String(d.to)}</span>
                   </div>
                 ))}
@@ -294,7 +294,7 @@ function AuditTrailPanel({ billId }) {
   );
 }
 
-// ─── Main BillView ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main BillView â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function BillView() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -350,10 +350,10 @@ export default function BillView() {
       'Hello ' + customer.name + ',\n\n' +
       'Your bill *' + bill.bill_no + '* dated ' + bill.date + ' has been generated.\n\n' +
       '*Amount Details:*\n' +
-      '- Subtotal: Rs.' + fmt(bill.subtotal) + '\n' +
-      '- Grand Total: Rs.' + fmt(bill.grand_total) + '\n' +
-      '- Advance Paid: Rs.' + fmt(bill.advance_paid) + '\n' +
-      '- *Balance Due: Rs.' + fmt(bill.balance_due) + '*\n\n' +
+      '- Subtotal: ₹' + fmt(bill.subtotal) + '\n' +
+      '- Grand Total: ₹' + fmt(bill.grand_total) + '\n' +
+      '- Advance Paid: ₹' + fmt(bill.advance_paid) + '\n' +
+      '- *Balance Due: ₹' + fmt(bill.balance_due) + '*\n\n' +
       'Thank you for your business!';
     window.open('https://wa.me/91' + phone + '?text=' + encodeURIComponent(message), '_blank');
   };
@@ -586,7 +586,7 @@ export default function BillView() {
           {/* Customer Info */}
           <div className="py-5 border-b border-surface-200">
             <p className="text-xs text-surface-500 uppercase tracking-wide font-semibold mb-1">Bill To</p>
-            <p className="text-base font-bold text-surface-900">{customer?.name || '—'}</p>
+            <p className="text-base font-bold text-surface-900">{customer?.name || 'â€”'}</p>
             {customer?.phone && <p className="text-sm text-surface-600">Phone: {customer.phone}</p>}
             {customer?.address && <p className="text-sm text-surface-600">Address: {customer.address}</p>}
           </div>
@@ -611,8 +611,8 @@ export default function BillView() {
                     <td className="py-2 font-medium text-surface-800">{item.name}</td>
                     <td className="py-2 text-center text-surface-500">{item.unit || '-'}</td>
                     <td className="py-2 text-right text-surface-700">{item.qty}</td>
-                    <td className="py-2 text-right text-surface-700">Rs. {fmt(item.price)}</td>
-                    <td className="py-2 text-right font-semibold text-surface-900">Rs. {fmt(item.total)}</td>
+                    <td className="py-2 text-right text-surface-700">₹ {fmt(item.price)}</td>
+                    <td className="py-2 text-right font-semibold text-surface-900">₹ {fmt(item.total)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -624,39 +624,39 @@ export default function BillView() {
             <div className="w-72 space-y-2 text-sm">
               <div className="flex justify-between text-surface-600">
                 <span>Subtotal</span>
-                <span>Rs. {fmt(bill.subtotal)}</span>
+                <span>₹ {fmt(bill.subtotal)}</span>
               </div>
               {Number(bill.discount) > 0 && (
                 <div className="flex justify-between text-red-600">
                   <span>Discount</span>
-                  <span>- Rs. {fmt(bill.discount)}</span>
+                  <span>- ₹ {fmt(bill.discount)}</span>
                 </div>
               )}
               {Number(bill.labour_charges) > 0 && (
                 <div className="flex justify-between text-surface-600">
                   <span>Labour Charges</span>
-                  <span>+ Rs. {fmt(bill.labour_charges)}</span>
+                  <span>+ ₹ {fmt(bill.labour_charges)}</span>
                 </div>
               )}
               {Number(bill.transport_charges) > 0 && (
                 <div className="flex justify-between text-surface-600">
                   <span>Transport Charges</span>
-                  <span>+ Rs. {fmt(bill.transport_charges)}</span>
+                  <span>+ ₹ {fmt(bill.transport_charges)}</span>
                 </div>
               )}
               <div className="flex justify-between font-bold text-base text-surface-900 border-t border-surface-200 pt-2">
                 <span>Grand Total</span>
-                <span>Rs. {fmt(grandTotal)}</span>
+                <span>₹ {fmt(grandTotal)}</span>
               </div>
               {Number(bill.advance_paid) > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Amount Paid</span>
-                  <span>- Rs. {fmt(bill.advance_paid)}</span>
+                  <span>- ₹ {fmt(bill.advance_paid)}</span>
                 </div>
               )}
               <div className={'flex justify-between font-black text-lg border-t border-surface-300 pt-2 ' + (Number(bill.balance_due) > 0 ? 'text-red-600' : 'text-green-600')}>
                 <span>Balance Due</span>
-                <span>Rs. {fmt(bill.balance_due)}</span>
+                <span>₹ {fmt(bill.balance_due)}</span>
               </div>
             </div>
           </div>

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { HiOutlineSave as Save, HiOutlineExclamationCircle as AlertCircle, HiOutlineArrowLeft as ArrowLeft } from 'react-icons/hi';
 
 export default function PurchaseReturn() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState('');
   const [invoiceDetails, setInvoiceDetails] = useState(null);
@@ -175,7 +175,6 @@ export default function PurchaseReturn() {
 
       navigate('/purchases');
     } catch (error) {
-      console.error('Error processing return:', error);
       alert('Error processing return: ' + error.message);
     } finally {
       setLoading(false);

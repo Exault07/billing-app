@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { HiOutlinePlus, HiOutlineDocumentText, HiOutlineSearch, HiOutlineEye } from 'react-icons/hi';
@@ -14,20 +14,28 @@ const fmt = (n) => Number(n || 0).toLocaleString('en-IN', { minimumFractionDigit
 export default function QuotationsHistory() {
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     const fetch = async () => {
+      setError('');
       setLoading(true);
-      let query = supabase
-        .from('quotations')
-        .select('*, customers(name, phone)')
-        .order('created_at', { ascending: false });
-      if (statusFilter !== 'all') query = query.eq('status', statusFilter);
-      const { data } = await query;
-      setQuotations(data || []);
-      setLoading(false);
+      try {
+        let query = supabase
+          .from('quotations')
+          .select('*, customers(name, phone)')
+          .order('created_at', { ascending: false });
+        if (statusFilter !== 'all') query = query.eq('status', statusFilter);
+        const { data, error: fetchError } = await query;
+        if (fetchError) throw fetchError;
+        setQuotations(data || []);
+      } catch (err) {
+        setError(err.message || 'Failed to load quotations');
+      } finally {
+        setLoading(false);
+      }
     };
     fetch();
   }, [statusFilter]);
@@ -66,6 +74,13 @@ export default function QuotationsHistory() {
         </div>
       </div>
 
+      {error && (
+        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
+          <span className="mt-0.5 text-red-400">âš </span>
+          <span>{error}</span>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl border border-surface-200 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-48"><div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" /></div>
@@ -97,15 +112,15 @@ export default function QuotationsHistory() {
                       <td className="px-5 py-3.5 font-mono font-semibold text-amber-700">{q.bill_no}</td>
                       <td className="px-5 py-3.5 text-surface-600">{new Date(q.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                       <td className="px-5 py-3.5">
-                        <p className="font-medium text-surface-800">{q.customers?.name || '—'}</p>
+                        <p className="font-medium text-surface-800">{q.customers?.name || '-'}</p>
                         {q.customers?.phone && <p className="text-xs text-surface-400">{q.customers.phone}</p>}
                       </td>
-                      <td className="px-5 py-3.5 text-right font-semibold text-surface-800">₹{fmt(total)}</td>
+                      <td className="px-5 py-3.5 text-right font-semibold text-surface-800">₹ {fmt(total)}</td>
                       <td className="px-5 py-3.5 text-center"><span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${STATUS_STYLES[q.status] || ''}`}>{q.status}</span></td>
                       <td className="px-5 py-3.5 text-center">
                         {q.converted_to_bill_id ? (
-                          <Link to={`/billing/${q.converted_to_bill_id}`} className="text-xs text-green-600 hover:underline font-medium">View Bill →</Link>
-                        ) : <span className="text-xs text-surface-400">—</span>}
+                          <Link to={`/billing/${q.converted_to_bill_id}`} className="text-xs text-green-600 hover:underline font-medium">View Bill â†’</Link>
+                        ) : <span className="text-xs text-surface-400">-</span>}
                       </td>
                       <td className="px-5 py-3.5 text-center">
                         <Link to={`/quotations/${q.id}`} className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800 font-medium"><HiOutlineEye className="w-3.5 h-3.5" /> View</Link>

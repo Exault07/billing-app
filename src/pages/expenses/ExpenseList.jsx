@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -8,7 +8,7 @@ export default function ExpenseList() {
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [paymentModeFilter, setPaymentModeFilter] = useState('');
@@ -40,7 +40,7 @@ export default function ExpenseList() {
       if (error) throw error;
       if (expData) setExpenses(expData);
     } catch (err) {
-      console.error('Error fetching expenses:', err);
+      setError(err.message || 'Failed to fetch expenses');
     } finally {
       setLoading(false);
     }
@@ -53,8 +53,7 @@ export default function ExpenseList() {
       if (error) throw error;
       setExpenses(expenses.filter(e => e.id !== id));
     } catch (err) {
-      console.error('Error deleting expense:', err);
-      alert('Failed to delete expense.');
+      setError(err.message || 'Failed to delete expense');
     }
   };
 
@@ -154,6 +153,13 @@ export default function ExpenseList() {
         </Link>
       </div>
 
+      {error && (
+        <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
+          <span className="mt-0.5 text-red-400">âš </span>
+          <span>{error}</span>
+        </div>
+      )}
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5">
@@ -243,14 +249,29 @@ export default function ExpenseList() {
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-slate-500">
-                    Loading expenses...
+                  <td colSpan="6" className="py-16 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="w-8 h-8 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mb-4" />
+                      <span className="text-slate-500">Loading expenses...</span>
+                    </div>
                   </td>
                 </tr>
               ) : filteredExpenses.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-slate-500">
-                    No expenses found.
+                  <td colSpan="6" className="py-16 text-center text-slate-500">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-3">
+                        <HiOutlineCurrencyRupee className="w-8 h-8 text-slate-400" />
+                      </div>
+                      <p className="text-base font-semibold text-slate-700">No expenses found</p>
+                      <p className="text-sm mt-1 mb-4">Click "Add Expense" above to record an expense.</p>
+                      <button 
+                        onClick={() => navigate('/expenses/new')}
+                        className="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-semibold hover:bg-rose-700"
+                      >
+                        + Add Expense
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ) : (

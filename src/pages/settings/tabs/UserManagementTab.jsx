@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabaseClient';
 import { HiOutlineUserAdd, HiOutlineTrash, HiOutlineExclamationCircle } from 'react-icons/hi';
 import { useAuth } from '../../../context/AuthContext';
@@ -97,7 +97,7 @@ export default function UserManagementTab() {
     }
   };
 
-  if (loading) return <div className="p-4 text-surface-500">Loading users...</div>;
+  if (loading) return <div className="p-4 text-surface-500">Loading users..</div>;
 
   return (
     <div>

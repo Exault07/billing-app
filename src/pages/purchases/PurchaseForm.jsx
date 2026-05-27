@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -10,7 +10,7 @@ import {
   HiOutlineDocumentText,
 } from 'react-icons/hi';
 
-// ─── Empty line-item template ──────────────────────────────────────────────
+// â”€â”€â”€ Empty line-item template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const emptyItem = () => ({
   product_id: '',
   name: '',
@@ -28,7 +28,7 @@ export default function PurchaseForm() {
   const { user } = useAuth();
   const isEditing = Boolean(id);
 
-  // ── Form state ─────────────────────────────────────────────────────────
+  // â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [billNo, setBillNo] = useState(''); // Supplier Invoice No
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
@@ -50,7 +50,7 @@ export default function PurchaseForm() {
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('draft');
 
-  // ── Data lists ─────────────────────────────────────────────────────────
+  // â”€â”€ Data lists â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [suppliers, setSuppliers] = useState([]);
   const [products, setProducts] = useState([]);
   const [productSearch, setProductSearch] = useState({});
@@ -59,17 +59,17 @@ export default function PurchaseForm() {
   const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState('');
 
-  // ── Derived totals ─────────────────────────────────────────────────────
+  // â”€â”€ Derived totals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const subtotal = items.reduce((sum, item) => sum + Number(item.total || 0), 0);
   const grandTotal = subtotal - Number(discount) + Number(labourCharges) + Number(transportCharges) + Number(roundOff);
   const balanceDue = grandTotal - Number(advancePaid) - Number(paymentInDiscount);
 
-  // ── Load data ────────────────────────────────────────────────────────
+  // â”€â”€ Load data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [{ data: supData }, { data: prodData }] = await Promise.all([
-          supabase.from('suppliers').select('id, name, phone, balance').order('name'),
+          supabase.from('parties').select('id, name, phone:mobile, balance:current_balance').in('party_type', ['supplier', 'both']).order('name'),
           supabase.from('products').select('id, name, category, unit, selling_price, stock_qty').order('name'),
         ]);
         setSuppliers(supData || []);
@@ -83,7 +83,7 @@ export default function PurchaseForm() {
     fetchData();
   }, []);
 
-  // ── Load existing bill ───────────────────────────────────
+  // â”€â”€ Load existing bill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!isEditing) return;
     const fetchBill = async () => {
@@ -234,7 +234,7 @@ export default function PurchaseForm() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-surface-800">
-              {isEditing ? `Edit Purchase — ${billNo}` : 'Record Purchase Invoice'}
+              {isEditing ? `Edit Purchase â€” ${billNo}` : 'Record Purchase Invoice'}
             </h1>
             <p className="text-xs text-surface-400">Stock will be automatically added upon saving as 'final'.</p>
           </div>
@@ -250,7 +250,7 @@ export default function PurchaseForm() {
         </div>
       </div>
 
-      {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">⚠ {error}</div>}
+      {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">âš  {error}</div>}
 
       <div className="bg-white rounded-2xl border border-surface-200 p-6 mb-4 shadow-sm">
         <h2 className="text-sm font-semibold text-surface-600 mb-4 uppercase tracking-wide">Supplier Details</h2>
@@ -270,7 +270,7 @@ export default function PurchaseForm() {
           <div>
             <label className="block text-xs font-medium text-surface-600 mb-1">Supplier *</label>
             <select value={supplierId} onChange={e => setSupplierId(e.target.value)} className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-              <option value="">— Select Supplier —</option>
+              <option value="">â€” Select Supplier â€”</option>
               {suppliers.map(s => <option key={s.id} value={s.id}>{s.name} {s.phone ? `(${s.phone})` : ''}</option>)}
             </select>
             {selectedSupplier && <p className={`text-xs mt-1 font-medium ${Number(selectedSupplier.balance) < 0 ? 'text-red-500' : 'text-green-600'}`}>Current Balance: ₹{selectedSupplier.balance}</p>}
@@ -307,7 +307,7 @@ export default function PurchaseForm() {
                       {item.product_id ? (
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-surface-800">{item.name}</span>
-                          <button onClick={() => updateItem(index, 'product_id', '')} className="text-xs text-surface-400 hover:text-red-500">✕</button>
+                          <button onClick={() => updateItem(index, 'product_id', '')} className="text-xs text-surface-400 hover:text-red-500">âœ•</button>
                         </div>
                       ) : (
                         <div className="relative">
@@ -343,7 +343,7 @@ export default function PurchaseForm() {
               { label: 'Discount Received (₹)', value: discount, setter: setDiscount },
               { label: 'Labour / Service Charges (₹)', value: labourCharges, setter: setLabourCharges },
               { label: 'Transport / Shipping (₹)', value: transportCharges, setter: setTransportCharges },
-              { label: 'Round Off (±₹)', value: roundOff, setter: setRoundOff },
+              { label: 'Round Off (Â±₹)', value: roundOff, setter: setRoundOff },
               { label: 'Amount Paid to Supplier (₹)', value: advancePaid, setter: setAdvancePaid },
             ].map(({ label, value, setter }) => (
               <div key={label} className="flex items-center gap-3">

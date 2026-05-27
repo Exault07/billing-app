@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -20,8 +20,7 @@ const PurchaseList = ({ tab = 'invoices' }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState('365days');
   const [loading, setLoading] = useState(true);
-
-  // Summary Metrics (calculated from invoices)
+  const [error, setError] = useState(null);
   const [metrics, setMetrics] = useState({
     totalPurchases: 0,
     paid: 0,
@@ -39,33 +38,44 @@ const PurchaseList = ({ tab = 'invoices' }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const { data: partiesData } = await supabase.from('parties').select('id, name');
+      const partyMap = {};
+      if (partiesData) {
+        partiesData.forEach(p => partyMap[p.id] = p.name);
+      }
+
       if (activeTab === 'invoices') {
         const { data, error } = await supabase
           .from('purchase_invoices')
-          .select('*, suppliers(name)')
+          .select('*')
           .order('date', { ascending: false });
         
         if (!error && data) {
-          setInvoices(data);
+          const processed = data.map(inv => ({ ...inv, suppliers: { name: partyMap[inv.supplier_id] || '-' } }));
+          setInvoices(processed);
           
           // Calculate metrics
           let total = 0, paid = 0, unpaid = 0;
-          data.forEach(inv => {
+          processed.forEach(inv => {
             total += Number(inv.total_amount || 0);
-            paid += Number(inv.advance_paid || 0);
+            paid += Number(inv.paid_amount || 0);
             unpaid += Number(inv.balance_due || 0);
           });
           setMetrics({ totalPurchases: total, paid, unpaid });
         }
       } else if (activeTab === 'orders') {
-        const { data, error } = await supabase.from('purchase_orders').select('*, suppliers(name)').order('date', { ascending: false });
-        if (!error && data) setOrders(data);
+        const { data, error } = await supabase.from('purchase_orders').select('*').order('date', { ascending: false });
+        if (!error && data) {
+          setOrders(data.map(ord => ({ ...ord, suppliers: { name: partyMap[ord.supplier_id] || '-' } })));
+        }
       } else if (activeTab === 'returns') {
-        const { data, error } = await supabase.from('purchase_returns').select('*, suppliers(name), purchase_invoices(bill_no)').order('return_date', { ascending: false });
-        if (!error && data) setReturns(data);
+        const { data, error } = await supabase.from('purchase_returns').select('*, purchase_invoices(bill_no)').order('return_date', { ascending: false });
+        if (!error && data) {
+          setReturns(data.map(ret => ({ ...ret, suppliers: { name: partyMap[ret.supplier_id] || '-' } })));
+        }
       }
     } catch (err) {
-      console.error(err);
+      setError(err.message || 'Failed to fetch data');
     } finally {
       setLoading(false);
     }
@@ -206,10 +216,34 @@ const PurchaseList = ({ tab = 'invoices' }) => {
           )}
         </div>
 
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
+            <span className="mt-0.5 text-red-400">âš </span>
+            <span>{error}</span>
+          </div>
+        )}
+
         {/* Table Area */}
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex-1">
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Loading...</div>
+            <div className="py-16">
+              <div className="flex flex-col items-center justify-center">
+                <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
+                <span className="text-gray-500">Loading {activeTab}...</span>
+              </div>
+            </div>
+          ) : ((activeTab === 'invoices' && filteredInvoices.length === 0) ||
+               (activeTab === 'orders' && orders.length === 0) ||
+               (activeTab === 'returns' && returns.length === 0)) ? (
+            <div className="py-16 text-center text-gray-500">
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                  <HiOutlineSearch className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-base font-semibold text-gray-700">No {activeTab} found</p>
+                <p className="text-sm mt-1 mb-4">You have no records matching your criteria.</p>
+              </div>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -307,10 +341,6 @@ const PurchaseList = ({ tab = 'invoices' }) => {
                   ))}
                 </tbody>
               </table>
-              
-              {activeTab === 'invoices' && filteredInvoices.length === 0 && !loading && (
-                <div className="py-12 text-center text-gray-500 bg-white">No invoices found.</div>
-              )}
             </div>
           )}
         </div>

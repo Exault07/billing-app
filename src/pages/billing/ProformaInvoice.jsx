@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -18,6 +18,7 @@ export default function ProformaInvoice() {
   const { user } = useAuth();
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const fetchProformas = async () => {
@@ -30,7 +31,7 @@ export default function ProformaInvoice() {
         .order('date', { ascending: false });
       setBills(data || []);
     } catch (err) {
-      console.error(err);
+      setError(err.message || 'Failed to fetch proformas');
     } finally {
       setLoading(false);
     }
@@ -92,6 +93,12 @@ export default function ProformaInvoice() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      {error && (
+        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
+          <span className="mt-0.5 text-red-400">âš </span>
+          <span>{error}</span>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-surface-900 flex items-center gap-2">
           <HiOutlineDocumentText className="w-6 h-6 text-[#4f46e5]" />
@@ -144,7 +151,7 @@ export default function ProformaInvoice() {
                       {b.bill_no}
                     </td>
                     <td className="py-3 px-4">{b.customers?.name || '-'}</td>
-                    <td className="py-3 px-4 text-right font-bold text-surface-800">Rs. {fmt(b.grand_total)}</td>
+                    <td className="py-3 px-4 text-right font-bold text-surface-800">₹ {fmt(b.grand_total)}</td>
                     <td className="py-3 px-4 text-center">
                       <span className={'px-2 py-0.5 rounded text-xs font-bold uppercase border ' + (b.status === 'converted' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-amber-100 text-amber-700 border-amber-200')}>
                         {b.status}

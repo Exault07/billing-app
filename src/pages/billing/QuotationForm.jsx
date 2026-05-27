@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -128,14 +128,14 @@ export default function QuotationForm() {
             <HiOutlineDocumentText className="w-5 h-5 text-amber-600" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-surface-800">{isEditing ? `Edit Quotation — ${billNo}` : 'Create Quotation'}</h1>
+            <h1 className="text-xl font-bold text-surface-800">{isEditing ? `Edit Quotation â€” ${billNo}` : 'Create Quotation'}</h1>
             <p className="text-xs text-surface-400">Quotations can be converted to bills later.</p>
           </div>
         </div>
         <div className="flex gap-2">
           {isEditing && (
             <button onClick={handleConvertToBill} disabled={converting} className="px-4 py-2 text-sm rounded-xl bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50">
-              {converting ? 'Converting...' : '→ Convert to Bill'}
+              {converting ? 'Converting...' : 'â†’ Convert to Bill'}
             </button>
           )}
           <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2 text-sm rounded-xl bg-amber-600 text-white hover:bg-amber-700 transition-colors disabled:opacity-50">
@@ -144,7 +144,7 @@ export default function QuotationForm() {
         </div>
       </div>
 
-      {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">⚠ {error}</div>}
+      {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">âš  {error}</div>}
 
       <div className="bg-white rounded-2xl border border-surface-200 p-6 mb-4">
         <h2 className="text-sm font-semibold text-surface-600 mb-4 uppercase tracking-wide">Details</h2>
@@ -159,7 +159,7 @@ export default function QuotationForm() {
         </div>
         <div className="mt-4"><label className="block text-xs font-medium text-surface-600 mb-1">Customer *</label>
           <select value={customerId} onChange={e => setCustomerId(e.target.value)} className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
-            <option value="">— Select Customer —</option>
+            <option value="">â€” Select Customer â€”</option>
             {customers.map(c => <option key={c.id} value={c.id}>{c.name} {c.phone ? `(${c.phone})` : ''}</option>)}
           </select>
         </div>
@@ -185,7 +185,7 @@ export default function QuotationForm() {
                   <tr key={index}>
                     <td className="py-2 pr-3 relative">
                       {item.product_id ? (
-                        <div className="flex items-center gap-2"><span className="font-medium text-surface-800">{item.name}</span><button onClick={() => updateItem(index, 'product_id', '')} className="text-xs text-surface-400 hover:text-red-500">✕</button></div>
+                        <div className="flex items-center gap-2"><span className="font-medium text-surface-800">{item.name}</span><button onClick={() => updateItem(index, 'product_id', '')} className="text-xs text-surface-400 hover:text-red-500">âœ•</button></div>
                       ) : (
                         <div className="relative">
                           <div className="relative"><HiOutlineSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-surface-400" />
@@ -227,11 +227,11 @@ export default function QuotationForm() {
           <h2 className="text-sm font-semibold text-surface-600 uppercase tracking-wide mb-4">Summary</h2>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between text-surface-600"><span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
-            <div className="flex justify-between text-red-600"><span>Discount</span><span>− ₹{Number(discount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
+            <div className="flex justify-between text-red-600"><span>Discount</span><span>âˆ’ ₹{Number(discount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
             <div className="flex justify-between text-surface-600"><span>Labour</span><span>+ ₹{Number(labourCharges).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
             <div className="flex justify-between text-surface-600"><span>Transport</span><span>+ ₹{Number(transportCharges).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
             <div className="flex justify-between font-semibold text-surface-800 border-t border-surface-200 pt-3"><span>Grand Total</span><span>₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
-            <div className="flex justify-between text-green-700"><span>Advance Paid</span><span>− ₹{Number(advancePaid).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
+            <div className="flex justify-between text-green-700"><span>Advance Paid</span><span>âˆ’ ₹{Number(advancePaid).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
             <div className={`flex justify-between font-bold text-lg border-t border-surface-200 pt-3 ${balanceDue > 0 ? 'text-red-600' : 'text-green-600'}`}><span>Balance Due</span><span>₹{balanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
           </div>
         </div>

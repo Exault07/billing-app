@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { HiOutlineDocumentText, HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
+import { supabase } from '../supabaseClient';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,13 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [shopName, setShopName] = useState('Shop Name');
+
+  useEffect(() => {
+    supabase.from('shop_settings').select('shop_name').limit(1).maybeSingle().then(({ data }) => {
+      if (data && data.shop_name) setShopName(data.shop_name);
+    });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +56,7 @@ export default function Login() {
             <HiOutlineDocumentText className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">BillDesk</h1>
-          <p className="text-surface-400 text-sm mt-1">Furniture & Hardware Billing</p>
+          <p className="text-surface-400 text-sm mt-1">{shopName} Billing</p>
         </div>
 
         {/* Form Card */}

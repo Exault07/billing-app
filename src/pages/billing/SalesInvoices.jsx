@@ -17,13 +17,13 @@ import {
   HiOutlineDotsVertical,
 } from 'react-icons/hi';
 
-// ─── Helper ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function generateBillNo() {
   const { count } = await supabase.from('bills').select('id', { count: 'exact', head: true });
   return String((count || 0) + 1);
 }
 
-// ─── Add Items Modal ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Add Items Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function AddItemsModal({ products, onAdd, onClose }) {
   const [search, setSearch] = useState('');
   const [selectedQtys, setSelectedQtys] = useState({});
@@ -114,8 +114,8 @@ function AddItemsModal({ products, onAdd, onClose }) {
                         {p.stock_qty} {p.unit}
                       </span>
                     </td>
-                    <td className="py-3 px-4">Rs. {Number(p.selling_price).toLocaleString('en-IN')}</td>
-                    <td className="py-3 px-4">Rs. {Number(p.purchase_price || 0).toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4">₹ {Number(p.selling_price).toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4">₹ {Number(p.purchase_price || 0).toLocaleString('en-IN')}</td>
                     <td className="py-3 px-4 text-right pr-3">
                       <div className="flex items-center justify-end gap-2">
                         <input
@@ -132,7 +132,7 @@ function AddItemsModal({ products, onAdd, onClose }) {
                             onClick={(e) => { e.stopPropagation(); handleAdd(p); }}
                             className="bg-[#e9d5ff] text-[#7c3aed] font-bold px-3 py-1 rounded text-[12px] min-w-[64px]"
                           >
-                            Added ✓
+                            Added âœ“
                           </button>
                         ) : (
                           <button
@@ -175,7 +175,7 @@ function AddItemsModal({ products, onAdd, onClose }) {
   );
 }
 
-// ─── Create Invoice Form (Full Page) ─────────────────────────────────────────
+// â”€â”€â”€ Create Invoice Form (Full Page) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€// ðŸ¢ Create Invoice Form (Full Page) ðŸ¢
 function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }) {
   const { user } = useAuth();
 
@@ -355,11 +355,11 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
                   <div className="text-[12px] text-surface-500">{selectedCustomer.phone}</div>
                 )}
                 <div className="text-[12px] text-surface-500 mt-1">
-                  Balance: Rs. {selectedCustomer.balance}
+                  Balance: ₹ {selectedCustomer.balance}
                 </div>
                 <button
                   onClick={() => setCustomerId('')}
-                  className="absolute top-2 right-2 text-surface-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-2 right-2 text-surface-400 hover:text-red-500  transition-opacity"
                 >
                   <HiOutlineX className="w-4 h-4" />
                 </button>
@@ -392,7 +392,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
                         className="flex justify-between px-4 py-2.5 hover:bg-[#f5f3ff] cursor-pointer border-b border-surface-100 text-[13px]"
                       >
                         <span className="font-medium">{c.name}</span>
-                        <span className="text-surface-500">Rs. {c.balance}</span>
+                        <span className="text-surface-500">₹ {c.balance}</span>
                       </div>
                     ))}
                 </div>
@@ -451,7 +451,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
           </div>
         </div>
 
-        {/* ── Referral Section ── */}
+        {/* â”€â”€ Referral Section â”€â”€ */}
         <div className="flex gap-6 mb-8 p-4 bg-[#f5f3ff] border border-surface-200 rounded">
           <div>
             <label className="block text-[11px] font-medium text-surface-500 mb-1">Referred By (Carpenter / Worker):</label>
@@ -459,13 +459,13 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
               value={carpenterId} 
               onChange={(e) => {
                 setCarpenterId(e.target.value);
-                const selected = carpenters.find(c => c.id === e.target.value);
+                const selected = carpentersfind(c => c.id === e.target.value);
                 if (selected) setCommissionRate(selected.default_commission_rate);
               }}
               className="w-64 px-3 py-1.5 border border-surface-200 rounded text-[13px] bg-white outline-none focus:border-[#7c3aed]"
             >
               <option value="">-- No Referrer --</option>
-              {carpenters.map(c => (
+              {carpentersmap(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
@@ -494,10 +494,10 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
                 <th className="py-2.5 px-3">Items / Services</th>
                 <th className="py-2.5 px-3 w-20">HSN/SAC</th>
                 <th className="py-2.5 px-3 w-16 text-right">Qty</th>
-                <th className="py-2.5 px-3 w-28 text-right">Price (Rs.)</th>
+                <th className="py-2.5 px-3 w-28 text-right">Price (₹)</th>
                 <th className="py-2.5 px-3 w-20 text-right">Disc.</th>
                 <th className="py-2.5 px-3 w-16 text-right">Tax%</th>
-                <th className="py-2.5 px-3 w-28 text-right">Amount (Rs.)</th>
+                <th className="py-2.5 px-3 w-28 text-right">Amount (₹)</th>
                 <th className="py-2.5 px-3 w-8"></th>
               </tr>
             </thead>
@@ -560,7 +560,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
                     <td className="py-2 px-3">
                       <button
                         onClick={() => removeItem(idx)}
-                        className="text-surface-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="text-surface-300 hover:text-red-500  transition-opacity"
                       >
                         <HiOutlineX className="w-4 h-4" />
                       </button>
@@ -611,7 +611,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
             <div className="p-4 space-y-3">
               <div className="flex justify-between font-bold text-surface-800">
                 <span>SUBTOTAL</span>
-                <span>Rs. {subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span>₹ {subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-blue-600 font-medium">+ Add Additional Charges</span>
@@ -625,7 +625,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
               </div>
               <div className="flex justify-between font-bold text-surface-700">
                 <span>Taxable Amount</span>
-                <span>Rs. {taxableAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span>₹ {taxableAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-blue-600 font-medium">+ Add Discount</span>
@@ -648,7 +648,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
                   <span>Auto Round Off</span>
                 </label>
                 <span className="text-surface-600">
-                  {autoRoundOff ? 'Rs. ' + roundOffAmt.toFixed(2) : '0'}
+                  {autoRoundOff ? '₹ ' + roundOffAmt.toFixed(2) : '0'}
                 </span>
               </div>
             </div>
@@ -657,7 +657,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
             <div className="bg-surface-100 px-4 py-3 border-y border-surface-200 flex justify-between items-center">
               <span className="font-bold text-[15px] text-surface-900">Total Amount</span>
               <span className="font-black text-[20px] text-surface-900">
-                Rs. {grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                ₹ {grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </span>
             </div>
 
@@ -676,7 +676,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
               <div className="flex justify-between items-center">
                 <span className="font-bold text-surface-700">Amount Received</span>
                 <div className="flex border border-surface-200 rounded overflow-hidden w-36">
-                  <span className="bg-surface-100 px-2 py-1.5 text-surface-500 text-[12px]">Rs.</span>
+                  <span className="bg-surface-100 px-2 py-1.5 text-surface-500 text-[12px]">₹</span>
                   <input
                     type="number"
                     value={isFullyPaid ? grandTotal : amountReceived}
@@ -688,7 +688,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
               <div className="flex justify-between items-center pt-1">
                 <span className="font-bold text-surface-500">Balance Amount</span>
                 <span className={'font-bold text-[15px] ' + (balanceDue > 0 ? 'text-red-600' : 'text-green-600')}>
-                  Rs. {balanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  ₹ {balanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>
@@ -708,7 +708,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
   );
 }
 
-// ─── Main: Sales Invoices List Page ──────────────────────────────────────────
+// â”€â”€â”€ Main: Sales Invoices List Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function SalesInvoices() {
   const navigate = useNavigate();
   const [bills, setBills] = useState([]);
@@ -716,6 +716,7 @@ export default function SalesInvoices() {
   const [products, setProducts] = useState([]);
   const [carpenters, setCarpenters] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [totalSales, setTotalSales] = useState(0);
@@ -730,17 +731,23 @@ export default function SalesInvoices() {
       const [{ data: billData }, { data: custData }, { data: prodData }, { data: carpData }] = await Promise.all([
         supabase
           .from('bills')
-          .select('*, customers(name)')
+          .select('*')
           .order('date', { ascending: false }),
-        supabase.from('customers').select('*').order('name'),
+        supabase.from('parties').select('*').order('name'),
         supabase.from('products').select('*').order('name'),
         supabase.from('carpenters').select('id, name, default_commission_rate').order('name'),
       ]);
 
-      const processed = (billData || []).map(b => ({
-        ...b,
-        calculated_amount: Number(b.grand_total || (Number(b.balance_due) + Number(b.advance_paid))),
-      }));
+      const processed = (billData || []).map(b => {
+        const party = custData?.find(p => p.id === b.customer_id) || {};
+        return {
+          ...b,
+          customers: { name: party.name || '-' },
+          paid_amount: b.advance_paid || 0,
+          due_amount: b.balance_due || 0,
+          calculated_amount: Number(b.grand_total || (Number(b.balance_due) + Number(b.advance_paid))),
+        };
+      });
 
       setBills(processed);
       setCustomers(custData || []);
@@ -759,7 +766,7 @@ export default function SalesInvoices() {
       setTotalPaid(tP);
       setTotalUnpaid(tU);
     } catch (err) {
-      console.error(err);
+      setError(err.message || 'Failed to fetch invoices');
     } finally {
       setLoading(false);
     }
@@ -784,7 +791,7 @@ export default function SalesInvoices() {
   // If creating, render the full-page form instead of the list
   if (showForm) {
     return (
-      <div className="fixed inset-0 z-40 bg-white overflow-y-auto">
+      <div className="bg-white overflow-y-auto animate-fade-in relative z-10">
         <CreateInvoiceForm
           customers={customers}
           products={products}
@@ -800,8 +807,8 @@ export default function SalesInvoices() {
     <div className="max-w-[1400px] mx-auto px-4 pb-16 animate-fade-in bg-surface-50 min-h-screen">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 mt-2">
-        <h1 className="text-xl font-bold text-surface-800">Sales Invoices</h1>
+      <div className="flex items-center justify-between mb-2 mt-2">
+        <h1 className="text-lg font-bold text-surface-800">Sales Invoices</h1>
         <div className="flex items-center gap-2">
           <button className="px-4 py-1.5 text-[13px] font-semibold border border-surface-200 rounded text-blue-600 flex items-center gap-1 hover:bg-surface-50 bg-white">
             <HiOutlineDocumentText className="w-4 h-4" /> Reports
@@ -812,9 +819,17 @@ export default function SalesInvoices() {
         </div>
       </div>
 
-      <div className="bg-white rounded-md shadow-sm border border-surface-200 overflow-hidden">
+      {/* Main Container */}
+      <div className="bg-white border-y sm:border sm:rounded-xl border-surface-200 shadow-sm flex flex-col flex-1 overflow-hidden min-h-0">
+        
+        {error && (
+          <div className="m-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
+            <span className="mt-0.5 text-red-400">âš </span>
+            <span>{error}</span>
+          </div>
+        )}
 
-        {/* Top Metrics */}
+        {/* Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 border-b border-surface-200">
           <div className="border-2 border-[#e0e7ff] bg-[#f5f3ff] rounded-md p-3">
             <div className="flex items-center gap-1 mb-1 text-[#7c3aed]">
@@ -822,7 +837,7 @@ export default function SalesInvoices() {
               <span className="text-[12px] font-semibold">Total Sales</span>
             </div>
             <div className="text-[18px] font-bold text-surface-900">
-              Rs. {totalSales.toLocaleString('en-IN', { minimumFractionDigits: 1 })}
+              ₹ {totalSales.toLocaleString('en-IN', { minimumFractionDigits: 1 })}
             </div>
           </div>
           <div className="border border-surface-200 rounded-md p-3">
@@ -831,7 +846,7 @@ export default function SalesInvoices() {
               <span className="text-[12px] font-semibold">Paid</span>
             </div>
             <div className="text-[18px] font-bold text-surface-900">
-              Rs. {totalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              ₹ {totalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
           </div>
           <div className="border border-surface-200 rounded-md p-3">
@@ -840,7 +855,7 @@ export default function SalesInvoices() {
               <span className="text-[12px] font-semibold">Unpaid</span>
             </div>
             <div className="text-[18px] font-bold text-surface-900">
-              Rs. {totalUnpaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              ₹ {totalUnpaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
           </div>
           <div className="border border-surface-200 rounded-md p-3">
@@ -908,14 +923,20 @@ export default function SalesInvoices() {
                 </tr>
               ) : filteredBills.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="py-16 text-center">
-                    <div className="text-surface-400 text-[14px] mb-3">No invoices yet</div>
-                    <button
-                      onClick={() => setShowForm(true)}
-                      className="px-5 py-2 bg-[#7c3aed] text-white text-[13px] font-bold rounded hover:bg-[#6d28d9]"
-                    >
-                      + Create Sales Invoice
-                    </button>
+                  <td colSpan="8" className="py-16 text-center text-surface-500">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-surface-100 rounded-full flex items-center justify-center mb-3">
+                        <HiOutlineDocumentText className="w-8 h-8 text-surface-400" />
+                      </div>
+                      <p className="text-base font-semibold text-surface-700">No invoices yet</p>
+                      <p className="text-sm mt-1 mb-4">Click below to create your first sales invoice.</p>
+                      <button
+                        onClick={() => setShowForm(true)}
+                        className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-700"
+                      >
+                        + Create Sales Invoice
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ) : (
@@ -929,19 +950,19 @@ export default function SalesInvoices() {
                       onClick={() => navigate('/billing/' + b.id)}
                     >
                       <td className="py-3 px-4 text-center" onClick={e => e.stopPropagation()}>
-                        <input type="checkbox" className="rounded border-surface-300 opacity-0 group-hover:opacity-100" />
+                        <input type="checkbox" className="rounded border-surface-300 " />
                       </td>
                       <td className="py-3 px-4 whitespace-nowrap">{formatDate(b.date)}</td>
                       <td className="py-3 px-4 text-surface-600">{b.bill_no.replace('BILL-', '')}</td>
                       <td className="py-3 px-4">{b.customers?.name || '-'}</td>
                       <td className="py-3 px-4">{calcDueIn(b.due_date, isPaid || isCancelled)}</td>
                       <td className="py-3 px-4">
-                        <div className="font-semibold">
-                          Rs. {b.calculated_amount.toLocaleString('en-IN')}
+                        <div>
+                          ₹ {b.calculated_amount.toLocaleString('en-IN')}
                         </div>
                         {!isPaid && !isCancelled && Number(b.balance_due) > 0 && (
-                          <div className="text-[11px] text-surface-500">
-                            (Rs. {Number(b.balance_due).toLocaleString('en-IN')} unpaid)
+                          <div className="text-[11px] text-surface-500 mt-0.5">
+                            (₹ {Number(b.balance_due).toLocaleString('en-IN')} unpaid)
                           </div>
                         )}
                       </td>
@@ -951,10 +972,12 @@ export default function SalesInvoices() {
                           (isCancelled
                             ? 'bg-surface-100 text-surface-500 border-surface-200'
                             : isPaid
-                              ? 'bg-[#e6f4ea] text-[#1e8e3e] border-[#ceead6]'
-                              : 'bg-[#fce8e6] text-[#d93025] border-[#fad2cf]')
+                              ? 'bg-green-100 text-green-700 border-green-200'
+                              : (Number(b.advance_paid) > 0 && Number(b.balance_due) > 0)
+                                ? 'bg-orange-100 text-orange-700 border-orange-200'
+                                : 'bg-red-100 text-red-700 border-red-200')
                         }>
-                          {isCancelled ? 'Cancelled' : isPaid ? 'Paid' : 'Unpaid'}
+                          {isCancelled ? 'Cancelled' : isPaid ? 'Paid' : (Number(b.advance_paid) > 0 && Number(b.balance_due) > 0) ? 'Partial' : 'Unpaid'}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-center" onClick={e => e.stopPropagation()}>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { 
@@ -18,6 +18,7 @@ export default function CarpenterList() {
   const [carpenters, setCarpenters] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Summary state
   const [stats, setStats] = useState({
@@ -97,7 +98,7 @@ export default function CarpenterList() {
       setCarpenters(processedData);
 
     } catch (err) {
-      console.error('Error fetching carpenters:', err);
+      setError(err.message || 'Failed to fetch carpenters');
     } finally {
       setLoading(false);
     }
@@ -114,7 +115,7 @@ export default function CarpenterList() {
     }
   };
 
-  const filteredCarpenters = carpenters.filter(c => 
+  const filteredCarpenters = carpentersfilter(c => 
     c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.phone?.includes(searchTerm)
   );
@@ -139,6 +140,13 @@ export default function CarpenterList() {
           <HiOutlinePlus className="w-4 h-4" /> Add Carpenter
         </Link>
       </div>
+
+      {error && (
+        <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
+          <span className="mt-0.5 text-red-400">âš </span>
+          <span>{error}</span>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -215,14 +223,33 @@ export default function CarpenterList() {
             <tbody className="divide-y divide-surface-100">
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="py-8 text-center text-surface-400">Loading...</td>
+                  <td colSpan="6" className="py-16 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
+                      <span className="text-surface-500">Loading carpenters.</span>
+                    </div>
+                  </td>
                 </tr>
-              ) : filteredCarpenters.length === 0 ? (
+              ) : filteredCarpenterslength === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-8 text-center text-surface-400">No carpenters found.</td>
+                  <td colSpan="6" className="py-16 text-center text-surface-500">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-surface-100 rounded-full flex items-center justify-center mb-3">
+                        <HiOutlineUsers className="w-8 h-8 text-surface-400" />
+                      </div>
+                      <p className="text-base font-semibold text-surface-700">No carpenters found</p>
+                      <p className="text-sm mt-1 mb-4">Click "Add Carpenter" above to create one.</p>
+                      <Link 
+                        to="/carpenters/new"
+                        className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700"
+                      >
+                        + Add Carpenter
+                      </Link>
+                    </div>
+                  </td>
                 </tr>
               ) : (
-                filteredCarpenters.map((carpenter) => (
+                filteredCarpentersmap((carpenter) => (
                   <tr key={carpenter.id} className="hover:bg-surface-50 transition-colors">
                     <td className="py-4 px-6">
                       <p className="font-semibold text-surface-800">{carpenter.name}</p>

@@ -15,6 +15,7 @@ export default function PaymentOutList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState('365days');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchPayments();
@@ -32,7 +33,7 @@ export default function PaymentOutList() {
         setPayments(data);
       }
     } catch (err) {
-      console.error(err);
+      setError(err.message || 'Failed to fetch payments');
     } finally {
       setLoading(false);
     }
@@ -73,6 +74,12 @@ export default function PaymentOutList() {
       </div>
 
       <div className="p-6 flex-1 max-w-full overflow-hidden">
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
+            <span className="mt-0.5 text-red-400">⚠</span>
+            <span>{error}</span>
+          </div>
+        )}
         {/* Controls Row */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { 
@@ -49,8 +49,7 @@ export default function CarpenterForm() {
         });
       }
     } catch (err) {
-      console.error(err);
-      alert('Error fetching carpenter details');
+      alert('Error fetching carpenter details: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -79,7 +78,6 @@ export default function CarpenterForm() {
       }
       navigate('/carpenters');
     } catch (err) {
-      console.error(err);
       alert('Error saving carpenter: ' + err.message);
     } finally {
       setSaving(false);

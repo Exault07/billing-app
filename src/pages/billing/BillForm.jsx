@@ -10,7 +10,7 @@ import {
   HiOutlineQrcode
 } from 'react-icons/hi';
 
-// ─── Helper: generate a sequential bill number ─────────────────────────────
+// â”€â”€â”€ Helper: generate a sequential bill number â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function generateBillNo() {
   const today = new Date();
   const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
@@ -21,7 +21,7 @@ async function generateBillNo() {
   return `BILL-${dateStr}-${seq}`;
 }
 
-// ─── Empty line-item template ──────────────────────────────────────────────
+// â”€â”€â”€ Empty line-item template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const emptyItem = () => ({
   product_id: '',
   name: '',
@@ -39,7 +39,7 @@ export default function BillForm() {
   const { user } = useAuth();
   const isEditing = Boolean(id);
 
-  // ── Form state ─────────────────────────────────────────────────────────
+  // â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [billNo, setBillNo] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [paymentTerms, setPaymentTerms] = useState('30');
@@ -59,12 +59,12 @@ export default function BillForm() {
   const [amountReceived, setAmountReceived] = useState(0);
   const [isFullyPaid, setIsFullyPaid] = useState(false);
 
-  // ── Data lists ─────────────────────────────────────────────────────────
+  // â”€â”€ Data lists â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   const [carpenters, setCarpenters] = useState([]);
 
-  // ── UI state ───────────────────────────────────────────────────────────
+  // â”€â”€ UI state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [saving, setSaving] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState('');
@@ -74,7 +74,18 @@ export default function BillForm() {
   const [partySearch, setPartySearch] = useState('');
   const [productSearch, setProductSearch] = useState({});
 
-  // ── Derived totals ─────────────────────────────────────────────────────
+  // Quick Create / Barcode state
+  const [showQuickPartyModal, setShowQuickPartyModal] = useState(false);
+  const [newPartyName, setNewPartyName] = useState('');
+  const [newPartyMobile, setNewPartyMobile] = useState('');
+  const [newPartyAddress, setNewPartyAddress] = useState('');
+  const [newPartyType, setNewPartyType] = useState('customer');
+  const [savingParty, setSavingParty] = useState(false);
+  
+  const [showBarcodeModal, setShowBarcodeModal] = useState(false);
+  const [manualBarcode, setManualBarcode] = useState('');
+
+  // â”€â”€ Derived totals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const subtotal = items.reduce((sum, item) => sum + Number(item.total || 0), 0);
   const taxableAmount = subtotal + Number(additionalCharges);
   let grandTotalRaw = taxableAmount - Number(overallDiscount);
@@ -98,12 +109,12 @@ export default function BillForm() {
   }, [date, paymentTerms]);
 
 
-  // ── Load customers and products ────────────────────────────────────────
+  // â”€â”€ Load customers. and products â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [{ data: custData }, { data: prodData }, { data: carpData }] = await Promise.all([
-          supabase.from('customers').select('id, name, phone, balance').order('name'),
+          supabase.from('parties').select('id, name, phone:mobile, balance:current_balance').in('party_type', ['customer', 'both']).order('name'),
           supabase.from('products').select('id, name, category, unit, selling_price, stock_qty').order('name'),
           supabase.from('carpenters').select('id, name, default_commission_rate').order('name')
         ]);
@@ -124,7 +135,7 @@ export default function BillForm() {
     fetchData();
   }, [isEditing]);
 
-  // ── Load existing bill when editing ───────────────────────────────────
+  // â”€â”€ Load existing bill when editing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!isEditing) return;
     const fetchBill = async () => {
@@ -170,7 +181,7 @@ export default function BillForm() {
     fetchBill();
   }, [isEditing, id]);
 
-  // ── Item helpers ───────────────────────────────────────────────────────
+  // â”€â”€ Item helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const addItem = () => setItems(prev => [...prev, emptyItem()]);
 
   const removeItem = (index) =>
@@ -212,7 +223,7 @@ export default function BillForm() {
     setProductSearch(prev => ({ ...prev, [index]: '' }));
   };
 
-  // ── Save handler ───────────────────────────────────────────────────────
+  // â”€â”€ Save handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSave = async (e) => {
     e?.preventDefault();
     setError('');
@@ -257,6 +268,82 @@ export default function BillForm() {
     }
   };
 
+  // ——— Barcode Scanning & Creation ———
+  const handleBarcodeScanned = (scannedCode) => {
+    const p = products.find(prod => (prod.barcode && prod.barcode.toLowerCase() === scannedCode.toLowerCase()) || (prod.item_code && prod.item_code.toLowerCase() === scannedCode.toLowerCase()));
+    if (p) {
+      // Find empty slot or add new
+      let emptyIdx = items.findIndex(i => !i.product_id);
+      if (emptyIdx === -1) {
+        setItems(prev => [...prev, {
+          product_id: p.id,
+          name: p.name,
+          hsn: '',
+          qty: 1,
+          price: p.selling_price || 0,
+          discount: 0,
+          tax: 0,
+          total: p.selling_price || 0
+        }]);
+      } else {
+        updateItem(emptyIdx, 'product_id', p.id);
+        updateItem(emptyIdx, 'name', p.name);
+        updateItem(emptyIdx, 'price', p.selling_price || 0);
+        updateItem(emptyIdx, 'qty', 1);
+      }
+    } else {
+      if (window.confirm(`Product not found for barcode: ${scannedCode}. Create new item?`)) {
+        navigate('/inventory/new');
+      }
+    }
+    setManualBarcode('');
+    setShowBarcodeModal(false);
+  };
+
+  useEffect(() => {
+    let barcode = '';
+    let timeout = null;
+    const handleKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'Enter' && barcode.length > 2) {
+        handleBarcodeScanned(barcode);
+        barcode = '';
+        return;
+      }
+      if (e.key.length === 1) {
+        barcode += e.key;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => { barcode = ''; }, 100);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [products, items]);
+
+  const handleCreateParty = async () => {
+    if (!newPartyName.trim()) return setError('Party name is required.');
+    setSavingParty(true);
+    try {
+      const { data, error: err } = await supabase.from('parties').insert([{
+        name: newPartyName,
+        mobile: newPartyMobile,
+        address: newPartyAddress,
+        party_type: newPartyType
+      }]).select().single();
+      if (err) throw err;
+      setCustomers(prev => [...prev, data]);
+      setCustomerId(data.id);
+      setShowQuickPartyModal(false);
+      setNewPartyName('');
+      setNewPartyMobile('');
+      setNewPartyAddress('');
+    } catch (err) {
+      setError('Failed to create party: ' + err.message);
+    } finally {
+      setSavingParty(false);
+    }
+  };
+
   const selectedCustomer = customers.find(c => c.id === customerId);
 
   if (loadingData) return <div className="p-10 text-center text-surface-500">Loading invoice...</div>;
@@ -264,7 +351,7 @@ export default function BillForm() {
   return (
     <div className="max-w-[1400px] mx-auto min-h-screen bg-white">
       
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-surface-200">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="text-surface-600 hover:text-surface-900">
@@ -294,7 +381,7 @@ export default function BillForm() {
       {error && <div className="m-6 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded">{error}</div>}
 
       <div className="p-6">
-        {/* ── Top Section: Party & Meta ── */}
+        {/* â”€â”€ Top Section: Party & Meta â”€â”€ */}
         <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mb-8">
           
           {/* Bill To Box */}
@@ -313,7 +400,7 @@ export default function BillForm() {
                 <div className="text-[12px] text-surface-500 mt-1">Balance: ₹ {selectedCustomer.balance}</div>
                 <button 
                   onClick={() => setCustomerId('')}
-                  className="absolute top-2 right-2 text-surface-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-2 right-2 text-surface-400 hover:text-red-500  transition-opacity"
                 >
                   <HiOutlineX className="w-4 h-4" />
                 </button>
@@ -349,7 +436,10 @@ export default function BillForm() {
                     </div>
                   ))}
                 </div>
-                <div className="p-3 border-t border-surface-200 bg-surface-50 cursor-pointer hover:bg-surface-100 text-center border-dashed border-2 m-2 rounded text-blue-600 font-bold text-[13px]">
+                <div 
+                  onClick={() => { setShowPartyDropdown(false); setShowQuickPartyModal(true); }}
+                  className="p-3 border-t border-surface-200 bg-surface-50 cursor-pointer hover:bg-surface-100 text-center border-dashed border-2 m-2 rounded text-blue-600 font-bold text-[13px]"
+                >
                   + Create Party
                 </div>
               </div>
@@ -396,7 +486,7 @@ export default function BillForm() {
           </div>
         </div>
 
-        {/* ── Referral Section ── */}
+        {/* â”€â”€ Referral Section â”€â”€ */}
         <div className="flex gap-6 mb-8 p-4 bg-purple-50/30 border border-purple-100 rounded-lg">
           <div>
             <label className="block text-[11px] font-medium text-surface-500 mb-1">Referred By (Carpenter / Worker):</label>
@@ -430,7 +520,7 @@ export default function BillForm() {
           )}
         </div>
 
-        {/* ── Middle Section: Items Table ── */}
+        {/* â”€â”€ Middle Section: Items Table â”€â”€ */}
         <div className="border border-surface-200 rounded mb-8">
           <table className="w-full text-left">
             <thead className="bg-[#f9fafb] border-b border-surface-200 text-[11px] font-bold text-surface-500">
@@ -482,7 +572,7 @@ export default function BillForm() {
                   <td className="py-2 px-3"><input type="number" value={item.tax} onChange={e => updateItem(idx, 'tax', e.target.value)} className="w-full bg-transparent outline-none text-right" placeholder="0%" /></td>
                   <td className="py-2 px-3 text-right font-bold text-surface-800">{Number(item.total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                   <td className="py-2 px-3 text-center">
-                    <button onClick={() => removeItem(idx)} className="text-surface-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => removeItem(idx)} className="text-surface-300 hover:text-red-500  transition-opacity">
                       <HiOutlineX className="w-4 h-4" />
                     </button>
                   </td>
@@ -499,7 +589,10 @@ export default function BillForm() {
             >
               + Add Item
             </div>
-            <div className="w-64 border-l border-surface-200 bg-surface-50 flex items-center justify-center cursor-pointer hover:bg-surface-100 transition-colors">
+            <div 
+              onClick={() => setShowBarcodeModal(true)}
+              className="w-64 border-l border-surface-200 bg-surface-50 flex items-center justify-center cursor-pointer hover:bg-surface-100 transition-colors"
+            >
               <div className="flex items-center gap-2 font-bold text-[14px] text-surface-800">
                 <HiOutlineQrcode className="w-6 h-6 text-surface-600" /> Scan Barcode
               </div>
@@ -507,7 +600,7 @@ export default function BillForm() {
           </div>
         </div>
 
-        {/* ── Bottom Section: Notes & Calculations ── */}
+        {/* â”€â”€ Bottom Section: Notes & Calculations â”€â”€ */}
         <div className="flex flex-col lg:flex-row gap-8">
           
           {/* Left: Notes & Terms */}
@@ -611,6 +704,93 @@ export default function BillForm() {
         </div>
 
       </div>
+
+      {/* Quick Party Create Modal */}
+      {showQuickPartyModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center animate-fade-in">
+          <div className="bg-white rounded-xl shadow-xl w-[400px] overflow-hidden">
+            <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center bg-surface-50">
+              <h2 className="font-bold text-surface-800">Quick Create Party</h2>
+              <button onClick={() => setShowQuickPartyModal(false)} className="text-surface-400 hover:text-surface-600">
+                <HiOutlineX className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-[13px] font-bold text-surface-700 mb-1">Party Name <span className="text-red-500">*</span></label>
+                <input 
+                  autoFocus
+                  type="text" 
+                  value={newPartyName} 
+                  onChange={e => setNewPartyName(e.target.value)}
+                  className="w-full px-3 py-2 border border-surface-200 rounded focus:border-blue-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-surface-700 mb-1">Mobile</label>
+                <input 
+                  type="text" 
+                  value={newPartyMobile} 
+                  onChange={e => setNewPartyMobile(e.target.value)}
+                  className="w-full px-3 py-2 border border-surface-200 rounded focus:border-blue-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-surface-700 mb-1">Party Type</label>
+                <select 
+                  value={newPartyType} 
+                  onChange={e => setNewPartyType(e.target.value)}
+                  className="w-full px-3 py-2 border border-surface-200 rounded focus:border-blue-500 outline-none bg-white"
+                >
+                  <option value="customer">Customer</option>
+                  <option value="supplier">Supplier</option>
+                  <option value="both">Both</option>
+                </select>
+              </div>
+              <div className="pt-4 flex justify-end gap-2">
+                <button onClick={() => setShowQuickPartyModal(false)} className="px-4 py-2 text-sm font-medium text-surface-600 bg-surface-100 hover:bg-surface-200 rounded">Cancel</button>
+                <button onClick={handleCreateParty} disabled={savingParty} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50">
+                  {savingParty ? 'Saving...' : 'Save Party'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Barcode Modal */}
+      {showBarcodeModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center animate-fade-in">
+          <div className="bg-white rounded-xl shadow-xl w-[400px] overflow-hidden">
+            <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center bg-surface-50">
+              <h2 className="font-bold text-surface-800">Scan / Enter Barcode</h2>
+              <button onClick={() => setShowBarcodeModal(false)} className="text-surface-400 hover:text-surface-600">
+                <HiOutlineX className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <p className="text-sm text-surface-500 mb-4">Focus this input and scan, or type manually and press Enter.</p>
+              <input 
+                autoFocus
+                type="text" 
+                value={manualBarcode} 
+                onChange={e => setManualBarcode(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleBarcodeScanned(manualBarcode);
+                }}
+                className="w-full px-3 py-3 border border-surface-200 rounded focus:border-blue-500 outline-none text-lg text-center tracking-widest font-mono"
+                placeholder="|| |||| | ||"
+              />
+              <button 
+                onClick={() => handleBarcodeScanned(manualBarcode)}
+                className="mt-4 w-full py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

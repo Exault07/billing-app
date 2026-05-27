@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { supabase } from '../../../supabaseClient';
 import { HiOutlineDownload, HiOutlineUpload, HiOutlineExclamation } from 'react-icons/hi';
 import * as XLSX from 'xlsx';
@@ -9,7 +9,7 @@ export default function DataManagementTab() {
   const [clearConfirmText, setClearConfirmText] = useState('');
   const [clearing, setClearing] = useState(false);
 
-  // ── EXPORT LOGIC ──────────────────────────────────────────────────────────
+  // â”€â”€ EXPORT LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const exportData = async (tableName, fileName) => {
     try {
       setExporting(tableName);
@@ -36,7 +36,7 @@ export default function DataManagementTab() {
     }
   };
 
-  // ── IMPORT LOGIC ──────────────────────────────────────────────────────────
+  // â”€â”€ IMPORT LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const downloadTemplate = () => {
     const templateData = [
       { name: "Sample Product", category: "Hardware", unit: "pcs", mrp: 100, selling_price: 90, stock_qty: 50, low_stock_alert_qty: 5, barcode: "123456789", godown_location: "A1" }
@@ -101,7 +101,7 @@ export default function DataManagementTab() {
     reader.readAsArrayBuffer(file);
   };
 
-  // ── CLEAR DATA LOGIC ──────────────────────────────────────────────────────
+  // â”€â”€ CLEAR DATA LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleClearData = async () => {
     if (clearConfirmText !== 'DELETE') return;
     

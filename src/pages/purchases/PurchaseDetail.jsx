@@ -22,13 +22,15 @@ const PurchaseDetail = () => {
   }, [id]);
 
   const fetchInvoiceDetails = async () => {
-    const { data, error } = await supabase
+    const { data: invData, error: invError } = await supabase
       .from('purchase_invoices')
-      .select('*, suppliers(*)')
+      .select('*')
       .eq('id', id)
       .single();
-    if (!error && data) {
-      setInvoice(data);
+      
+    if (!invError && invData) {
+      const { data: partyData } = await supabase.from('parties').select('*').eq('id', invData.supplier_id).single();
+      setInvoice({ ...invData, suppliers: partyData || null });
     }
     setLoading(false);
   };
@@ -106,9 +108,9 @@ const PurchaseDetail = () => {
       <div className="bg-white rounded-lg shadow-sm border p-6 mb-6 flex justify-between">
         <div>
           <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Supplier Details</h3>
-          <p className="font-bold text-lg">{invoice.suppliers?.name}</p>
-          <p className="text-gray-600">{invoice.suppliers?.address}</p>
-          <p className="text-gray-600">{invoice.suppliers?.phone}</p>
+          <p className="font-bold text-lg">{invoice.suppliers?.name || '-'}</p>
+          <p className="text-gray-600">{invoice.suppliers?.billing_address || invoice.suppliers?.address || ''}</p>
+          <p className="text-gray-600">{invoice.suppliers?.mobile || invoice.suppliers?.phone || ''}</p>
         </div>
         <div className="text-right">
           <p><span className="text-gray-500">Bill No:</span> <span className="font-medium">{invoice.bill_no}</span></p>

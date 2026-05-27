@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -9,7 +9,7 @@ export default function ExpenseForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
 
   // Form State
@@ -42,7 +42,7 @@ export default function ExpenseForm() {
       if (error) throw error;
       setCategories(data || []);
     } catch (err) {
-      console.error('Error fetching categories:', err);
+      alert('Error fetching categories: ' + err.message);
     }
   };
 
@@ -67,7 +67,7 @@ export default function ExpenseForm() {
         setRecurringEndDate(data.recurring_end_date ? data.recurring_end_date.split('T')[0] : '');
       }
     } catch (err) {
-      console.error('Error fetching expense:', err);
+      alert('Error fetching expense: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -90,8 +90,7 @@ export default function ExpenseForm() {
         setNewCategoryName('');
       }
     } catch (err) {
-      console.error('Error adding category:', err);
-      alert('Failed to add category');
+      alert('Failed to add category: ' + err.message);
     }
   };
 
@@ -131,8 +130,7 @@ export default function ExpenseForm() {
 
       navigate('/expenses');
     } catch (err) {
-      console.error('Error saving expense:', err);
-      alert('Failed to save expense');
+      alert('Failed to save expense: ' + err.message);
     } finally {
       setLoading(false);
     }

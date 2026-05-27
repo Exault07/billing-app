@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { HiOutlinePlus as Plus, HiOutlineTrash as Trash2, HiOutlineArrowRight as ArrowRight, HiOutlineSave as Save, HiOutlineArrowLeft as ArrowLeft } from 'react-icons/hi';
@@ -10,7 +10,7 @@ export default function PurchaseOrderForm() {
 
   const [suppliers, setSuppliers] = useState([]);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [converting, setConverting] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -40,7 +40,7 @@ export default function PurchaseOrderForm() {
     }
   }, [id]);
 
-  const fetchSuppliers = async () => {
+  const fetchsuppliers = async () => {
     const { data } = await supabase.from('suppliers').select('*').order('name');
     if (data) setSuppliers(data);
   };
@@ -105,7 +105,7 @@ export default function PurchaseOrderForm() {
       }
     }
     if (error) {
-      console.error(error);
+      alert('Error fetching data: ' + error.message);
     }
     setLoading(false);
   };
@@ -189,7 +189,6 @@ export default function PurchaseOrderForm() {
 
       navigate('/purchases');
     } catch (error) {
-      console.error('Error saving PO:', error);
       alert('Error saving PO: ' + error.message);
     } finally {
       setLoading(false);
@@ -257,7 +256,6 @@ export default function PurchaseOrderForm() {
 
       navigate(`/purchases/${newInvoice.id}/edit`);
     } catch (error) {
-      console.error('Error converting:', error);
       alert('Error converting: ' + error.message);
     } finally {
       setConverting(false);

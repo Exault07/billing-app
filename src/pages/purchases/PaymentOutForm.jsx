@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import { HiOutlineUser, HiOutlineCalendar, HiOutlineCreditCard, HiOutlineDocumentText, HiOutlineArrowLeft } from 'react-icons/hi';
@@ -15,7 +15,7 @@ export default function PaymentOutForm() {
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
   
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function PaymentOutForm() {
     }
   }, [selectedSupplier]);
 
-  const fetchSuppliers = async () => {
+  const fetchsuppliers = async () => {
     try {
       const { data, error } = await supabase
         .from('suppliers')
@@ -40,8 +40,7 @@ export default function PaymentOutForm() {
       if (error) throw error;
       setSuppliers(data || []);
     } catch (error) {
-      console.error('Error fetching suppliers:', error);
-      alert('Failed to load suppliers.');
+      alert('Failed to load suppliers: ' + error.message);
     }
   };
 
@@ -65,8 +64,7 @@ export default function PaymentOutForm() {
       setPayAmounts(initialPayAmounts);
       
     } catch (error) {
-      console.error('Error fetching invoices:', error);
-      alert('Failed to load pending invoices.');
+      alert('Failed to load pending invoices: ' + error.message);
     } finally {
       setFetching(false);
     }
@@ -160,8 +158,7 @@ export default function PaymentOutForm() {
       }
       
     } catch (error) {
-      console.error('Error saving payments:', error);
-      alert('Failed to save payments. Check console for details.');
+      alert('Failed to save payments: ' + error.message);
     } finally {
       setLoading(false);
     }

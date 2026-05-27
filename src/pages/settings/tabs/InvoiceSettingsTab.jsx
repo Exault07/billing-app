@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabaseClient';
 import { HiOutlineSave } from 'react-icons/hi';
 
@@ -23,7 +23,7 @@ export default function InvoiceSettingsTab() {
 
   const fetchSettings = async () => {
     try {
-      const { data, error } = await supabase.from('shop_settings').select('*').limit(1).single();
+      const { data, error } = await supabase.from('shop_settings').select('*').limit(1).maybeSingle();
       if (error) throw error;
       if (data) {
         setFormData({
@@ -49,19 +49,26 @@ export default function InvoiceSettingsTab() {
     setSaving(true);
     setMessage({ text: '', type: '' });
     try {
-      const { error } = await supabase
-        .from('shop_settings')
-        .update({
-          bill_prefix: formData.bill_prefix,
-          bill_start_number: parseInt(formData.bill_start_number) || 1,
-          quotation_prefix: formData.quotation_prefix,
-          purchase_prefix: formData.purchase_prefix,
-          default_bill_notes: formData.default_bill_notes,
-          show_customer_balance: formData.show_customer_balance,
-          show_thankyou_message: formData.show_thankyou_message,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', formData.id);
+      let error;
+      const payload = {
+        bill_prefix: formData.bill_prefix,
+        bill_start_number: parseInt(formData.bill_start_number) || 1,
+        quotation_prefix: formData.quotation_prefix,
+        purchase_prefix: formData.purchase_prefix,
+        default_bill_notes: formData.default_bill_notes,
+        show_customer_balance: formData.show_customer_balance,
+        show_thankyou_message: formData.show_thankyou_message,
+        updated_at: new Date().toISOString()
+      };
+
+      if (formData.id) {
+        const { error: updateErr } = await supabase.from('shop_settings').update(payload).eq('id', formData.id);
+        error = updateErr;
+      } else {
+        const { data: newRow, error: insertErr } = await supabase.from('shop_settings').insert([payload]).select().single();
+        error = insertErr;
+        if (newRow) setFormData(prev => ({ ...prev, id: newRow.id }));
+      }
 
       if (error) throw error;
       setMessage({ text: 'Invoice settings saved successfully!', type: 'success' });

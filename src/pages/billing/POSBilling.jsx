@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import { HiOutlineShoppingCart, HiOutlineTrash, HiOutlinePause, HiOutlinePlay, HiOutlineSave } from 'react-icons/hi';
@@ -6,7 +6,7 @@ import { HiOutlineShoppingCart, HiOutlineTrash, HiOutlinePause, HiOutlinePlay, H
 export default function POSBilling() {
   const { user } = useAuth();
   
-  // ── States ─────────────────────────────────────────────────────────────
+  // â”€â”€ States â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   
@@ -25,7 +25,7 @@ export default function POSBilling() {
   const [saving, setSaving] = useState(false);
   const searchInputRef = useRef(null);
 
-  // ── Fetch Data ─────────────────────────────────────────────────────────
+  // â”€â”€ Fetch Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const loadData = async () => {
       const [{ data: prodData }, { data: custData }] = await Promise.all([
@@ -40,12 +40,12 @@ export default function POSBilling() {
     loadData();
   }, []);
 
-  // ── Derived Totals ─────────────────────────────────────────────────────
+  // â”€â”€ Derived Totals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const subtotal = items.reduce((sum, item) => sum + (item.qty * item.price), 0);
   const grandTotal = subtotal - Number(discount);
   const balanceDue = grandTotal - (amountReceived === '' ? grandTotal : Number(amountReceived));
 
-  // ── POS Actions ────────────────────────────────────────────────────────
+  // â”€â”€ POS Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSearchKeyPress = (e) => {
     if (e.key === 'Enter' && searchTerm.trim()) {
       // Find exact barcode match first
@@ -86,7 +86,7 @@ export default function POSBilling() {
     setItems(prev => prev.filter(i => i.product_id !== id));
   };
 
-  // ── Hold Bill Logic ────────────────────────────────────────────────────
+  // â”€â”€ Hold Bill Logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const holdCurrentBill = () => {
     if (items.length === 0) return;
     const holdId = Date.now();
@@ -127,7 +127,7 @@ export default function POSBilling() {
     setPaymentMode('cash');
   };
 
-  // ── Save Bill ──────────────────────────────────────────────────────────
+  // â”€â”€ Save Bill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const checkout = async () => {
     if (items.length === 0) return;
     setSaving(true);
@@ -169,7 +169,7 @@ export default function POSBilling() {
   return (
     <div className="flex h-[calc(100vh-80px)] gap-4 pb-4">
       
-      {/* ── Left Side: Products Catalog & Scanner ── */}
+      {/* â”€â”€ Left Side: Products Catalog & Scanner â”€â”€ */}
       <div className="flex-1 flex flex-col bg-white rounded-2xl border border-surface-200 overflow-hidden shadow-sm">
         <div className="p-4 border-b border-surface-200 bg-surface-50 flex gap-3">
           <input 
@@ -203,7 +203,7 @@ export default function POSBilling() {
         </div>
       </div>
 
-      {/* ── Right Side: POS Cart / Checkout ── */}
+      {/* â”€â”€ Right Side: POS Cart / Checkout â”€â”€ */}
       <div className="w-[400px] flex flex-col bg-white rounded-2xl border border-surface-200 shadow-sm flex-shrink-0">
         
         {/* Held Bills Bar */}
