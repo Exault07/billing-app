@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { 
@@ -115,7 +115,7 @@ export default function CarpenterList() {
     }
   };
 
-  const filteredCarpenters = carpentersfilter(c => 
+  const filteredCarpenters = carpenters.filter(c => 
     c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.phone?.includes(searchTerm)
   );
@@ -230,7 +230,7 @@ export default function CarpenterList() {
                     </div>
                   </td>
                 </tr>
-              ) : filteredCarpenterslength === 0 ? (
+              ) : filteredCarpenters.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-16 text-center text-surface-500">
                     <div className="flex flex-col items-center">
@@ -249,7 +249,7 @@ export default function CarpenterList() {
                   </td>
                 </tr>
               ) : (
-                filteredCarpentersmap((carpenter) => (
+                filteredCarpenters.map((carpenter) => (
                   <tr key={carpenter.id} className="hover:bg-surface-50 transition-colors">
                     <td className="py-4 px-6">
                       <p className="font-semibold text-surface-800">{carpenter.name}</p>
