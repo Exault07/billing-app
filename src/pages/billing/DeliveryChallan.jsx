@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -85,7 +85,7 @@ export default function DeliveryChallan() {
  };
 
  return (
- <div className="max-w-4xl mx-auto">
+ <div className="animate-fade-in w-full">
  <div className="flex items-center justify-between mb-6">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">

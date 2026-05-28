@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import { HiOutlineUser, HiOutlineCalendar, HiOutlineCreditCard, HiOutlineDocumentText, HiOutlineArrowLeft } from 'react-icons/hi';
@@ -34,8 +34,9 @@ export default function PaymentOutForm() {
  const fetchsuppliers = async () => {
  try {
  const { data, error } = await supabase
- .from('suppliers')
+ .from('parties')
  .select('id, name')
+ .in('party_type', ['supplier', 'both'])
  .order('name');
  if (error) throw error;
  setSuppliers(data || []);
@@ -148,6 +149,13 @@ export default function PaymentOutForm() {
  if (updateError) throw updateError;
  }
 
+ // Update supplier balance
+ const { data: partyData } = await supabase.from('parties').select('current_balance').eq('id', selectedSupplier).single();
+ if (partyData) {
+   const newBalance = Number(partyData.current_balance || 0) + totalPaymentAmount;
+   await supabase.from('parties').update({ current_balance: newBalance }).eq('id', selectedSupplier);
+ }
+
  alert('Payments saved successfully!');
  
  setPaymentMode('cash');
@@ -165,7 +173,7 @@ export default function PaymentOutForm() {
  };
 
  return (
- <div className="max-w-6xl mx-auto bg-gray-50 min-h-screen">
+ <div className="animate-fade-in w-full">
  <div className="flex items-center gap-4 mb-6">
  <button onClick={() => window.history.back()} className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors bg-white border border-gray-200 shadow-sm">
  <HiOutlineArrowLeft className="w-5 h-5" />

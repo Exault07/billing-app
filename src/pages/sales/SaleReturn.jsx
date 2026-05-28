@@ -145,6 +145,18 @@ export default function SaleReturn() {
  await supabase.from('bills').update({ status: isFullyReturned ? 'fully_returned' : 'partially_returned' }).eq('id', billId);
  }
 
+ // Update party balance
+ if (partyId) {
+ const netDeduction = totalAmount - Number(amountRefunded || 0);
+ if (netDeduction !== 0) {
+ const { data: partyData } = await supabase.from('parties').select('current_balance').eq('id', partyId).single();
+ if (partyData) {
+ const newBalance = Number(partyData.current_balance || 0) - netDeduction;
+ await supabase.from('parties').update({ current_balance: newBalance }).eq('id', partyId);
+ }
+ }
+ }
+
  if (isSaveAndNew) {
  resetForm();
  generateReturnNo();
@@ -207,7 +219,7 @@ export default function SaleReturn() {
  );
 
  return (
- <div className="max-w-[1400px] mx-auto animate-fade-in">
+ <div className="animate-fade-in w-full">
  {showForm ? (
  <div className="bg-white rounded-xl shadow-sm border border-surface-200">
  <div className="flex items-center justify-between p-5 border-b border-surface-200 bg-surface-50">

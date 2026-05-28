@@ -26,7 +26,7 @@ export default function PaymentOutList() {
  try {
  const { data, error } = await supabase
  .from('purchase_payments')
- .select('*, suppliers(name)')
+ .select('*, parties(name)')
  .order('date', { ascending: false });
  
  if (!error && data) {
@@ -50,11 +50,11 @@ export default function PaymentOutList() {
 
  const filteredPayments = payments.filter(item => 
  (item.id?.toLowerCase().includes(searchQuery.toLowerCase()) || '') ||
- (item.suppliers?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
+ (item.parties?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
  );
 
  return (
- <div className="min-h-screen bg-gray-50 flex flex-col">
+ <div className="animate-fade-in w-full flex flex-col">
  {/* Top Header */}
  <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
  <h1 className="text-xl font-bold text-gray-800">Payment Out</h1>
@@ -132,7 +132,7 @@ export default function PaymentOutList() {
  <tr key={pay.id} className="hover:bg-gray-50/50">
  <td className="px-4 py-4 text-sm text-gray-600">{new Date(pay.date || pay.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
  <td className="px-4 py-4 text-sm text-gray-800">{String(filteredPayments.length - idx).padStart(3, '0')}</td>
- <td className="px-4 py-4 text-sm text-gray-800">{pay.suppliers?.name}</td>
+ <td className="px-4 py-4 text-sm text-gray-800">{pay.parties?.name}</td>
  <td className="px-4 py-4 text-sm font-medium text-gray-900 text-right">{formatCurrency(pay.amount)}</td>
  <td className="px-4 py-4 text-sm font-medium text-gray-900 text-right">{formatCurrency(pay.amount)}</td>
  <td className="px-4 py-4 text-center">

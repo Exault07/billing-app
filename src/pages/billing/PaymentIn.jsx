@@ -279,7 +279,7 @@ export default function PaymentIn() {
 
  if (view === 'create') {
  return (
- <div className="max-w-[1400px] mx-auto animate-fade-in">
+ <div className="animate-fade-in w-full">
  <div className="flex items-center gap-4 mb-8">
  <button onClick={() => setView('list')} className="p-2 hover:bg-surface-100 rounded-full transition-colors text-surface-500">
  <HiOutlineArrowLeft className="w-6 h-6" />
@@ -413,7 +413,7 @@ export default function PaymentIn() {
  }
 
  return (
- <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+ <div className="animate-fade-in w-full">
  {/* Header */}
  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
  <div>
