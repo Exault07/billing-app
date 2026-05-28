@@ -244,7 +244,7 @@ export default function ProductList() {
 
  // ─── Render ───────────────────────────────────────────────────────────────
  return (
- <div className="animate-fade-in text-surface-900 flex flex-col h-[calc(100vh-6rem)]">
+ <div className="animate-fade-in text-surface-900 flex flex-col h-[calc(100vh-8.5rem)]">
 
  {/* Header */}
  <div className="flex items-center justify-between mb-6 pt-4">
