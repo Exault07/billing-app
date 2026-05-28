@@ -195,9 +195,8 @@ export default function Sidebar({ isOpen, onClose }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-64 flex flex-col transform transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed top-0 left-0 z-50 h-full w-64 flex flex-col transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
         style={{ background: '#1e2433' }}
       >
         {/* ── Shop Header ── */}
@@ -241,7 +240,7 @@ export default function Sidebar({ isOpen, onClose }) {
           >
             <span className="flex items-center gap-2">
               <HiOutlinePlus className="w-4 h-4" />
-              + Create Sales Invoice
+              Create Sales Invoice
             </span>
             <HiOutlineChevronDown className="w-4 h-4 opacity-60" />
           </button>
