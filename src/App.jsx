@@ -97,7 +97,6 @@ export default function App() {
         <Route path="sales/invoices" element={<SalesInvoices />} />
         <Route path="sales/payment-in" element={<ProtectedRoute allowedRoles={['owner', 'staff', 'accountant']}><PaymentIn /></ProtectedRoute>} />
         <Route path="sales/proforma" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><ProformaInvoice /></ProtectedRoute>} />
-        <Route path="sales/return" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><SaleReturn /></ProtectedRoute>} />
         <Route path="billing/history" element={<Navigate to="/sales/invoices" replace />} />
         <Route path="billing/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><BillForm /></ProtectedRoute>} />
         <Route path="billing/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><BillForm /></ProtectedRoute>} />
@@ -180,7 +179,7 @@ export default function App() {
         <Route path="/billing/challan" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><DeliveryChallan /></ProtectedRoute>} />
         <Route path="/billing/pos" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><POSBilling /></ProtectedRoute>} />
         <Route path="/billing/payment-in" element={<ProtectedRoute allowedRoles={['owner', 'staff', 'accountant']}><PaymentIn /></ProtectedRoute>} />
-        <Route path="/sales/returns" element={<PlaceholderPage title="Sale Returns" part={99} />} />
+        <Route path="/sales/returns" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><SaleReturn /></ProtectedRoute>} />
 
         <Route path="/purchase" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="invoices" /></ProtectedRoute>} />
         <Route path="/purchase/orders" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="orders" /></ProtectedRoute>} />
