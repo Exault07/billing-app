@@ -182,7 +182,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-64 flex flex-col transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed top-0 left-0 z-50 h-full w-56 flex flex-col transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
         style={{ background: '#1e2433' }}
       >
@@ -197,7 +197,7 @@ export default function Sidebar({ isOpen, onClose }) {
               {shopInitial}
             </div>
             <div className="overflow-hidden">
-              <p className="text-white font-semibold text-[14px] leading-tight truncate">
+              <p className="text-white font-semibold text-[13px] leading-tight truncate whitespace-nowrap overflow-hidden">
                 {shopName}
               </p>
               {shopPhone && (
@@ -216,7 +216,7 @@ export default function Sidebar({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* ── Create Sales Invoice button ── */}
+        {/* ── Create Invoice button ── */}
         <div className="px-3 pb-4 flex-shrink-0">
           <button
             onClick={() => { navigate('/billing/new'); window.innerWidth < 1024 && onClose(); }}
@@ -227,7 +227,7 @@ export default function Sidebar({ isOpen, onClose }) {
           >
             <span className="flex items-center gap-2">
               <HiOutlinePlus className="w-4 h-4" />
-              Create Sales Invoice
+              Create Invoice
             </span>
             <HiOutlineChevronDown className="w-4 h-4 opacity-60" />
           </button>
@@ -258,7 +258,7 @@ export default function Sidebar({ isOpen, onClose }) {
                   onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#a0aec0'; } }}
                 >
                   <item.icon className="w-[18px] h-[18px] flex-shrink-0" />
-                  <span className="text-[13.5px] font-medium leading-tight">{item.label}</span>
+                  <span className="text-[13px] font-medium leading-tight truncate whitespace-nowrap overflow-hidden flex-1">{item.label}</span>
                 </NavLink>
               );
             }
@@ -281,7 +281,7 @@ export default function Sidebar({ isOpen, onClose }) {
                   >
                     <div className="flex items-center gap-3">
                       <item.icon className="w-[18px] h-[18px] flex-shrink-0" />
-                      <span className="text-[13.5px] font-medium leading-tight">{item.label}</span>
+                      <span className="text-[13px] font-medium leading-tight truncate whitespace-nowrap overflow-hidden flex-1">{item.label}</span>
                     </div>
                     <HiOutlineChevronDown
                       className="w-4 h-4 flex-shrink-0 transition-transform duration-200"
@@ -303,7 +303,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             key={sub.label}
                             to={sub.path}
                             onClick={() => window.innerWidth < 1024 && onClose()}
-                            className="block px-3 py-2 rounded-lg text-[13px] transition-all font-medium"
+                            className="block px-3 py-2 rounded-lg text-[12.5px] transition-all font-medium truncate"
                             style={isSubActive
                               ? { background: '#3b82f620', color: '#60a5fa' }
                               : { color: '#718096' }

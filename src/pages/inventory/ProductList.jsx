@@ -62,27 +62,40 @@ export default function ProductList() {
  .order('name');
  setCategories(catData || []);
 
- // Fetch products in chunks of 1000
- let allData = [];
- let from = 0;
- const chunkSize = 1000;
+      // Fetch units
+      const { data: unitsData } = await supabase
+        .from('units')
+        .select('*')
+        .order('name');
+      const unitsList = unitsData || [];
 
- while (true) {
- const { data, error: fetchError } = await supabase
- .from('products')
- .select('*')
- .range(from, from + chunkSize - 1)
- .order('name');
+      // Fetch products in chunks of 1000
+      let allData = [];
+      let from = 0;
+      const chunkSize = 1000;
 
- if (fetchError) throw fetchError;
- if (!data || data.length === 0) break;
+      while (true) {
+        const { data, error: fetchError } = await supabase
+          .from('products')
+          .select('*, units(name), item_categories(name)')
+          .range(from, from + chunkSize - 1)
+          .order('name');
 
- allData = [...allData, ...data];
- if (data.length < chunkSize) break;
- from += chunkSize;
- }
+        if (fetchError) throw fetchError;
+        if (!data || data.length === 0) break;
 
- setAllProducts(allData);
+        const mappedData = data.map(p => ({
+          ...p,
+          unit: p.units?.name || '',
+          category: p.item_categories?.name || ''
+        }));
+
+        allData = [...allData, ...mappedData];
+        if (data.length < chunkSize) break;
+        from += chunkSize;
+      }
+
+      setAllProducts(allData);
  setSelectedIds(new Set());
  setRenderedCount(RENDER_BATCH); // reset scroll position
  } catch (err) {
@@ -244,7 +257,7 @@ export default function ProductList() {
 
  // ─── Render ───────────────────────────────────────────────────────────────
  return (
- <div className="animate-fade-in text-surface-900 flex flex-col h-[calc(100vh-8.5rem)]">
+ <div className="animate-fade-in text-surface-900 flex flex-col flex-1 min-h-0">
 
  {/* Header */}
  <div className="flex items-center justify-between mb-6 pt-4">

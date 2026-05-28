@@ -36,7 +36,7 @@ export default function CarpenterDetail() {
  
  const [carpenterRes, billsRes, paymentsRes] = await Promise.all([
  supabase.from('carpenters').select('*').eq('id', id).single(),
- supabase.from('bills').select('*, customers(name)').eq('carpenter_id', id).order('date', { ascending: false }),
+ supabase.from('bills').select('*, customers:parties(name)').eq('carpenter_id', id).order('date', { ascending: false }),
  supabase.from('carpenter_payments').select('*').eq('carpenter_id', id).order('payment_date', { ascending: false })
  ]);
 
@@ -107,7 +107,7 @@ export default function CarpenterDetail() {
  <div className="max-w-6xl mx-auto space-y-6">
  {error && (
  <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
- <span className="mt-0.5 text-red-400">âš </span>
+ <span className="mt-0.5 text-red-400">⚠️</span>
  <span>{error}</span>
  </div>
  )}

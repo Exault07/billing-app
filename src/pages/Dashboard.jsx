@@ -34,12 +34,12 @@ export default function Dashboard() {
  try {
  // 1. Fetch Balances (To Collect & To Pay)
  const [{ data: cData }, { data: sData }] = await Promise.all([
- supabase.from('customers').select('balance'),
- supabase.from('suppliers').select('balance')
+ supabase.from('parties').select('current_balance').eq('party_type', 'customer'),
+ supabase.from('parties').select('current_balance').eq('party_type', 'supplier')
  ]);
  
- const toCollect = (cData || []).reduce((sum, c) => sum + Number(c.balance || 0), 0);
- const toPay = (sData || []).reduce((sum, s) => sum + Number(s.balance || 0), 0);
+ const toCollect = (cData || []).reduce((sum, c) => sum + Number(c.current_balance || 0), 0);
+ const toPay = (sData || []).reduce((sum, s) => sum + Number(s.current_balance || 0), 0);
 
  // 2. Fetch Today's Sales
  const todayString = new Date().toISOString().split('T')[0];
@@ -58,10 +58,7 @@ export default function Dashboard() {
 
  // 4. Fetch Pending Payments (Top 5 customers with balance > 0)
  const { data: topcustomers } = await supabase
- .from('customers')
- .select('name, phone, balance')
- .gt('balance', 0)
- .order('balance', { ascending: false })
+ .from('parties').select('name, mobile, current_balance').eq('party_type', 'customer').gt('current_balance', 0).order('current_balance', { ascending: false })
  .limit(5);
  setPendingPayments(topcustomers || []);
 
@@ -74,9 +71,9 @@ export default function Dashboard() {
 
  // 6. Fetch Latest Transactions (Merge Sales, Purchases, Quotations)
  const [{ data: sales }, { data: purchases }, { data: quotations }] = await Promise.all([
- supabase.from('bills').select('*, customers(name)').order('created_at', { ascending: false }).limit(10),
- supabase.from('purchase_invoices').select('*, suppliers(name)').order('created_at', { ascending: false }).limit(10),
- supabase.from('quotations').select('*, customers(name)').order('created_at', { ascending: false }).limit(10)
+ supabase.from('bills').select('*, customers:parties(name)').order('created_at', { ascending: false }).limit(10),
+ supabase.from('purchase_invoices').select('*, suppliers:parties(name)').order('created_at', { ascending: false }).limit(10),
+ supabase.from('quotations').select('*, customers:parties(name)').order('created_at', { ascending: false }).limit(10)
  ]);
 
  const mergedTxns = [
@@ -197,12 +194,12 @@ export default function Dashboard() {
  const formatAmount = (num) => `₹ ${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
  return (
- <div className="max-w-[1400px] mx-auto animate-fade-in text-surface-900 bg-surface-50 min-h-screen">
+ <div className="animate-fade-in text-surface-900">
  
  {/* Top Header / Title */}
  {error && (
  <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
- <span className="mt-0.5 text-red-400">âš </span>
+ <span className="mt-0.5 text-red-400">⚠️</span>
  <span>{error}</span>
  </div>
  )}
@@ -292,13 +289,13 @@ export default function Dashboard() {
  <tr key={i} className="hover:bg-surface-50 transition-colors">
  <td className="py-2.5 px-4">
  <div className="font-semibold text-surface-800">{c.name}</div>
- <div className="text-xs text-surface-500">{c.phone || 'No phone'}</div>
+ <div className="text-xs text-surface-500">{c.mobile || 'No phone'}</div>
  </td>
- <td className="py-2.5 px-4 text-right font-bold text-red-600">{formatAmount(c.balance)}</td>
+ <td className="py-2.5 px-4 text-right font-bold text-red-600">{formatAmount(c.current_balance)}</td>
  <td className="py-2.5 px-4 text-center">
  <button 
  onClick={() => handleRemind(c)}
- disabled={!c.phone}
+ disabled={!c.mobile}
  className="text-xs px-3 py-1.5 bg-green-100 text-green-700 font-bold rounded hover:bg-green-200 transition-colors disabled:opacity-50"
  >
  Remind

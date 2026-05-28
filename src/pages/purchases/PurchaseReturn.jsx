@@ -27,7 +27,7 @@ export default function PurchaseReturn() {
  invoice_number, 
  invoice_date, 
  supplier_id, 
- suppliers(name)
+ suppliers:parties(name)
  `)
  .neq('status', 'cancelled')
  .order('invoice_date', { ascending: false });
@@ -54,7 +54,7 @@ export default function PurchaseReturn() {
  .from('purchase_invoices')
  .select(`
  *,
- suppliers(id, name),
+ suppliers:parties(id, name),
  purchase_invoice_items(
  id,
  product_id,
@@ -161,7 +161,7 @@ export default function PurchaseReturn() {
 
  // Update supplier balance
  const { data: suppData } = await supabase
- .from('suppliers')
+ .from('parties')
  .select('balance')
  .eq('id', invoiceDetails.supplier_id)
  .single();
@@ -169,7 +169,7 @@ export default function PurchaseReturn() {
  if (suppData) {
  const newBalance = (suppData.balance || 0) - totalReturnAmount;
  await supabase
- .from('suppliers')
+ .from('parties')
  .update({ balance: newBalance })
  .eq('id', invoiceDetails.supplier_id);
  }

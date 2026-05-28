@@ -125,7 +125,7 @@ export default function PartyDetail() {
  type: 'Opening Balance',
  bill_no: '-',
  amount: party.opening_balance,
- is_debit: party.balance_type === 'to_collect'
+ is_debit: party.current_balance_type === 'to_collect'
  });
  }
 

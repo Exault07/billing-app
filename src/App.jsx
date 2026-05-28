@@ -157,16 +157,6 @@ export default function App() {
           }
         />
 
-        {/* ── Settings (Part 11) ────────────────────────── */}
-        <Route
-          path="settings"
-          element={
-            <ProtectedRoute allowedRoles={['owner', 'staff']}>
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
-
         {/* ── Additional Sidebar Routes ──────────── */}
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
         <Route path="/billing" element={<SalesInvoices />} />
@@ -185,6 +175,16 @@ export default function App() {
         {/* ── Catch All ────────────────────────── */}
         <Route path="*" element={<NotFound />} />
       </Route>
+
+      {/* ── Settings (Part 11) ────────────────────────── */}
+      <Route
+        path="settings"
+        element={
+          <ProtectedRoute allowedRoles={['owner', 'staff']}>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Global Catch All */}
       <Route path="*" element={<NotFound />} />

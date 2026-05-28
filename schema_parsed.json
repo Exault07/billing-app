@@ -1,0 +1,126 @@
+{
+  "audit_logs": [
+    "id",
+    "table_name",
+    "record_id",
+    "changed_by",
+    "change_type",
+    "old_data",
+    "new_data",
+    "changed_at"
+  ],
+  "bill_audit_log": [
+    "id",
+    "bill_id",
+    "changed_by",
+    "change_type",
+    "old_data",
+    "new_data",
+    "changed_at"
+  ],
+  "bill_payments": [
+    "id",
+    "bill_id",
+    "amount",
+    "payment_mode",
+    "date",
+    "notes",
+    "created_by",
+    "created_at"
+  ],
+  "bills": [
+    "id",
+    "bill_no",
+    "date",
+    "customer_id",
+    "items",
+    "subtotal",
+    "discount",
+    "labour_charges",
+    "transport_charges",
+    "advance_paid",
+    "balance_due",
+    "payment_mode",
+    "notes",
+    "created_by",
+    "status",
+    "created_at",
+    "due_date",
+    "po_number",
+    "eway_bill_number",
+    "vehicle_number",
+    "round_off",
+    "payment_in_discount",
+    "bill_type",
+    "carpenter_id",
+    "commission_rate",
+    "grand_total"
+  ],
+  "carpenter_payments": [
+    "id",
+    "carpenter_id",
+    "amount",
+    "payment_mode",
+    "date",
+    "notes",
+    "created_by",
+    "created_at"
+  ],
+  "carpenters": [
+    "id",
+    "name",
+    "phone",
+    "notes",
+    "created_at",
+    "default_commission_rate",
+    "address"
+  ],
+  "customers": [
+    "id",
+    "name",
+    "phone",
+    "address",
+    "notes",
+    "balance",
+    "created_at",
+    "email",
+    "shipping_address",
+    "credit_limit",
+    "credit_period"
+  ],
+  "delivery_challans": [
+    "id",
+    "bill_id",
+    "customer_id",
+    "items",
+    "date",
+    "notes",
+    "created_at"
+  ],
+  "expense_categories": [
+    "id",
+    "name",
+    "created_at"
+  ],
+  "expenses": [
+    "id",
+    "category",
+    "amount",
+    "payment_mode",
+    "date",
+    "notes",
+    "created_by",
+    "created_at"
+  ],
+  "item_categories": [
+    "id",
+    "name",
+    "created_at"
+  ],
+  "parties": [
+    "id",
+    "name",
+    "mobile",
+    "email"
+  ]
+}

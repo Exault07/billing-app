@@ -41,7 +41,7 @@ export default function PurchaseOrderForm() {
  }, [id]);
 
  const fetchsuppliers = async () => {
- const { data } = await supabase.from('suppliers').select('*').order('name');
+ const { data } = await supabase.from('parties').select('*').eq('party_type', 'supplier').order('name');
  if (data) setSuppliers(data);
  };
 

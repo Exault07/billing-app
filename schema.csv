@@ -1,0 +1,101 @@
+table_name,column_name,data_type,is_nullable,column_default
+audit_logs,id,uuid,NO,gen_random_uuid()
+audit_logs,table_name,text,NO,null
+audit_logs,record_id,uuid,NO,null
+audit_logs,changed_by,uuid,YES,null
+audit_logs,change_type,text,NO,null
+audit_logs,old_data,jsonb,YES,null
+audit_logs,new_data,jsonb,YES,null
+audit_logs,changed_at,timestamp with time zone,YES,now()
+bill_audit_log,id,uuid,NO,gen_random_uuid()
+bill_audit_log,bill_id,uuid,YES,null
+bill_audit_log,changed_by,uuid,YES,null
+bill_audit_log,change_type,text,YES,null
+bill_audit_log,old_data,jsonb,YES,null
+bill_audit_log,new_data,jsonb,YES,null
+bill_audit_log,changed_at,timestamp with time zone,YES,now()
+bill_payments,id,uuid,NO,gen_random_uuid()
+bill_payments,bill_id,uuid,YES,null
+bill_payments,amount,numeric,NO,null
+bill_payments,payment_mode,text,YES,'cash'::text
+bill_payments,date,date,NO,null
+bill_payments,notes,text,YES,null
+bill_payments,created_by,uuid,YES,null
+bill_payments,created_at,timestamp with time zone,YES,now()
+bills,id,uuid,NO,gen_random_uuid()
+bills,bill_no,text,NO,null
+bills,date,date,NO,CURRENT_DATE
+bills,customer_id,uuid,YES,null
+bills,items,jsonb,NO,'[]'::jsonb
+bills,subtotal,numeric,YES,0.00
+bills,discount,numeric,YES,0.00
+bills,labour_charges,numeric,YES,0.00
+bills,transport_charges,numeric,YES,0.00
+bills,advance_paid,numeric,YES,0.00
+bills,balance_due,numeric,YES,0.00
+bills,payment_mode,text,YES,null
+bills,notes,text,YES,null
+bills,created_by,uuid,YES,null
+bills,status,text,YES,'draft'::text
+bills,created_at,timestamp with time zone,YES,now()
+bills,due_date,date,YES,null
+bills,po_number,text,YES,null
+bills,eway_bill_number,text,YES,null
+bills,vehicle_number,text,YES,null
+bills,round_off,numeric,YES,0.00
+bills,payment_in_discount,numeric,YES,0.00
+bills,bill_type,text,YES,'invoice'::text
+bills,carpenter_id,uuid,YES,null
+bills,commission_rate,numeric,YES,0
+bills,grand_total,numeric,YES,0
+carpenter_payments,id,uuid,NO,gen_random_uuid()
+carpenter_payments,carpenter_id,uuid,YES,null
+carpenter_payments,amount,numeric,NO,null
+carpenter_payments,payment_mode,text,YES,'cash'::text
+carpenter_payments,date,date,NO,null
+carpenter_payments,notes,text,YES,null
+carpenter_payments,created_by,uuid,YES,null
+carpenter_payments,created_at,timestamp with time zone,YES,now()
+carpenters,id,uuid,NO,gen_random_uuid()
+carpenters,name,text,NO,null
+carpenters,phone,text,YES,null
+carpenters,notes,text,YES,null
+carpenters,created_at,timestamp with time zone,YES,now()
+carpenters,default_commission_rate,numeric,YES,0
+carpenters,address,text,YES,null
+customers,id,uuid,NO,gen_random_uuid()
+customers,name,text,NO,null
+customers,phone,text,YES,null
+customers,address,text,YES,null
+customers,notes,text,YES,null
+customers,balance,numeric,YES,0.00
+customers,created_at,timestamp with time zone,YES,now()
+customers,email,text,YES,null
+customers,shipping_address,text,YES,null
+customers,credit_limit,numeric,YES,0.00
+customers,credit_period,integer,YES,0
+delivery_challans,id,uuid,NO,gen_random_uuid()
+delivery_challans,bill_id,uuid,YES,null
+delivery_challans,customer_id,uuid,YES,null
+delivery_challans,items,jsonb,NO,'[]'::jsonb
+delivery_challans,date,date,NO,CURRENT_DATE
+delivery_challans,notes,text,YES,null
+delivery_challans,created_at,timestamp with time zone,YES,now()
+expense_categories,id,uuid,NO,gen_random_uuid()
+expense_categories,name,text,NO,null
+expense_categories,created_at,timestamp with time zone,YES,now()
+expenses,id,uuid,NO,gen_random_uuid()
+expenses,category,text,NO,null
+expenses,amount,numeric,YES,0.00
+expenses,payment_mode,text,YES,null
+expenses,date,date,NO,CURRENT_DATE
+expenses,notes,text,YES,null
+expenses,created_by,uuid,YES,null
+expenses,created_at,timestamp with time zone,YES,now()
+item_categories,id,uuid,NO,gen_random_uuid()
+item_categories,name,text,NO,null
+item_categories,created_at,timestamp with time zone,YES,now()
+parties,id,uuid,NO,gen_random_uuid()
+parties,name,text,NO,null
+parties,mobile,text,YES,null
+parties,email,text,YES,null

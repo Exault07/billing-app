@@ -176,7 +176,7 @@ export default function PaymentIn() {
  
  if (isAdvance) {
  paymentsToInsert.push({
- payment_number: formData.paymentNumber,
+ payment_no: formData.paymentNumber,
  party_id: selectedParty,
  bill_id: null,
  is_advance: true,
@@ -195,7 +195,7 @@ export default function PaymentIn() {
  const applyAmount = Math.min(remaining, bill.balance_due);
  
  paymentsToInsert.push({
- payment_number: formData.paymentNumber,
+ payment_no: formData.paymentNumber,
  party_id: selectedParty,
  bill_id: bill.id,
  is_advance: false,
@@ -217,7 +217,7 @@ export default function PaymentIn() {
  
  if (remaining > 0) {
  paymentsToInsert.push({
- payment_number: formData.paymentNumber,
+ payment_no: formData.paymentNumber,
  party_id: selectedParty,
  bill_id: null,
  is_advance: true,

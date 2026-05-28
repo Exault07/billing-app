@@ -25,7 +25,7 @@ export default function DeliveryChallan() {
  useEffect(() => {
  const fetchData = async () => {
  const [{ data: c }, { data: p }] = await Promise.all([
- supabase.from('customers').select('id, name, phone').order('name'),
+ supabase.from('parties').select('id, name, mobile').eq('party_type', 'customer').order('name'),
  supabase.from('products').select('id, name, unit').order('name'),
  ]);
  setCustomers(c || []);
@@ -104,7 +104,7 @@ export default function DeliveryChallan() {
  </div>
  </div>
 
- {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">âš  {error}</div>}
+ {error && <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">⚠️ {error}</div>}
 
  <div className="bg-white rounded-2xl border border-surface-200 p-6 mb-4">
  <h2 className="text-sm font-semibold text-surface-600 uppercase tracking-wide mb-4">Details</h2>
@@ -117,7 +117,7 @@ export default function DeliveryChallan() {
  <label className="block text-xs font-medium text-surface-600 mb-1">Customer *</label>
  <select value={customerId} onChange={e => setCustomerId(e.target.value)} className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
  <option value="">â€” Select Customer â€”</option>
- {customers.map(c => <option key={c.id} value={c.id}>{c.name} {c.phone ? `(${c.phone})` : ''}</option>)}
+ {customers.map(c => <option key={c.id} value={c.id}>{c.name} {c.mobile ? `(${c.mobile})` : ''}</option>)}
  </select>
  </div>
  </div>

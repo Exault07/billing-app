@@ -36,9 +36,7 @@ export default function Parties() {
  // Action Menu
  const [activeMenu, setActiveMenu] = useState(null);
 
- // Pagination
- const [currentPage, setCurrentPage] = useState(1);
- const ITEMS_PER_PAGE = 20;
+ // Pagination removed
 
  useEffect(() => {
  fetchData();
@@ -154,9 +152,8 @@ export default function Parties() {
  });
  }, [parties, searchTerm, typeFilter, categoryFilter]);
 
- // Pagination Logic
- const totalPages = Math.ceil(filteredParties.length / ITEMS_PER_PAGE);
- const currentItems = filteredParties.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+ // Pagination Logic removed
+ const currentItems = filteredParties;
 
  // Summary Metrics
  const summary = useMemo(() => {
@@ -185,7 +182,7 @@ export default function Parties() {
  };
 
  return (
- <div className="max-w-7xl mx-auto px-4 py-8">
+ <div className="flex flex-col flex-1 min-h-0 pt-4">
  {error && (
  <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
  <HiOutlineExclamationCircle className="mt-0.5 text-red-400 w-5 h-5" />
@@ -225,7 +222,7 @@ export default function Parties() {
  </div>
 
  {/* Main Content Area */}
- <div className="bg-white rounded-2xl shadow-sm border border-surface-200 flex flex-col min-h-[500px]">
+ <div className="bg-white rounded-2xl shadow-sm border border-surface-200 flex flex-col flex-1 min-h-0">
  
  {/* Filters Bar */}
  <div className="p-4 border-b border-surface-200 flex flex-wrap gap-4 items-center justify-between bg-surface-50/50 rounded-t-2xl">
@@ -236,14 +233,14 @@ export default function Parties() {
  type="text" 
  placeholder="Search name or phone..." 
  value={searchTerm}
- onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+ onChange={(e) => { setSearchTerm(e.target.value); }}
  className="w-full pl-10 pr-4 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
  />
  </div>
 
  <select 
  value={typeFilter}
- onChange={(e) => { setTypeFilter(e.target.value); setCurrentPage(1); }}
+ onChange={(e) => { setTypeFilter(e.target.value); }}
  className="border border-surface-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
  >
  <option value="All">All Types</option>
@@ -254,7 +251,7 @@ export default function Parties() {
 
  <select 
  value={categoryFilter}
- onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
+ onChange={(e) => { setCategoryFilter(e.target.value); }}
  className="border border-surface-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 max-w-[200px] truncate"
  >
  <option value="">All Categories</option>
@@ -274,9 +271,9 @@ export default function Parties() {
  </div>
 
  {/* Table */}
- <div className="overflow-x-auto flex-1">
+ <div className="overflow-auto flex-1 min-h-0">
  <table className="w-full text-left border-collapse whitespace-nowrap">
- <thead>
+ <thead className="sticky top-0 z-10 shadow-sm bg-white">
  <tr className="border-b border-surface-200 text-xs uppercase tracking-wider text-surface-500 bg-white">
  <th className="px-6 py-4 w-12">
  <input 
@@ -392,30 +389,7 @@ export default function Parties() {
  </table>
  </div>
 
- {/* Pagination */}
- {totalPages > 1 && (
- <div className="px-6 py-4 border-t border-surface-200 flex items-center justify-between bg-surface-50/50 rounded-b-2xl">
- <span className="text-sm text-surface-600">
- Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredParties.length)} of {filteredParties.length} entries
- </span>
- <div className="flex gap-2">
- <button 
- disabled={currentPage === 1} 
- onClick={() => setCurrentPage(p => p - 1)}
- className="p-1.5 border border-surface-200 rounded-lg hover:bg-surface-100 disabled:opacity-50 text-surface-600"
- >
- <HiOutlineChevronLeft className="w-5 h-5" />
- </button>
- <button 
- disabled={currentPage === totalPages} 
- onClick={() => setCurrentPage(p => p + 1)}
- className="p-1.5 border border-surface-200 rounded-lg hover:bg-surface-100 disabled:opacity-50 text-surface-600"
- >
- <HiOutlineChevronRight className="w-5 h-5" />
- </button>
- </div>
- </div>
- )}
+ 
  </div>
 
  {/* Bulk Delete Modal */}

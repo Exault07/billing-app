@@ -93,11 +93,11 @@ export default function BillsHistory() {
  };
 
  return (
- <div className="max-w-[1400px] mx-auto animate-fade-in text-surface-900 bg-surface-50 min-h-screen">
+ <div className="animate-fade-in text-surface-900">
  
  {error && (
  <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2 mt-4">
- <span className="mt-0.5 text-red-400">âš </span>
+ <span className="mt-0.5 text-red-400">⚠️</span>
  <span>{error}</span>
  </div>
  )}

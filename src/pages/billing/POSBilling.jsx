@@ -30,7 +30,7 @@ export default function POSBilling() {
  const loadData = async () => {
  const [{ data: prodData }, { data: custData }] = await Promise.all([
  supabase.from('products').select('*').order('name'),
- supabase.from('customers').select('*').order('name')
+ supabase.from('parties').select('*').eq('party_type', 'customer').order('name')
  ]);
  setProducts(prodData || []);
  setCustomers(custData || []);

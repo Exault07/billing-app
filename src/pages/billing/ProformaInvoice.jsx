@@ -26,7 +26,7 @@ export default function ProformaInvoice() {
  try {
  const { data } = await supabase
  .from('bills')
- .select('*, customers(name)')
+ .select('*, customers:parties(name)')
  .eq('bill_type', 'proforma')
  .order('date', { ascending: false });
  setBills(data || []);
@@ -95,7 +95,7 @@ export default function ProformaInvoice() {
  <div className="animate-fade-in w-full">
  {error && (
  <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
- <span className="mt-0.5 text-red-400">âš </span>
+ <span className="mt-0.5 text-red-400">⚠️</span>
  <span>{error}</span>
  </div>
  )}

@@ -25,7 +25,7 @@ export default function QuotationsHistory() {
  try {
  let query = supabase
  .from('quotations')
- .select('*, customers(name, phone)')
+ .select('*, customers:parties(name, mobile)')
  .order('created_at', { ascending: false });
  if (statusFilter !== 'all') query = query.eq('status', statusFilter);
  const { data, error: fetchError } = await query;
@@ -76,7 +76,7 @@ export default function QuotationsHistory() {
 
  {error && (
  <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 animate-fade-in flex items-start gap-2">
- <span className="mt-0.5 text-red-400">âš </span>
+ <span className="mt-0.5 text-red-400">⚠️</span>
  <span>{error}</span>
  </div>
  )}
@@ -113,7 +113,7 @@ export default function QuotationsHistory() {
  <td className="px-5 py-3.5 text-surface-600">{new Date(q.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
  <td className="px-5 py-3.5">
  <p className="font-medium text-surface-800">{q.customers?.name || '-'}</p>
- {q.customers?.phone && <p className="text-xs text-surface-400">{q.customers.phone}</p>}
+ {q.customers?.mobile && <p className="text-xs text-surface-400">{q.customers.mobile}</p>}
  </td>
  <td className="px-5 py-3.5 text-right font-semibold text-surface-800">₹ {fmt(total)}</td>
  <td className="px-5 py-3.5 text-center"><span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${STATUS_STYLES[q.status] || ''}`}>{q.status}</span></td>

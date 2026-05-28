@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -172,7 +172,6 @@ export default function BillForm() {
  
  setNotes(data.notes || '');
  if (data.advance_paid >= data.grand_total && data.grand_total > 0) setIsFullyPaid(true);
- 
  } catch (err) {
  setError('Failed to load bill: ' + err.message);
  } finally {
@@ -181,6 +180,47 @@ export default function BillForm() {
  };
  fetchBill();
  }, [isEditing, id]);
+
+ // ── Handle Duplicate ────────────────────────────────────────────────────────────────
+ useEffect(() => {
+   if (location.state?.duplicateFrom) {
+     const fetchDuplicate = async () => {
+       setLoadingData(true);
+       try {
+         const { data, error } = await supabase.from('bills').select('*').eq('id', location.state.duplicateFrom).single();
+         if (error) throw error;
+         
+         setCustomerId(data.customer_id || '');
+         setCarpenterId(data.carpenter_id || '');
+         setCommissionRate(data.commission_rate || 0);
+         
+         const loadedItems = (data.items || []).map(i => ({
+           product_id: i.product_id,
+           name: i.name,
+           hsn: i.hsn || '',
+           qty: i.qty,
+           price: i.price,
+           discount: i.discount || 0,
+           tax: i.tax || 0,
+           total: i.total
+         }));
+         setItems(loadedItems.length ? loadedItems : [emptyItem()]);
+         
+         setOverallDiscount(data.discount || 0);
+         setAdditionalCharges((data.labour_charges || 0) + (data.transport_charges || 0));
+         setAutoRoundOff(Boolean(data.round_off));
+         
+         setNotes(data.notes || '');
+         
+       } catch (err) {
+         setError('Failed to load duplicate bill: ' + err.message);
+       } finally {
+         setLoadingData(false);
+       }
+     };
+     fetchDuplicate();
+   }
+ }, [location.state?.duplicateFrom]);
 
  // ——— Item helpers ———————————————————————————————————————————————————————————————————————
  const addItem = () => setItems(prev => [...prev, emptyItem()]);
@@ -225,36 +265,36 @@ export default function BillForm() {
  };
 
  // â”€â”€ Save handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- const handleSave = async (e) => {
- e?.preventDefault();
- setError('');
- if (!customerId) return setError('Please select a Party.');
- const validItems = items.filter(i => i.product_id);
- if (validItems.length === 0) return setError('Please add at least one item.');
+   const handleSave = async (e) => {
+    e?.preventDefault();
+    setError('');
+    if (!customerId) return setError('Please select a Party.');
+    const validItems = items.filter(i => i.product_id);
+    if (validItems.length === 0) return setError('Please add at least one item.');
 
- setSaving(true);
- try {
- const payload = {
- bill_no: `BILL-${billNo}`,
- date: date || new Date().toISOString().split('T')[0],
- due_date: dueDate || null,
- customer_id: customerId,
- items: validItems,
- subtotal,
- discount: Number(overallDiscount),
- labour_charges: Number(additionalCharges), // mapping additional to labour for DB compat
- round_off: roundOffAmt,
- advance_paid: Number(amountReceived),
- balance_due: balanceDue,
- grand_total: grandTotal,
- notes: `${notes}\n\nTerms:\n${terms}`,
- status: balanceDue <= 0 ? 'paid' : 'final',
- created_by: user?.id,
- carpenter_id: carpenterId || null,
- commission_rate: Number(commissionRate) || 0,
- };
+    setSaving(true);
+    try {
+      const payload = {
+        bill_no: `BILL-${billNo}`,
+        date: date || new Date().toISOString().split('T')[0],
+        due_date: dueDate || null,
+        customer_id: customerId || null,
+        items: validItems,
+        subtotal,
+        discount: Number(overallDiscount),
+        labour_charges: Number(additionalCharges),
+        round_off: roundOffAmt,
+        advance_paid: Number(amountReceived),
+        balance_due: balanceDue,
+        grand_total: grandTotal,
+        notes: `${notes}\n\nTerms:\n${terms}`,
+        status: balanceDue <= 0 ? 'paid' : 'final',
+        created_by: user?.id,
+        carpenter_id: carpenterId || null,
+        commission_rate: Number(commissionRate) || 0,
+      };
 
- if (isEditing) {
+      if (isEditing) {
  // Fetch old bill to adjust balance difference
  const { data: oldBill } = await supabase.from('bills').select('balance_due').eq('id', id).single();
  const oldBalance = Number(oldBill?.balance_due || 0);
@@ -340,22 +380,23 @@ export default function BillForm() {
  return () => document.removeEventListener('keydown', handleKeyDown);
  }, [products, items]);
 
- const handleCreateParty = async () => {
- if (!newPartyName.trim()) return setError('Party name is required.');
- setSavingParty(true);
- try {
- const { data, error: err } = await supabase.from('parties').insert([{
- name: newPartyName,
- mobile: newPartyMobile,
- address: newPartyAddress,
- party_type: newPartyType
- }]).select().single();
- if (err) throw err;
- setCustomers(prev => [...prev, data]);
- setCustomerId(data.id);
- setShowQuickPartyModal(false);
- setNewPartyName('');
- setNewPartyMobile('');
+  const handleCreateParty = async () => {
+    if (!newPartyName.trim()) return setError('Party name is required.');
+    setSavingParty(true);
+    try {
+      const { data, error: err } = await supabase.from('parties').insert([{
+        name: newPartyName,
+        mobile: newPartyMobile,
+        billing_address: newPartyAddress,
+        party_type: newPartyType
+      }]).select().single();
+      if (err) throw err;
+      setCustomers(prev => [...prev, data]);
+      setCustomerId(data.id);
+      setShowQuickPartyModal(false);
+      setNewPartyName('');
+      setNewPartyMobile('');
+
  setNewPartyAddress('');
  } catch (err) {
  setError('Failed to create party: ' + err.message);
