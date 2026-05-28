@@ -810,12 +810,11 @@ export default function SalesInvoices() {
  return (
  <div className="max-w-[1400px] mx-auto px-4 pb-16 animate-fade-in bg-surface-50 min-h-screen">
 
- {/* Header */}
- <div className="flex items-center justify-between mb-6 pt-4">
- <div>
- <h1 className="text-2xl font-bold text-surface-900">Sales Invoices</h1>
- <p className="text-sm text-surface-500 mt-1">Manage and track your sales invoices</p>
- </div>
+   {/* Header */}
+   <div className="flex items-center justify-between mb-4 pt-2">
+   <div>
+   <h1 className="text-lg font-bold text-surface-900">Sales Invoices</h1>
+   </div>
  <div className="flex items-center gap-2">
  <button className="px-4 py-2.5 text-sm font-semibold border border-surface-200 rounded-xl text-blue-600 flex items-center gap-2 hover:bg-surface-50 bg-white shadow-sm transition-colors">
  <HiOutlineDocumentText className="w-4 h-4" /> Reports
@@ -828,46 +827,46 @@ export default function SalesInvoices() {
 
  {error && (
  <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-start gap-2">
- <span className="mt-0.5 text-red-400">âš </span>
+ <span className="mt-0.5 text-red-400">⚠</span>
  <span>{error}</span>
  </div>
  )}
 
  {/* Metrics */}
- <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
- <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#e0e7ff] bg-[#f8f7ff] flex flex-col justify-center">
- <div className="flex items-center gap-2 mb-2 text-[#7c3aed]">
- <HiOutlineCash className="w-5 h-5" />
- <span className="text-sm font-bold uppercase tracking-wider">Total Sales</span>
+ <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+ <div className="bg-white rounded-xl py-3 px-4 shadow-sm border border-[#e0e7ff] bg-[#f8f7ff] flex flex-col justify-center">
+ <div className="flex items-center gap-1.5 mb-1 text-[#7c3aed]">
+ <HiOutlineCash className="w-4 h-4" />
+ <span className="text-xs font-bold uppercase tracking-wider">Total Sales</span>
  </div>
- <div className="text-3xl font-black text-surface-900">
+ <div className="text-xl font-bold text-surface-900">
  ₹ {totalSales.toLocaleString('en-IN', { minimumFractionDigits: 1 })}
  </div>
  </div>
- <div className="bg-white rounded-2xl p-5 shadow-sm border border-surface-200 flex flex-col justify-center">
- <div className="flex items-center gap-2 mb-2 text-green-600">
- <HiOutlineCheckCircle className="w-5 h-5" />
- <span className="text-sm font-bold uppercase tracking-wider">Paid</span>
+ <div className="bg-white rounded-xl py-3 px-4 shadow-sm border border-surface-200 flex flex-col justify-center">
+ <div className="flex items-center gap-1.5 mb-1 text-green-600">
+ <HiOutlineCheckCircle className="w-4 h-4" />
+ <span className="text-xs font-bold uppercase tracking-wider">Paid</span>
  </div>
- <div className="text-3xl font-black text-surface-900">
+ <div className="text-xl font-bold text-surface-900">
  ₹ {totalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
  </div>
  </div>
- <div className="bg-white rounded-2xl p-5 shadow-sm border border-surface-200 flex flex-col justify-center">
- <div className="flex items-center gap-2 mb-2 text-red-600">
- <HiOutlineExclamationCircle className="w-5 h-5" />
- <span className="text-sm font-bold uppercase tracking-wider">Unpaid</span>
+ <div className="bg-white rounded-xl py-3 px-4 shadow-sm border border-surface-200 flex flex-col justify-center">
+ <div className="flex items-center gap-1.5 mb-1 text-red-600">
+ <HiOutlineExclamationCircle className="w-4 h-4" />
+ <span className="text-xs font-bold uppercase tracking-wider">Unpaid</span>
  </div>
- <div className="text-3xl font-black text-surface-900">
+ <div className="text-xl font-bold text-surface-900">
  ₹ {totalUnpaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
  </div>
  </div>
- <div className="bg-white rounded-2xl p-5 shadow-sm border border-surface-200 flex flex-col justify-center">
- <div className="flex items-center gap-2 mb-2 text-surface-500">
- <HiOutlineXCircle className="w-5 h-5" />
- <span className="text-sm font-bold uppercase tracking-wider">Cancelled</span>
+ <div className="bg-white rounded-xl py-3 px-4 shadow-sm border border-surface-200 flex flex-col justify-center opacity-70">
+ <div className="flex items-center gap-1.5 mb-1 text-surface-500">
+ <HiOutlineXCircle className="w-4 h-4" />
+ <span className="text-xs font-bold uppercase tracking-wider">Cancelled</span>
  </div>
- <div className="text-3xl font-black text-surface-900">-</div>
+ <div className="text-xl font-bold text-surface-900">-</div>
  </div>
  </div>
 

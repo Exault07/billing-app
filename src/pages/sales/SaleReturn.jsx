@@ -543,10 +543,9 @@ export default function SaleReturn() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 pb-16 animate-fade-in bg-surface-50 min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 pt-4">
+      <div className="flex items-center justify-between mb-4 pt-2">
         <div>
-          <h1 className="text-2xl font-bold text-surface-900">Sales Returns</h1>
-          <p className="text-sm text-surface-500 mt-1">Manage and track your sales returns & credit notes</p>
+          <h1 className="text-lg font-bold text-surface-900">Sales Returns</h1>
         </div>
         <div className="flex items-center gap-2">
           <button className="px-4 py-2.5 text-sm font-semibold border border-surface-200 rounded-xl text-blue-600 flex items-center gap-2 hover:bg-surface-50 bg-white shadow-sm transition-colors">

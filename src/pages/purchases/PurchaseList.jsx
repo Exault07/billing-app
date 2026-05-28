@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -124,7 +124,7 @@ const PurchaseList = ({ tab = 'invoices' }) => {
  <div className="min-h-screen bg-gray-50 flex flex-col">
  {/* Top Header */}
  <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
- <h1 className="text-xl font-bold text-gray-800">
+ <h1 className="text-lg font-bold text-gray-800">
  {activeTab === 'invoices' && 'Purchase Invoices'}
  {activeTab === 'orders' && 'Purchase Orders'}
  {activeTab === 'returns' && 'Purchase Returns'}
@@ -149,28 +149,28 @@ const PurchaseList = ({ tab = 'invoices' }) => {
  {/* Summary Cards */}
  {activeTab === 'invoices' && (
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
- <div className="bg-[#f5f3ff] border border-[#ddd6fe] rounded-lg p-5 flex flex-col justify-center">
- <div className="flex items-center gap-2 text-indigo-800 text-sm font-medium mb-1">
+ <div className="bg-[#f5f3ff] border border-[#ddd6fe] rounded-lg py-3 px-4 flex flex-col justify-center">
+ <div className="flex items-center gap-2 text-indigo-800 text-xs font-bold uppercase tracking-wider mb-1">
  <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
  Total Purchases
  </div>
- <div className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.totalPurchases)}</div>
+ <div className="text-xl font-bold text-gray-900">{formatCurrency(metrics.totalPurchases)}</div>
  </div>
  
- <div className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col justify-center">
- <div className="flex items-center gap-2 text-green-700 text-sm font-medium mb-1">
+ <div className="bg-white border border-gray-200 rounded-lg py-3 px-4 flex flex-col justify-center">
+ <div className="flex items-center gap-2 text-green-700 text-xs font-bold uppercase tracking-wider mb-1">
  <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
  Paid
  </div>
- <div className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.paid)}</div>
+ <div className="text-xl font-bold text-gray-900">{formatCurrency(metrics.paid)}</div>
  </div>
  
- <div className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col justify-center">
- <div className="flex items-center gap-2 text-red-600 text-sm font-medium mb-1">
+ <div className="bg-white border border-gray-200 rounded-lg py-3 px-4 flex flex-col justify-center">
+ <div className="flex items-center gap-2 text-red-600 text-xs font-bold uppercase tracking-wider mb-1">
  <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
  Unpaid
  </div>
- <div className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.unpaid)}</div>
+ <div className="text-xl font-bold text-gray-900">{formatCurrency(metrics.unpaid)}</div>
  </div>
  </div>
  )}
