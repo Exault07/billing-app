@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -31,10 +31,7 @@ export default function ExpenseList() {
 
  const { data: expData, error } = await supabase
  .from('expenses')
- .select(`
- *,
- expense_categories (name)
- `)
+ .select('*')
  .order('date', { ascending: false });
 
  if (error) throw error;
@@ -65,7 +62,7 @@ export default function ExpenseList() {
  const lowerSearch = searchTerm.toLowerCase();
  result = result.filter(e => 
  (e.notes && e.notes.toLowerCase().includes(lowerSearch)) ||
- (e.expense_categories?.name && e.expense_categories.name.toLowerCase().includes(lowerSearch))
+ (categories.find(c => c.id === e.category_id)?.name?.toLowerCase().includes(lowerSearch))
  );
  }
 
@@ -123,7 +120,7 @@ export default function ExpenseList() {
  if (d >= startOfThisMonth) {
  tMonth += amt;
  
- const catName = e.expense_categories?.name || 'Uncategorized';
+ const catName = categories.find(c => c.id === e.category_id)?.name || 'Uncategorized';
  categorySums[catName] = (categorySums[catName] || 0) + amt;
  }
  });
@@ -284,7 +281,7 @@ export default function ExpenseList() {
  </td>
  <td className="px-6 py-4">
  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800">
- {expense.expense_categories?.name || 'Unknown'}
+ {categories.find(c => c.id === expense.category_id)?.name || 'Unknown'}
  </span>
  </td>
  <td className="px-6 py-4 font-medium text-slate-900">

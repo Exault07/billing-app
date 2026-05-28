@@ -31,9 +31,7 @@ import PurchaseForm from './pages/purchases/PurchaseForm';
 import PurchaseOrderForm from './pages/purchases/PurchaseOrderForm';
 import PurchaseReturn from './pages/purchases/PurchaseReturn';
 import PaymentOutList from './pages/purchases/PaymentOut';
-import PaymentOutForm from './pages/purchases/PaymentOutForm';
 
-// â”€â”€ Expenses (Part 7) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // ── Expenses (Part 7) ──────────────────────────
 import ExpenseList from './pages/expenses/ExpenseList';
 import ExpenseForm from './pages/expenses/ExpenseForm';
@@ -120,7 +118,6 @@ export default function App() {
         <Route path="purchases/returns" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="returns" /></ProtectedRoute>} />
         <Route path="purchases/returns/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseReturn /></ProtectedRoute>} />
         <Route path="purchases/payment-out" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><PaymentOutList /></ProtectedRoute>} />
-        <Route path="purchases/payment-out/new" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><PaymentOutForm /></ProtectedRoute>} />
 
         {/* â”€â”€ Expenses (Part 7) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Route path="expenses" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><ExpenseList /></ProtectedRoute>} />
@@ -188,7 +185,7 @@ export default function App() {
         <Route path="/purchase" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="invoices" /></ProtectedRoute>} />
         <Route path="/purchase/orders" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="orders" /></ProtectedRoute>} />
         <Route path="/purchase/returns" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="returns" /></ProtectedRoute>} />
-        <Route path="/purchase/payment-out" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><PaymentOutForm /></ProtectedRoute>} />
+        <Route path="/purchase/payment-out" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><PaymentOutList /></ProtectedRoute>} />
 
         <Route path="/inventory/godown" element={<PlaceholderPage title="Godown Management" part={99} />} />
 
