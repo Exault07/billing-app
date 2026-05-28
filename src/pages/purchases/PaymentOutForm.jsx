@@ -31,7 +31,7 @@ export default function PaymentOutForm() {
  }
  }, [selectedSupplier]);
 
- const fetchsuppliers = async () => {
+ const fetchSuppliers = async () => {
  try {
  const { data, error } = await supabase
  .from('parties')

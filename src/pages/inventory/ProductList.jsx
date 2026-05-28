@@ -244,7 +244,7 @@ export default function ProductList() {
 
  // ─── Render ───────────────────────────────────────────────────────────────
  return (
- <div className="max-w-[1400px] mx-auto px-4 pb-16 animate-fade-in text-surface-900 bg-surface-50 min-h-screen">
+ <div className="animate-fade-in text-surface-900 flex flex-col h-[calc(100vh-6rem)]">
 
  {/* Header */}
  <div className="flex items-center justify-between mb-6 pt-4">
@@ -362,8 +362,8 @@ export default function ProductList() {
  </div>
 
  {/* Table */}
- <div className="bg-white border border-surface-200 rounded-b-2xl overflow-hidden shadow-sm">
- <div className="overflow-x-auto">
+ <div className="bg-white border border-surface-200 rounded-b-2xl shadow-sm flex-1 flex flex-col min-h-0">
+ <div className="overflow-auto flex-1 relative">
  <table className="w-full text-left border-collapse whitespace-nowrap">
  <thead className="bg-surface-50 border-b border-surface-200 sticky top-0 z-10">
  <tr className="text-[11px] uppercase tracking-wider font-bold text-surface-500">
@@ -506,7 +506,6 @@ export default function ProductList() {
  )}
  </tbody>
  </table>
- </div>
 
  {/* Sentinel + loader */}
  {!loading && (
@@ -524,6 +523,7 @@ export default function ProductList() {
  )}
  </div>
  )}
+ </div>
  </div>
 
  {/* Modals */}
