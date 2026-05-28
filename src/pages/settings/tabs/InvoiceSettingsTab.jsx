@@ -38,7 +38,7 @@ export default function InvoiceSettingsTab() {
  });
  }
  } catch (err) {
- console.error('Error fetching settings:', err);
+ 
  } finally {
  setLoading(false);
  }
@@ -74,7 +74,7 @@ export default function InvoiceSettingsTab() {
  setMessage({ text: 'Invoice settings saved successfully!', type: 'success' });
  setTimeout(() => setMessage({ text: '', type: '' }), 3000);
  } catch (err) {
- console.error('Error saving invoice settings:', err);
+ 
  setMessage({ text: 'Failed to save: ' + err.message, type: 'error' });
  } finally {
  setSaving(false);

@@ -7,7 +7,7 @@ export default function Unauthorized() {
  <div className="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center mb-4">
  <HiOutlineShieldExclamation className="w-8 h-8 text-red-500" />
  </div>
- <h1 className="text-2xl font-bold text-surface-800 mb-2">Access Denied</h1>
+ <h1 className="text-xl font-bold text-surface-800 mb-2">Access Denied</h1>
  <p className="text-surface-400 mb-6 max-w-sm">
  You don't have permission to view this page. Contact the Owner if you believe this is an error.
  </p>

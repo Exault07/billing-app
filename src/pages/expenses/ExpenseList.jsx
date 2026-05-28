@@ -140,7 +140,7 @@ export default function ExpenseList() {
  return (
  <div className="max-w-7xl mx-auto">
  <div className="flex justify-between items-center mb-6">
- <h1 className="text-2xl font-bold text-slate-800">Expenses</h1>
+ <h1 className="text-xl font-bold text-slate-800">Expenses</h1>
  <Link 
  to="/expenses/new" 
  className="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"

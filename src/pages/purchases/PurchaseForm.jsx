@@ -24,6 +24,7 @@ const emptyItem = () => ({
 export default function PurchaseForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const isEditing = Boolean(id);
 
@@ -69,12 +70,12 @@ export default function PurchaseForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [{ data: supData }, { data: prodData }] = await Promise.all([
-          supabase.from('parties').select('*').in('party_type', ['supplier', 'both']).order('name'),
-          supabase.from('products').select('*').order('name'),
+        const [partiesRes, productsRes] = await Promise.all([
+          supabase.from('parties').select('id, name, current_balance, party_type').in('party_type', ['supplier', 'both']).order('name'),
+          supabase.from('products').select('id, name, purchase_price, stock_qty, barcode, item_code, unit').order('name'),
         ]);
-        setSuppliers(supData || []);
-        setProducts(prodData || []);
+        setSuppliers(partiesRes.data || []);
+        setProducts(productsRes.data || []);
       } catch (err) {
         setError('Failed to load data. ' + err.message);
       } finally {
@@ -83,6 +84,36 @@ export default function PurchaseForm() {
     };
     fetchData();
   }, []);
+
+  
+  useEffect(() => {
+    if (location.state?.duplicateFrom) {
+      const fetchDuplicate = async () => {
+        setLoadingData(true);
+        try {
+          const { data, error } = await supabase.from('purchase_invoices').select('*').eq('id', location.state.duplicateFrom).single();
+          if (error) throw error;
+          
+          setSupplierId(data.supplier_id);
+          if (data.items) setItems(data.items);
+          setSubtotal(data.subtotal || 0);
+          setDiscount(data.discount || 0);
+          setAdditionalCharges(data.additional_charges || 0);
+          setGrandTotal(data.total_amount || 0);
+          setNotes(data.notes || '');
+          
+          setDate(new Date().toISOString().split('T')[0]);
+          // keep invoice_no empty so user can fill it
+          setInvoiceNo('');
+        } catch (err) {
+          console.error('Error duplicating purchase bill', err);
+        } finally {
+          setLoadingData(false);
+        }
+      };
+      fetchDuplicate();
+    }
+  }, [location.state?.duplicateFrom]);
 
   useEffect(() => {
     if (!isEditing) return;
@@ -184,30 +215,26 @@ export default function PurchaseForm() {
       };
 
       if (isEditing) {
+        const { data: oldInv } = await supabase.from('purchase_invoices').select('balance_due').eq('id', id).single();
+        const oldBalance = Number(oldInv?.balance_due || 0);
+        const diff = balanceDue - oldBalance;
+        
         const { error: updateErr } = await supabase.from('purchase_invoices').update(payload).eq('id', id);
         if (updateErr) throw updateErr;
+
+        if (diff !== 0 && saveStatus === 'final') {
+          const { data: partyData } = await supabase.from('parties').select('current_balance').eq('id', supplierId).single();
+          if (partyData) {
+            await supabase.from('parties').update({ current_balance: Number(partyData.current_balance || 0) - diff }).eq('id', supplierId);
+          }
+        }
       } else {
         const { error: insertErr } = await supabase.from('purchase_invoices').insert(payload);
         if (insertErr) throw insertErr;
-      }
 
-      // If saving as 'final' and not editing (or we can assume new inventory addition), 
-      // Update product stock quantities
-      if (saveStatus === 'final' && !isEditing) {
-        const validItems = items.filter(i => i.product_id && i.qty);
-        for (const item of validItems) {
-          const { data: prod } = await supabase.from('products').select('stock_qty').eq('id', item.product_id).single();
-          if (prod) {
-            const newStock = Number(prod.stock_qty || 0) + Number(item.qty);
-            await supabase.from('products').update({ stock_qty: newStock }).eq('id', item.product_id);
-          }
-        }
-        
-        // Update Party Balance
-        if (balanceDue > 0) {
+        if (balanceDue > 0 && saveStatus === 'final') {
           const { data: partyData } = await supabase.from('parties').select('current_balance').eq('id', supplierId).single();
           if (partyData) {
-            // Unpaid purchase means we owe the supplier more money (balance decreases negatively)
             await supabase.from('parties').update({ current_balance: Number(partyData.current_balance || 0) - balanceDue }).eq('id', supplierId);
           }
         }
@@ -240,7 +267,7 @@ export default function PurchaseForm() {
             <HiOutlineArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-surface-900">{isEditing ? 'Edit Purchase Invoice' : 'Create Purchase Invoice'}</h1>
+            <h1 className="text-xl font-bold text-surface-900">{isEditing ? 'Edit Purchase Invoice' : 'Create Purchase Invoice'}</h1>
             <p className="text-sm text-surface-500 mt-1">Record purchases from your suppliers to add stock</p>
           </div>
         </div>

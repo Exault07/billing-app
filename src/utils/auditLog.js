@@ -13,7 +13,7 @@ export async function logAudit({ tableName, recordId, changedBy, changeType, old
     });
   } catch (err) {
     // Audit logging should never break the main flow
-    console.warn('Audit log failed:', err.message);
+    
   }
 }
 

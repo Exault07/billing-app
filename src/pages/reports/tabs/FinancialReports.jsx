@@ -131,7 +131,7 @@ export default function FinancialReports({ dateRange }) {
  setData(pts || []);
  }
  } catch (err) {
- console.error(err);
+ 
  alert('Error fetching report data: ' + err.message);
  } finally {
  setLoading(false);

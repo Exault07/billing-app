@@ -249,7 +249,7 @@ export default function ProductList() {
  {/* Header */}
  <div className="flex items-center justify-between mb-6 pt-4">
  <div>
- <h1 className="text-2xl font-bold text-surface-900">Inventory Management</h1>
+ <h1 className="text-xl font-bold text-surface-900">Inventory Management</h1>
  <p className="text-sm text-surface-500 mt-1">
  {loading ? 'Loading...' : `${filteredProducts.length.toLocaleString()} of ${allProducts.length.toLocaleString()} items`}
  </p>
@@ -279,36 +279,37 @@ export default function ProductList() {
  )}
 
  {/* Summary Cards */}
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
- <div className="bg-white rounded-2xl p-5 shadow-sm border border-surface-200 flex flex-col justify-center">
- <div className="flex items-center gap-2 mb-2 text-indigo-600">
- <HiOutlineAdjustments className="w-5 h-5" />
- <span className="text-sm font-bold uppercase tracking-wider">Stock Value</span>
- </div>
- <div className="text-3xl font-black text-surface-900">
- {loading
- ? <div className="h-8 w-32 bg-surface-200 animate-pulse rounded mt-1" />
- : `₹ ${stats.stockValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
- </div>
- </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="bg-white rounded-xl py-3 px-4 shadow-sm border border-[#e0e7ff] bg-[#f8f7ff] flex flex-col justify-center">
+          <div className="flex items-center gap-1.5 mb-1 text-[#7c3aed]">
+            <HiOutlineAdjustments className="w-4 h-4" />
+            <span className="text-xs font-bold uppercase tracking-wider">Stock Value</span>
+          </div>
+          <div className="text-xl font-bold text-surface-900">
+            {loading
+              ? <div className="h-6 w-24 bg-surface-200 animate-pulse rounded mt-1" />
+              : `₹ ${stats.stockValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
+          </div>
+        </div>
 
- <div
- onClick={() => setShowLowStockOnly(!showLowStockOnly)}
- className={`rounded-2xl p-5 shadow-sm border cursor-pointer transition-colors flex flex-col justify-center ${
- showLowStockOnly ? 'bg-orange-50 border-orange-200' : 'bg-white border-surface-200 hover:border-orange-200'
- }`}
- >
- <div className="flex items-center gap-2 mb-2 text-orange-600">
- <span className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse" />
- <span className="text-sm font-bold uppercase tracking-wider">Low Stock Items</span>
- </div>
- <div className="text-3xl font-black text-surface-900">
- {loading
- ? <div className="h-8 w-16 bg-surface-200 animate-pulse rounded mt-1" />
- : stats.lowStockCount}
- </div>
- </div>
- </div>
+        <div
+          onClick={() => setShowLowStockOnly(!showLowStockOnly)}
+          className={`rounded-xl py-3 px-4 shadow-sm border cursor-pointer transition-colors flex flex-col justify-center ${
+            showLowStockOnly ? 'bg-orange-50 border-orange-200' : 'bg-white border-surface-200 hover:border-orange-200'
+          }`}
+        >
+          <div className="flex items-center gap-1.5 mb-1 text-orange-600">
+             <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+             <span className="text-xs font-bold uppercase tracking-wider">Low Stock Items</span>
+          </div>
+          <div className="text-xl font-bold text-surface-900">
+            {loading
+              ? <div className="h-6 w-12 bg-surface-200 animate-pulse rounded mt-1" />
+              : stats.lowStockCount}
+          </div>
+        </div>
+      </div>
 
  {/* Filter Bar */}
  <div className="bg-white p-4 rounded-t-2xl border border-surface-200 border-b-0 flex flex-wrap gap-4 items-center justify-between">

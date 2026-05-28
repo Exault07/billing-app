@@ -106,7 +106,7 @@ export default function InventoryReports({ dateRange }) {
  setData(movements);
  }
  } catch (err) {
- console.error(err);
+ 
  alert("Error fetching report data:" + err.message);
  } finally {
  setLoading(false);

@@ -40,7 +40,7 @@ export default function CategoriesTab() {
 
  setCategories(merged);
  } catch (err) {
- console.error('Error fetching categories:', err);
+ 
  } finally {
  setLoading(false);
  }
@@ -60,7 +60,7 @@ export default function CategoriesTab() {
  fetchCategories();
  }
  } catch (err) {
- console.error('Error adding category:', err);
+ 
  alert('Failed to add category');
  }
  };
@@ -82,7 +82,7 @@ export default function CategoriesTab() {
  setEditingId(null);
  fetchCategories();
  } catch (err) {
- console.error('Error updating category:', err);
+ 
  alert('Failed to update category');
  }
  };
@@ -100,7 +100,7 @@ export default function CategoriesTab() {
  if (error) throw error;
  fetchCategories();
  } catch (err) {
- console.error('Error deleting category:', err);
+ 
  alert('Failed to delete category');
  }
  };

@@ -70,7 +70,7 @@ export default function ProductModal({ item, onClose, onSaved }) {
         });
       } catch (e) {
         // Barcode generation failed (maybe invalid characters)
-        console.warn("Invalid barcode format", e);
+        
       }
     }
   }, [form.barcode, activeTab]);

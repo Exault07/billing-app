@@ -22,7 +22,7 @@ export default function UserManagementTab() {
  if (error) throw error;
  setUsers(data || []);
  } catch (err) {
- console.error('Error fetching users:', err);
+ 
  } finally {
  setLoading(false);
  }
@@ -38,7 +38,7 @@ export default function UserManagementTab() {
  if (error) throw error;
  setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
  } catch (err) {
- console.error('Error updating role:', err);
+ 
  alert('Failed to update role');
  }
  };
@@ -63,7 +63,7 @@ export default function UserManagementTab() {
 
  setUsers(users.map(u => u.id === userId ? { ...u, status: newStatus } : u));
  } catch (err) {
- console.error('Error updating status:', err);
+ 
  alert('Failed to update user status');
  }
  };
@@ -90,7 +90,7 @@ export default function UserManagementTab() {
  setInviteForm({ email: '', role: 'staff', name: '' });
  fetchUsers();
  } catch (err) {
- console.error('Error inviting user:', err);
+ 
  alert('Failed to invite user: ' + err.message);
  } finally {
  setInviting(false);

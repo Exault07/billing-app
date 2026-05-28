@@ -73,7 +73,6 @@ const NAV_ITEMS = [
     type: 'group',
     subItems: [
       { label: 'Stocks', path: '/inventory', roles: ['owner', 'staff'] },
-      { label: 'Godown', path: '/inventory/godown', roles: ['owner', 'staff'] },
     ],
   },
   {
@@ -98,18 +97,6 @@ const NAV_ITEMS = [
     type: 'group',
     subItems: [
       { label: 'Carpenter List', path: '/carpenters', roles: ['owner', 'staff'] },
-      { label: 'Add Job', path: '/carpenters/job/new', roles: ['owner', 'staff'] },
-    ],
-  },
-  {
-    label: 'Staff',
-    icon: HiOutlineUserCircle,
-    roles: ['owner', 'accountant'],
-    type: 'group',
-    subItems: [
-      { label: 'Staff List', path: '/staff', roles: ['owner'] },
-      { label: 'Attendance', path: '/staff/attendance', roles: ['owner'] },
-      { label: 'Payroll', path: '/staff/payroll', roles: ['owner', 'accountant'] },
     ],
   },
   {
@@ -167,7 +154,7 @@ export default function Sidebar({ isOpen, onClose }) {
   }, []);
 
   const handleGroupClick = (item) => {
-    setActiveGroup((prev) => (prev === item.label ? null : item.label));
+    setActiveGroup(item.label);
     if (item.path) navigate(item.path);
   };
 

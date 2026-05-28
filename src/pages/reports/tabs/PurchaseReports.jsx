@@ -89,7 +89,7 @@ export default function PurchaseReports({ dateRange }) {
  setData((payments || []).map(p => ({ ...p, _billNo: purMap[p.purchase_id]?.bill_no || '-', _partyName: purMap[p.purchase_id]?.partyName || '-' })));
  }
  } catch (err) {
- console.error(err);
+ 
  alert('Error fetching report data: ' + err.message);
  } finally {
  setLoading(false);

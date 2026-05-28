@@ -73,7 +73,7 @@ export default function StaffReports({ dateRange }) {
  setData(pr || []);
  }
  } catch (err) {
- console.error(err);
+ 
  // Don't alert â€” show graceful error in UI
  setTableExists(false);
  } finally {

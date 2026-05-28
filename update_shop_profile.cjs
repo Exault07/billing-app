@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+const fs = require('fs');
+
+const componentCode = `import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../../supabaseClient';
 import { HiOutlineSave, HiOutlineCamera, HiOutlinePencil } from 'react-icons/hi';
 
@@ -132,9 +134,9 @@ export default function ShopProfileTab() {
       </div>
       
       {message.text && (
-        <div className={`mb-6 p-4 rounded-lg text-sm font-medium ${
+        <div className={\`mb-6 p-4 rounded-lg text-sm font-medium \${
           message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
-        }`}>
+        }\`}>
           {message.text}
         </div>
       )}
@@ -359,3 +361,7 @@ export default function ShopProfileTab() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/pages/settings/tabs/ShopProfileTab.jsx', componentCode);
+console.log('ShopProfileTab.jsx rewritten!');

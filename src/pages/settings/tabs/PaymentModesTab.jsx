@@ -21,7 +21,7 @@ export default function PaymentModesTab() {
  if (error) throw error;
  setModes(data || []);
  } catch (err) {
- console.error('Error fetching payment modes:', err);
+ 
  } finally {
  setLoading(false);
  }
@@ -41,7 +41,7 @@ export default function PaymentModesTab() {
  fetchModes();
  }
  } catch (err) {
- console.error('Error adding payment mode:', err);
+ 
  alert('Failed to add payment mode');
  }
  };
@@ -59,7 +59,7 @@ export default function PaymentModesTab() {
  setEditingId(null);
  fetchModes();
  } catch (err) {
- console.error('Error updating payment mode:', err);
+ 
  alert('Failed to update payment mode');
  }
  };
@@ -70,7 +70,7 @@ export default function PaymentModesTab() {
  if (error) throw error;
  setModes(modes.map(m => m.id === id ? { ...m, is_active: !currentStatus } : m));
  } catch (err) {
- console.error('Error toggling payment mode:', err);
+ 
  alert('Failed to update status');
  }
  };
@@ -83,7 +83,7 @@ export default function PaymentModesTab() {
  if (error) throw error;
  fetchModes();
  } catch (err) {
- console.error('Error deleting payment mode:', err);
+ 
  alert('Failed to delete payment mode. It might be linked to existing records.');
  }
  };

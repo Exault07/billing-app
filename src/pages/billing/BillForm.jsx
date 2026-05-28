@@ -36,6 +36,7 @@ const emptyItem = () => ({
 export default function BillForm() {
  const { id } = useParams();
  const navigate = useNavigate();
+  const location = useLocation();
  const { user } = useAuth();
  const isEditing = Boolean(id);
 
@@ -181,7 +182,7 @@ export default function BillForm() {
  fetchBill();
  }, [isEditing, id]);
 
- // â”€â”€ Item helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ // ——— Item helpers ———————————————————————————————————————————————————————————————————————
  const addItem = () => setItems(prev => [...prev, emptyItem()]);
 
  const removeItem = (index) =>
@@ -247,18 +248,37 @@ export default function BillForm() {
  balance_due: balanceDue,
  grand_total: grandTotal,
  notes: `${notes}\n\nTerms:\n${terms}`,
- status: balanceDue <= 0 ? 'final' : 'draft',
+ status: balanceDue <= 0 ? 'paid' : 'final',
  created_by: user?.id,
  carpenter_id: carpenterId || null,
  commission_rate: Number(commissionRate) || 0,
  };
 
  if (isEditing) {
+ // Fetch old bill to adjust balance difference
+ const { data: oldBill } = await supabase.from('bills').select('balance_due').eq('id', id).single();
+ const oldBalance = Number(oldBill?.balance_due || 0);
+ const diff = balanceDue - oldBalance;
+ 
  const { error: updateErr } = await supabase.from('bills').update(payload).eq('id', id);
  if (updateErr) throw updateErr;
+
+ if (diff !== 0) {
+ const { data: pData } = await supabase.from('parties').select('current_balance').eq('id', customerId).single();
+ if (pData) {
+ await supabase.from('parties').update({ current_balance: Number(pData.current_balance || 0) + diff }).eq('id', customerId);
+ }
+ }
  } else {
  const { error: insertErr } = await supabase.from('bills').insert(payload);
  if (insertErr) throw insertErr;
+
+ if (balanceDue > 0) {
+ const { data: pData } = await supabase.from('parties').select('current_balance').eq('id', customerId).single();
+ if (pData) {
+ await supabase.from('parties').update({ current_balance: Number(pData.current_balance || 0) + balanceDue }).eq('id', customerId);
+ }
+ }
  }
  navigate('/billing/history');
  } catch (err) {

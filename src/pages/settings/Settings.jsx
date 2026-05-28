@@ -48,7 +48,7 @@ export default function Settings() {
  return (
  <div className="max-w-7xl mx-auto">
  <div className="mb-6">
- <h1 className="text-2xl font-bold text-surface-900">Settings</h1>
+ <h1 className="text-xl font-bold text-surface-900">Settings</h1>
  <p className="text-surface-500">Manage your application configuration and data.</p>
  </div>
 

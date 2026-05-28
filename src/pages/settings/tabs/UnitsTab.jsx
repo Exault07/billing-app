@@ -38,7 +38,7 @@ export default function UnitsTab() {
 
  setUnits(merged);
  } catch (err) {
- console.error('Error fetching units:', err);
+ 
  } finally {
  setLoading(false);
  }
@@ -58,7 +58,7 @@ export default function UnitsTab() {
  fetchUnits();
  }
  } catch (err) {
- console.error('Error adding unit:', err);
+ 
  alert('Failed to add unit');
  }
  };
@@ -78,7 +78,7 @@ export default function UnitsTab() {
  setEditingId(null);
  fetchUnits();
  } catch (err) {
- console.error('Error updating unit:', err);
+ 
  alert('Failed to update unit');
  }
  };
@@ -96,7 +96,7 @@ export default function UnitsTab() {
  if (error) throw error;
  fetchUnits();
  } catch (err) {
- console.error('Error deleting unit:', err);
+ 
  alert('Failed to delete unit');
  }
  };

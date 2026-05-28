@@ -29,7 +29,7 @@ export default function DataManagementTab() {
  // Save file
  XLSX.writeFile(workbook, `${fileName}_${new Date().toISOString().split('T')[0]}.xlsx`);
  } catch (err) {
- console.error(`Error exporting ${tableName}:`, err);
+ 
  alert(`Failed to export ${tableName}`);
  } finally {
  setExporting('');
@@ -39,7 +39,7 @@ export default function DataManagementTab() {
  // â”€â”€ IMPORT LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  const downloadTemplate = () => {
  const templateData = [
- { name:"Sample Product", category:"Hardware", unit:"pcs", mrp: 100, selling_price: 90, stock_qty: 50, low_stock_alert_qty: 5, barcode:"123456789", godown_location:"A1" }
+ { name:"", category:"Hardware", unit:"pcs", mrp: 100, selling_price: 90, stock_qty: 50, low_stock_alert_qty: 5, barcode:"123456789", godown_location:"A1" }
  ];
  const worksheet = XLSX.utils.json_to_sheet(templateData);
  const workbook = XLSX.utils.book_new();
@@ -92,7 +92,7 @@ export default function DataManagementTab() {
  alert(`Successfully imported ${validProducts.length} products!`);
  e.target.value = null; // reset file input
  } catch (err) {
- console.error('Error importing file:', err);
+ 
  alert('Failed to import products. Check the file format matches the template.');
  } finally {
  setImporting(false);
@@ -123,7 +123,7 @@ export default function DataManagementTab() {
  setClearConfirmText('');
  }
  } catch (err) {
- console.error('Error clearing data:', err);
+ 
  alert('Failed to clear data: ' + err.message);
  } finally {
  setClearing(false);

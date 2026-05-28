@@ -55,7 +55,7 @@ export default function Login() {
  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-lg shadow-primary-500/30 mb-4">
  <HiOutlineDocumentText className="w-8 h-8 text-white" />
  </div>
- <h1 className="text-2xl font-bold text-white">BillDesk</h1>
+ <h1 className="text-xl font-bold text-white">BillDesk</h1>
  <p className="text-surface-400 text-sm mt-1">{shopName} Billing</p>
  </div>
 

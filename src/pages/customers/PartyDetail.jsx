@@ -197,7 +197,7 @@ export default function PartyDetail() {
  <button onClick={() => navigate('/parties')} className="p-2 hover:bg-surface-100 rounded-full text-surface-500 transition-colors">
  <HiOutlineArrowLeft className="w-5 h-5" />
  </button>
- <h1 className="text-2xl font-bold text-surface-900">Party Details</h1>
+ <h1 className="text-xl font-bold text-surface-900">Party Details</h1>
  </div>
  <div className="flex gap-3">
  <button onClick={() => setShowPaymentModal(true)} className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 flex items-center gap-2">

@@ -15,21 +15,27 @@ import {
  HiOutlineExclamationCircle,
  HiOutlineXCircle,
  HiOutlineDotsVertical,
+ HiOutlinePencilAlt,
+ HiOutlineDocumentDuplicate,
+ HiOutlineReceiptRefund,
+ HiOutlineBan,
+ HiOutlineTrash
 } from 'react-icons/hi';
+import ActionMenu from '../../components/ActionMenu';
 
-// â”€â”€â”€ Helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helper ─────────────────────────────────────────────────────────────────
 async function generateBillNo() {
- const { count } = await supabase.from('bills').select('id', { count: 'exact', head: true });
- return String((count || 0) + 1);
+  const { count } = await supabase.from('bills').select('id', { count: 'exact', head: true });
+  return String((count || 0) + 1);
 }
 
-// â”€â”€â”€ Add Items Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Add Items Modal ────────────────────────────────────────────────────────
 function AddItemsModal({ products, onAdd, onClose }) {
- const [search, setSearch] = useState('');
- const [selectedQtys, setSelectedQtys] = useState({});
- const [addedIds, setAddedIds] = useState({});
+  const [search, setSearch] = useState('');
+  const [selectedQtys, setSelectedQtys] = useState({});
+  const [addedIds, setAddedIds] = useState({});
 
- const filtered = products.filter(p =>
+  const filtered = products.filter(p =>
  p.name.toLowerCase().includes(search.toLowerCase()) ||
  (p.barcode || '').toLowerCase().includes(search.toLowerCase()) ||
  (p.category || '').toLowerCase().includes(search.toLowerCase())
@@ -260,8 +266,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
  return updated;
  });
  }, []);
-
- const handleSave = async () => {
+const handleSave = async () => {
  setError('');
  if (!customerId) return setError('Please select a Party.');
  if (items.length === 0) return setError('Please add at least one item.');
@@ -309,7 +314,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
  <HiOutlineArrowLeft className="w-5 h-5" />
  </button>
  <div>
- <h1 className="text-2xl font-bold text-surface-900">Create Sales Invoice</h1>
+ <h1 className="text-xl font-bold text-surface-900">Create Sales Invoice</h1>
  <p className="text-sm text-surface-500 mt-1">Fill in the details below to generate an invoice</p>
  </div>
  </div>
@@ -712,10 +717,63 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters }
  );
 }
 
-// â”€â”€â”€ Main: Sales Invoices List Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ——————————————————————————————————————————————————
 export default function SalesInvoices() {
- const navigate = useNavigate();
- const [bills, setBills] = useState([]);
+  const navigate = useNavigate();
+
+  const handleCancelBill = async (bill) => {
+    if (bill.status === 'cancelled') return alert('Already cancelled.');
+    if (!window.confirm('Are you sure you want to cancel Invoice ' + bill.bill_no + '?')) return;
+    try {
+      const unpaid = Number(bill.balance_due);
+      if (unpaid > 0 && bill.customer_id) {
+        const { data: party } = await supabase.from('parties').select('current_balance').eq('id', bill.customer_id).single();
+        if (party) {
+          await supabase.from('parties').update({ current_balance: Number(party.current_balance) - unpaid }).eq('id', bill.customer_id);
+        }
+      }
+      const { error } = await supabase.from('bills').update({ status: 'cancelled' }).eq('id', bill.id);
+      if (error) throw error;
+      alert('Invoice cancelled successfully.');
+      fetchAll();
+    } catch (err) {
+      alert('Error cancelling: ' + err.message);
+    }
+  };
+
+  const handleDeleteBill = async (bill) => {
+    if (!window.confirm('Are you sure you want to delete Invoice ' + bill.bill_no + '? This cannot be undone.')) return;
+    try {
+      if (bill.status !== 'cancelled') {
+        const unpaid = Number(bill.balance_due);
+        if (unpaid > 0 && bill.customer_id) {
+          const { data: party } = await supabase.from('parties').select('current_balance').eq('id', bill.customer_id).single();
+          if (party) {
+            await supabase.from('parties').update({ current_balance: Number(party.current_balance) - unpaid }).eq('id', bill.customer_id);
+          }
+        }
+        await supabase.from('bills').update({ status: 'cancelled' }).eq('id', bill.id);
+      }
+      await supabase.from('bill_payments').delete().eq('bill_id', bill.id);
+      const { error } = await supabase.from('bills').delete().eq('id', bill.id);
+      if (error) throw error;
+      alert('Invoice deleted successfully.');
+      fetchAll();
+    } catch (err) {
+      alert('Error deleting: ' + err.message);
+    }
+  };
+
+  const buildMenuOptions = (bill) => [
+    { label: 'Edit', icon: <HiOutlinePencilAlt />, onClick: () => navigate('/billing/' + bill.id + '/edit') },
+    { label: 'Duplicate', icon: <HiOutlineDocumentDuplicate />, onClick: () => navigate('/billing/new', { state: { duplicateFrom: bill.id } }) },
+    { label: 'Issue Credit Note', icon: <HiOutlineReceiptRefund />, onClick: () => navigate('/sales/returns', { state: { selectedBillId: bill.id } }) },
+    { divider: true },
+    { label: 'Cancel Invoice', icon: <HiOutlineBan />, onClick: () => handleCancelBill(bill), danger: true },
+    { label: 'Delete', icon: <HiOutlineTrash />, onClick: () => handleDeleteBill(bill), danger: true }
+  ];
+
+  const [bills, setBills] = useState([]);
  const [customers, setCustomers] = useState([]);
  const [products, setProducts] = useState([]);
  const [carpenters, setCarpenters] = useState([]);
@@ -984,11 +1042,7 @@ export default function SalesInvoices() {
  {isCancelled ? 'Cancelled' : isPaid ? 'Paid' : (Number(b.advance_paid) > 0 && Number(b.balance_due) > 0) ? 'Partial' : 'Unpaid'}
  </span>
  </td>
- <td className="py-3 px-4 text-center" onClick={e => e.stopPropagation()}>
- <button className="text-surface-400 hover:text-surface-800">
- <HiOutlineDotsVertical className="w-5 h-5" />
- </button>
- </td>
+ <td className="py-3 px-4 text-center"><ActionMenu options={buildMenuOptions(b)} /></td>
  </tr>
  );
  })

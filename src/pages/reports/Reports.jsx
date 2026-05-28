@@ -64,7 +64,7 @@ export default function Reports() {
  {/* Header & Global Filters */}
  <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 pt-4 gap-4">
  <div>
- <h1 className="text-2xl font-bold text-surface-900">Reports Center</h1>
+ <h1 className="text-xl font-bold text-surface-900">Reports Center</h1>
  <p className="text-sm text-surface-500 mt-1">Comprehensive analytics and exports for your business</p>
  </div>
 

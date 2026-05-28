@@ -91,7 +91,7 @@ const PurchaseDetail = () => {
  return (
  <div className="max-w-5xl mx-auto">
  <div className="flex justify-between items-center mb-6">
- <h1 className="text-2xl font-bold text-gray-800">Purchase Invoice #{invoice.bill_no}</h1>
+ <h1 className="text-xl font-bold text-gray-800">Purchase Invoice #{invoice.bill_no}</h1>
  <div className="flex gap-3">
  <Link to={`/purchases/${id}/edit`} className="bg-gray-100 text-gray-700 px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-200">
  <HiOutlinePencilAlt /> Edit

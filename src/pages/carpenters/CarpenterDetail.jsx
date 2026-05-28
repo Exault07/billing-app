@@ -118,7 +118,7 @@ export default function CarpenterDetail() {
  >
  <HiOutlineArrowLeft className="w-5 h-5" />
  </Link>
- <h1 className="text-2xl font-bold text-surface-900">Carpenter Details</h1>
+ <h1 className="text-xl font-bold text-surface-900">Carpenter Details</h1>
  </div>
 
  {/* Profile Card */}

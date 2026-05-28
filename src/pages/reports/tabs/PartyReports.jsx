@@ -113,7 +113,7 @@ export default function PartyReports({ dateRange }) {
  setData(Object.values(partyMap).sort((a, b) => b.total - a.total));
  }
  } catch (err) {
- console.error(err);
+ 
  alert('Error fetching report data: ' + err.message);
  } finally {
  setLoading(false);

@@ -142,7 +142,7 @@ export default function ExpenseForm() {
  <Link to="/expenses" className="text-slate-400 hover:text-rose-600 transition-colors">
  <HiArrowLeft className="w-6 h-6" />
  </Link>
- <h1 className="text-2xl font-bold text-slate-800">
+ <h1 className="text-xl font-bold text-slate-800">
  {id ? 'Edit Expense' : 'Add Expense'}
  </h1>
  </div>

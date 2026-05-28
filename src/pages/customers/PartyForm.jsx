@@ -190,7 +190,7 @@ export default function PartyForm() {
  <HiOutlineArrowLeft className="w-5 h-5" />
  </button>
  <div>
- <h1 className="text-2xl font-bold text-surface-900">
+ <h1 className="text-xl font-bold text-surface-900">
  {isEditing ? 'Edit Party' : 'Create New Party'}
  </h1>
  <p className="text-sm text-surface-500 mt-1">Manage party details, addresses, and credit settings.</p>

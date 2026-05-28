@@ -73,7 +73,7 @@ export default function CarpenterReports({ dateRange }) {
  setData(Object.values(aggMap).map(d => ({ ...d, pending: d.totalCommission - d.totalPaid })).sort((a, b) => b.totalSales - a.totalSales));
  }
  } catch (err) {
- console.error(err);
+ 
  alert('Error fetching report data: ' + err.message);
  } finally {
  setLoading(false);

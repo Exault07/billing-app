@@ -100,7 +100,7 @@ export default function ProformaInvoice() {
  </div>
  )}
  <div className="flex items-center justify-between mb-6">
- <h1 className="text-2xl font-bold text-surface-900 flex items-center gap-2">
+ <h1 className="text-xl font-bold text-surface-900 flex items-center gap-2">
  <HiOutlineDocumentText className="w-6 h-6 text-[#4f46e5]" />
  Proforma Invoices
  </h1>

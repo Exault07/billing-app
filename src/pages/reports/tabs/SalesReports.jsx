@@ -99,7 +99,7 @@ export default function SalesReports({ dateRange }) {
  setData((returns || []).map(r => ({ ...r, _billNo: bMap[r.original_bill_id] || '-', _partyName: pMap[r.customer_id] || '-' })));
  }
  } catch (err) {
- console.error(err);
+ 
  alert('Error fetching report data: ' + err.message);
  } finally {
  setLoading(false);

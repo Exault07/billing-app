@@ -196,8 +196,7 @@ export default function Parties() {
  {/* Header */}
  <div className="flex items-center justify-between mb-6">
  <div>
- <h1 className="text-2xl font-bold text-surface-900">Parties</h1>
- <p className="text-surface-500 text-sm mt-1">Manage your customers, suppliers, and ledgers</p>
+ <h1 className="text-xl font-bold text-surface-900">Parties</h1>
  </div>
  <Link 
  to="/parties/new"

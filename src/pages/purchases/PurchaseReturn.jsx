@@ -1,10 +1,11 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { HiOutlineSave as Save, HiOutlineExclamationCircle as AlertCircle, HiOutlineArrowLeft as ArrowLeft } from 'react-icons/hi';
 
 export default function PurchaseReturn() {
  const navigate = useNavigate();
+  const location = useLocation();
  const [loading, setLoading] = useState(true);
  const [invoices, setInvoices] = useState([]);
  const [selectedInvoiceId, setSelectedInvoiceId] = useState('');
@@ -188,7 +189,7 @@ export default function PurchaseReturn() {
  <ArrowLeft className="w-5 h-5" />
  </button>
  <div>
- <h1 className="text-2xl font-bold text-gray-800">Purchase Return (Debit Note)</h1>
+ <h1 className="text-xl font-bold text-gray-800">Purchase Return (Debit Note)</h1>
  <p className="text-sm text-gray-500 mt-1">Process a return to a supplier for a previous invoice</p>
  </div>
  </div>

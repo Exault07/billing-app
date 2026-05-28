@@ -90,7 +90,60 @@ const PurchaseList = ({ tab = 'invoices' }) => {
  }).format(amount || 0);
  };
 
- const getStatusPill = (inv) => {
+ 
+  const handleCancelBill = async (bill) => {
+    if (bill.status === 'cancelled') return alert('Already cancelled.');
+    if (!window.confirm('Are you sure you want to cancel Purchase Invoice ' + bill.bill_no + '?')) return;
+    try {
+      const unpaid = Number(bill.balance_due);
+      if (unpaid > 0 && bill.supplier_id) {
+        const { data: party } = await supabase.from('parties').select('current_balance').eq('id', bill.supplier_id).single();
+        if (party) {
+          await supabase.from('parties').update({ current_balance: Number(party.current_balance) - unpaid }).eq('id', bill.supplier_id);
+        }
+      }
+      const { error } = await supabase.from('purchase_invoices').update({ status: 'cancelled' }).eq('id', bill.id);
+      if (error) throw error;
+      alert('Invoice cancelled successfully.');
+      fetchData();
+    } catch (err) {
+      alert('Error cancelling: ' + err.message);
+    }
+  };
+
+  const handleDeleteBill = async (bill) => {
+    if (!window.confirm('Are you sure you want to delete Invoice ' + bill.bill_no + '? This cannot be undone.')) return;
+    try {
+      if (bill.status !== 'cancelled') {
+        const unpaid = Number(bill.balance_due);
+        if (unpaid > 0 && bill.supplier_id) {
+          const { data: party } = await supabase.from('parties').select('current_balance').eq('id', bill.supplier_id).single();
+          if (party) {
+            await supabase.from('parties').update({ current_balance: Number(party.current_balance) - unpaid }).eq('id', bill.supplier_id);
+          }
+        }
+        await supabase.from('purchase_invoices').update({ status: 'cancelled' }).eq('id', bill.id);
+      }
+      await supabase.from('purchase_payments').delete().eq('invoice_id', bill.id);
+      const { error } = await supabase.from('purchase_invoices').delete().eq('id', bill.id);
+      if (error) throw error;
+      alert('Invoice deleted successfully.');
+      fetchData();
+    } catch (err) {
+      alert('Error deleting: ' + err.message);
+    }
+  };
+
+  const buildMenuOptions = (inv) => [
+    { label: 'Edit', icon: <HiOutlinePencilAlt />, onClick: () => navigate('/purchases/' + inv.id + '/edit') },
+    { label: 'Duplicate', icon: <HiOutlineDocumentDuplicate />, onClick: () => navigate('/purchases/new', { state: { duplicateFrom: inv.id } }) },
+    { label: 'Issue Debit Note', icon: <HiOutlineReceiptRefund />, onClick: () => navigate('/purchases/returns/new', { state: { selectedInvoiceId: inv.id } }) },
+    { divider: true },
+    { label: 'Cancel Invoice', icon: <HiOutlineBan />, onClick: () => handleCancelBill(inv), danger: true },
+    { label: 'Delete', icon: <HiOutlineTrash />, onClick: () => handleDeleteBill(inv), danger: true }
+  ];
+
+  const getStatusPill = (inv) => {
  const balance = Number(inv.balance_due || 0);
  const total = Number(inv.total_amount || 0);
  

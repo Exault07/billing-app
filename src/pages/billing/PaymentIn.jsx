@@ -101,7 +101,7 @@ export default function PaymentIn() {
  
  setPayments(Object.values(grouped));
  } catch (err) {
- console.error(err);
+ 
  } finally {
  setLoading(false);
  }
@@ -284,7 +284,7 @@ export default function PaymentIn() {
  <button onClick={() => setView('list')} className="p-2 hover:bg-surface-100 rounded-full transition-colors text-surface-500">
  <HiOutlineArrowLeft className="w-6 h-6" />
  </button>
- <h1 className="text-2xl font-bold text-surface-900">Create Payment In</h1>
+ <h1 className="text-xl font-bold text-surface-900">Create Payment In</h1>
  </div>
  
  <div className="bg-white rounded-xl shadow-sm border border-surface-200 overflow-hidden">

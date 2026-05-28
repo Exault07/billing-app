@@ -561,7 +561,7 @@ export default function BillView() {
  <HiOutlineDocumentText className="w-6 h-6 text-white" />
  </div>
  <div>
- <h1 className="text-2xl font-black text-surface-900">{shopSettings?.shop_name || 'BillDesk'}</h1>
+ <h1 className="text-xl font-black text-surface-900">{shopSettings?.shop_name || 'BillDesk'}</h1>
  <p className="text-xs text-surface-500">
  {shopSettings?.address_line1 || 'Furniture & Hardware Billing'}
  {shopSettings?.address_line2 ? `, ${shopSettings.address_line2}` : ''}

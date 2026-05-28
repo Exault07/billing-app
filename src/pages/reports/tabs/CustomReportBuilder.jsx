@@ -64,7 +64,7 @@ export default function CustomReportBuilder({ dateRange }) {
  }
  }
  } catch (err) {
- console.error(err);
+ 
  alert("Error generating report:" + err.message);
  } finally {
  setLoading(false);
