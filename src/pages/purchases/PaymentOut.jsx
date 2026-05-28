@@ -414,36 +414,34 @@ export default function PaymentOut() {
 
  return (
  <div className="animate-fade-in w-full">
- {/* Header */}
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
- <div>
- <h1 className="text-2xl font-bold text-surface-900 flex items-center gap-2">
- <HiOutlineCash className="w-7 h-7 text-primary-600" />
- Payment Out
- </h1>
- <p className="text-sm text-surface-500 mt-1">Manage and record outgoing payments to suppliers</p>
- </div>
- <button onClick={() => setView('create')} className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-colors">
- <HiOutlinePlus className="w-5 h-5"/>
- Create Payment Out
- </button>
- </div>
- 
- {/* Summary Cards */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
- <div className="bg-white rounded-xl shadow-sm border border-surface-200 p-6">
- <p className="text-sm font-medium text-surface-500 mb-2 uppercase tracking-wider">Total Received Today</p>
- <h3 className="text-3xl font-bold text-surface-900">₹ {fmt(summary.today)}</h3>
- </div>
- <div className="bg-white rounded-xl shadow-sm border border-surface-200 p-6">
- <p className="text-sm font-medium text-surface-500 mb-2 uppercase tracking-wider">Total Received This Month</p>
- <h3 className="text-3xl font-bold text-surface-900">₹ {fmt(summary.month)}</h3>
- </div>
- <div className="bg-white rounded-xl shadow-sm border border-surface-200 p-6">
- <p className="text-sm font-medium text-surface-500 mb-2 uppercase tracking-wider">Total Pending</p>
- <h3 className="text-3xl font-bold text-orange-600">₹ {fmt(summary.pending)}</h3>
- </div>
- </div>
+   {/* Header */}
+   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 pt-2">
+   <div>
+   <h1 className="text-lg font-bold text-surface-900 flex items-center gap-2">
+   <HiOutlineCash className="w-5 h-5 text-primary-600" />
+   Payment Out
+   </h1>
+   </div>
+   <button onClick={() => setView('create')} className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-colors text-sm">
+   <HiOutlinePlus className="w-4 h-4"/>
+   Create Payment Out
+   </button>
+   </div>
+   {/* Summary Cards */}
+   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+   <div className="bg-white rounded-xl shadow-sm border border-surface-200 py-3 px-4">
+   <p className="text-xs font-bold text-surface-500 mb-1 uppercase tracking-wider">Total Paid Today</p>
+   <h3 className="text-xl font-bold text-surface-900">₹ {fmt(summary.today)}</h3>
+   </div>
+   <div className="bg-white rounded-xl shadow-sm border border-surface-200 py-3 px-4">
+   <p className="text-xs font-bold text-surface-500 mb-1 uppercase tracking-wider">Total Paid This Month</p>
+   <h3 className="text-xl font-bold text-surface-900">₹ {fmt(summary.month)}</h3>
+   </div>
+   <div className="bg-white rounded-xl shadow-sm border border-surface-200 py-3 px-4">
+   <p className="text-xs font-bold text-surface-500 mb-1 uppercase tracking-wider">Total Pending</p>
+   <h3 className="text-xl font-bold text-orange-600">₹ {fmt(summary.pending)}</h3>
+   </div>
+   </div>
  
  {/* Table Area */}
  <div className="bg-white rounded-xl shadow-sm border border-surface-200 overflow-hidden">
