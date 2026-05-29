@@ -79,7 +79,7 @@ export default function PurchaseForm() {
     const fetchData = async () => {
       try {
         const [partiesRes, productsRes] = await Promise.all([
-          supabase.from('parties').select('id, name, current_balance, party_type').in('party_type', ['supplier', 'both']).order('name'),
+          supabase.from('parties').select('id, name, current_balance, party_type').order('name'),
           supabase.from('products').select('*, units(name)').order('name'),
         ]);
         setSuppliers(partiesRes.data || []);

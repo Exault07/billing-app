@@ -49,8 +49,8 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
   const addedCount = Object.keys(addedIds).length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl mx-4 flex flex-col" style={{ maxHeight: '90vh' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl mx-4 flex flex-col" style={{ maxHeight: '90vh' }} onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-surface-200">
           <h2 className="text-[17px] font-bold text-surface-800">Add Items to Bill</h2>

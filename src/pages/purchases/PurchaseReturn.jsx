@@ -489,7 +489,7 @@ export default function PurchaseReturn() {
     try {
       const [retRes, custRes, purchase_invoicesRes, prodRes] = await Promise.all([
         supabase.from('purchase_returns').select('*, parties(name)').order('created_at', { ascending: false }),
-        supabase.from('parties').select('*').in('party_type', ['supplier', 'both']).order('name'),
+        supabase.from('parties').select('*').order('name'),
         supabase.from('purchase_invoices').select('*, suppliers:parties(name)').order('date', { ascending: false }),
         supabase.from('products').select('*').order('name')
       ]);
