@@ -21,6 +21,7 @@ const emptyItem = () => ({
   qty: 1,
   price: 0, 
   discount: 0,
+  discount_type: '₹',
   tax: 0,
   total: 0,
 });
@@ -53,6 +54,11 @@ export default function PurchaseForm() {
   const [showColumnsModal, setShowColumnsModal] = useState(false);
   const [colVisibility, setColVisibility] = useState({ qty: true, price: true, image: false, code: false });
   const [paymentTerms, setPaymentTerms] = useState('30');
+  const [terms, setTerms] = useState('1. Subject to [Location] jurisdiction.');
+
+  const [showNotes, setShowNotes] = useState(false);
+  const [showTerms, setShowTerms] = useState(true);
+  const [showOverallDiscount, setShowOverallDiscount] = useState(false);
 
 
   const [suppliers, setSuppliers] = useState([]);
@@ -190,7 +196,7 @@ export default function PurchaseForm() {
         name: product.name,
         hsn: product.hsn || '',
         unit: product.unit || 'PCS',
-        qty: q, price: p, discount: 0, tax: 0,
+        qty: q, price: p, discount: 0, discount_type: '₹', tax: 0,
         total: q * p,
       }];
     });
@@ -203,8 +209,15 @@ export default function PurchaseForm() {
       
       const q = Number(updated[idx].qty || 0);
       const p = Number(updated[idx].price || 0);
-      const d = Number(updated[idx].discount || 0);
-      const base = (q * p) - d;
+      
+      let dAmt = 0;
+      if (updated[idx].discount_type === '%') {
+        dAmt = (q * p) * (Number(updated[idx].discount || 0) / 100);
+      } else {
+        dAmt = Number(updated[idx].discount || 0);
+      }
+      
+      const base = (q * p) - dAmt;
       const taxAmt = base * (Number(updated[idx].tax || 0) / 100);
       updated[idx].total = base + taxAmt;
       
@@ -251,7 +264,7 @@ export default function PurchaseForm() {
         balance_due: balanceDue,
         grand_total: grandTotal,
         payment_mode: isFullyPaid ? 'Cash' : 'Mixed',
-        notes,
+        notes: `${showNotes ? notes : ''}\n\nTerms:\n${showTerms ? terms : ''}`,
         status: saveStatus,
         created_by: user?.id,
       };
@@ -337,10 +350,10 @@ export default function PurchaseForm() {
             {/* Bill To */}
             <div className="w-full lg:w-[280px] flex-shrink-0">
               <PartySelect
-                label="SUPPLIER"
-                partyType="supplier"
+                label="SUPPLIER / CUSTOMER"
+                partyType="both"
                 parties={suppliers}
-                selectedParty={selectedSupplier}
+                selectedParty={suppliers.find(c => c.id === supplierId)}
                 onSelect={(p) => setSupplierId(p.id)}
                 onClear={() => setSupplierId('')}
                 onPartyCreated={() => fetchParties()}
@@ -431,7 +444,17 @@ export default function PurchaseForm() {
                       </td>
                     )}
                     <td className="py-2 px-3">
-                      <input type="number" min="0" value={item.discount} onChange={e => updateItem(idx, 'discount', e.target.value)} className="w-full bg-transparent border-b border-transparent hover:border-surface-200 focus:border-blue-400 outline-none text-right" />
+                      <div className="flex items-center justify-end bg-white border border-surface-200 rounded px-2">
+                        <input type="number" min="0" value={item.discount || ''} onChange={e => updateItem(idx, 'discount', e.target.value)} className="w-16 bg-transparent border-none outline-none text-right py-1.5" />
+                        <select
+                          value={item.discount_type || '₹'}
+                          onChange={e => updateItem(idx, 'discount_type', e.target.value)}
+                          className="bg-transparent text-surface-500 outline-none ml-1 text-[11px] font-bold cursor-pointer"
+                        >
+                          <option value="₹">₹</option>
+                          <option value="%">%</option>
+                        </select>
+                      </div>
                     </td>
                     <td className="py-2 px-3">
                       <input type="number" min="0" value={item.tax} onChange={e => updateItem(idx, 'tax', e.target.value)} className="w-full bg-transparent border-b border-transparent hover:border-surface-200 focus:border-blue-400 outline-none text-right" />
@@ -460,15 +483,36 @@ export default function PurchaseForm() {
           {/* Bottom: Notes + Calculations */}
           <div className="flex flex-col lg:flex-row gap-8 mb-8">
             {/* Notes & Terms */}
-            <div className="flex-1 space-y-6">
-              <div>
-                <label className="block text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-2">Notes</label>
-                <textarea
-                  value={notes} onChange={e => setNotes(e.target.value)}
-                  className="w-full bg-[#f9fafb] border border-surface-200 rounded-lg p-3 text-[13px] outline-none focus:border-[#4f46e5] resize-none h-24"
-                  placeholder="Add any notes here..."
-                />
-              </div>
+            <div className="flex-1 space-y-4">
+              {!showNotes ? (
+                <div onClick={() => setShowNotes(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline inline-block">+ Add Notes</div>
+              ) : (
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[12px] font-bold text-surface-700">Notes</label>
+                    <HiOutlineX className="w-3 h-3 text-surface-400 cursor-pointer" onClick={() => setShowNotes(false)} />
+                  </div>
+                  <textarea
+                    value={notes} onChange={e => setNotes(e.target.value)}
+                    className="w-full bg-[#f9fafb] border border-surface-200 rounded-lg p-3 text-[13px] outline-none focus:border-[#4f46e5] resize-none h-20"
+                  />
+                </div>
+              )}
+              
+              {!showTerms ? (
+                <div onClick={() => setShowTerms(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline inline-block">+ Add Terms</div>
+              ) : (
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[12px] font-bold text-surface-700">Terms and Conditions</label>
+                    <HiOutlineX className="w-3 h-3 text-surface-400 cursor-pointer" onClick={() => setShowTerms(false)} />
+                  </div>
+                  <textarea
+                    value={terms} onChange={e => setTerms(e.target.value)}
+                    className="w-full bg-[#f9fafb] border border-surface-200 rounded-lg p-3 text-[13px] outline-none focus:border-[#4f46e5] resize-none h-20"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Calculations */}
@@ -478,11 +522,17 @@ export default function PurchaseForm() {
                   <span>Sub Total</span>
                   <span>₹ {subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                 </div>
-                <div className="flex justify-between items-center text-[13px] text-surface-600 font-medium">
-                  <span>Discount</span>
-                  <input type="number" value={overallDiscount} onChange={e => setOverallDiscount(e.target.value)}
-                    className="w-24 text-right px-2 py-1 bg-white border border-surface-200 rounded outline-none" />
-                </div>
+                {!showOverallDiscount ? (
+                  <div onClick={() => setShowOverallDiscount(true)} className="flex justify-between items-center text-blue-600 font-medium cursor-pointer hover:underline">
+                    <span>+ Add Discount</span>
+                  </div>
+                ) : (
+                  <div className="flex justify-between items-center text-blue-600 font-medium relative group">
+                    <span className="flex items-center gap-1">Discount <HiOutlineX className="w-3 h-3 text-surface-400 cursor-pointer hidden group-hover:block" onClick={() => { setShowOverallDiscount(false); setOverallDiscount(0); }} /></span>
+                    <input type="number" value={overallDiscount} onChange={e => setOverallDiscount(e.target.value)}
+                      className="w-24 text-right px-2 py-1 bg-white border border-surface-200 rounded outline-none" />
+                  </div>
+                )}
                 <div className="flex justify-between items-center text-[13px] text-surface-600 font-medium">
                   <span>Transport Charges</span>
                   <input type="number" value={transportCharges} onChange={e => setTransportCharges(e.target.value)}
@@ -538,6 +588,10 @@ export default function PurchaseForm() {
           products={products} 
           onClose={() => setShowItemModal(false)} 
           onAdd={handleAddItemFromModal} 
+          onProductCreated={async () => {
+            const productsRes = await supabase.from('products').select('*, units(name)').order('name');
+            setProducts((productsRes.data || []).map(p => ({ ...p, unit: p.units?.name || '' })));
+          }}
         />
       )}
       {showColumnsModal && (

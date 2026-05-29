@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
-import { HiOutlineSave, HiOutlinePlus, HiOutlineTrash, HiOutlineSearch } from 'react-icons/hi';
+import { HiOutlineSave, HiOutlinePlus, HiOutlineTrash, HiOutlineSearch, HiOutlineDocumentText } from 'react-icons/hi';
+import PartySelect from '../../components/shared/PartySelect';
+import AddItemsModal from '../../components/shared/AddItemsModal';
 
 const emptyItem = () => ({ product_id: '', name: '', unit: '', qty: 1 });
 
@@ -21,11 +23,14 @@ export default function DeliveryChallan() {
  const [productSearch, setProductSearch] = useState({});
  const [saving, setSaving] = useState(false);
  const [error, setError] = useState('');
+ 
+ const [showItemModal, setShowItemModal] = useState(false);
+ const [showNotes, setShowNotes] = useState(false);
 
  useEffect(() => {
  const fetchData = async () => {
  const [{ data: c }, { data: p }] = await Promise.all([
- supabase.from('parties').select('id, name, mobile').eq('party_type', 'customer').order('name'),
+ supabase.from('parties').select('id, name, mobile').order('name'),
  supabase.from('products').select('id, name, unit').order('name'),
  ]);
  setCustomers(c || []);
@@ -55,14 +60,26 @@ export default function DeliveryChallan() {
  });
  };
 
- const selectProduct = (index, product) => {
- setItems(prev => {
- const updated = [...prev];
- updated[index] = { ...updated[index], product_id: product.id, name: product.name, unit: product.unit || '' };
- return updated;
- });
- setProductSearch(prev => ({ ...prev, [index]: '' }));
- };
+  const handleAddItemFromModal = (product, qty) => {
+    const q = Number(qty || 1);
+    setItems(prev => {
+      const existing = prev.findIndex(i => i.product_id === product.id);
+      if (existing >= 0) {
+        const updated = [...prev];
+        updated[existing] = {
+          ...updated[existing],
+          qty: Number(updated[existing].qty) + q
+        };
+        return updated;
+      }
+      return [...prev, {
+        product_id: product.id,
+        name: product.name,
+        unit: product.unit || 'PCS',
+        qty: q
+      }];
+    });
+  };
 
  const handleSave = async () => {
  setError('');
@@ -114,64 +131,83 @@ export default function DeliveryChallan() {
  <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
  </div>
  <div>
- <label className="block text-xs font-medium text-surface-600 mb-1">Customer *</label>
- <select value={customerId} onChange={e => setCustomerId(e.target.value)} className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
- <option value="">-- Select Customer --</option>
- {customers.map(c => <option key={c.id} value={c.id}>{c.name} {c.mobile ? `(${c.mobile})` : ''}</option>)}
- </select>
+          <PartySelect
+            label="Customer / Supplier *"
+            partyType="both"
+            parties={customers}
+            selectedParty={customers.find(c => c.id === customerId)}
+            onSelect={c => setCustomerId(c.id)}
+            onClear={() => setCustomerId('')}
+            onPartyCreated={async () => {
+              const { data: c } = await supabase.from('parties').select('id, name, mobile').order('name');
+              setCustomers(c || []);
+            }}
+          />
+        </div>
  </div>
- </div>
- <div className="mt-4">
- <label className="block text-xs font-medium text-surface-600 mb-1">Linked Bill ID (optional)</label>
- <input value={billId} onChange={e => setBillId(e.target.value)} placeholder="Leave blank if standalone" className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
- </div>
- <div className="mt-4">
- <label className="block text-xs font-medium text-surface-600 mb-1">Notes</label>
- <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" />
- </div>
+      <div className="mt-4">
+        <label className="block text-[13px] font-bold text-surface-700 mb-1">Linked Bill ID (optional)</label>
+        <input value={billId} onChange={e => setBillId(e.target.value)} placeholder="Leave blank if standalone" className="w-full border border-surface-200 rounded px-3 py-2 text-[13px] focus:outline-none focus:border-indigo-500" />
+      </div>
+      
+      <div className="mt-4">
+        {!showNotes ? (
+          <div onClick={() => setShowNotes(true)} className="text-[#4f46e5] font-bold text-[13px] cursor-pointer hover:underline inline-block">
+            + Add Notes
+          </div>
+        ) : (
+          <div>
+            <label className="block text-[13px] font-bold text-surface-700 mb-1">Notes</label>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className="w-full border border-surface-200 rounded px-3 py-2 text-[13px] resize-none focus:outline-none focus:border-indigo-500" />
+          </div>
+        )}
+      </div>
  </div>
 
- <div className="bg-white rounded-2xl border border-surface-200 p-6">
- <div className="flex items-center justify-between mb-4">
- <h2 className="text-sm font-semibold text-surface-600 uppercase tracking-wide">Items Dispatched</h2>
- <button onClick={() => setItems(prev => [...prev, emptyItem()])} className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium"><HiOutlinePlus className="w-4 h-4" /> Add Item</button>
- </div>
- <div className="space-y-3">
- {items.map((item, index) => {
- const search = productSearch[index] || '';
- const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
- return (
- <div key={index} className="flex items-center gap-3">
- <div className="flex-1 relative">
- {item.product_id ? (
- <div className="flex items-center gap-2 border border-surface-200 rounded-xl px-3 py-2">
- <span className="text-sm font-medium text-surface-800 flex-1">{item.name}</span>
- <span className="text-xs text-surface-400">{item.unit}</span>
- <button onClick={() => updateItem(index, 'product_id', '')} className="text-xs text-surface-400 hover:text-red-500">✕</button>
- </div>
- ) : (
- <div className="relative">
- <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
- <input placeholder="Search product..." value={search} onChange={e => setProductSearch(prev => ({ ...prev, [index]: e.target.value }))} className="w-full pl-9 pr-3 py-2 border border-surface-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
- {search && filtered.length > 0 && (
- <ul className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-surface-200 rounded-xl shadow-lg max-h-40 overflow-y-auto">
- {filtered.map(p => <li key={p.id} onClick={() => selectProduct(index, p)} className="px-3 py-2 hover:bg-surface-50 cursor-pointer text-sm">{p.name}</li>)}
- </ul>
- )}
- </div>
- )}
- </div>
- <div className="w-24">
- <input type="number" min="1" value={item.qty} onChange={e => updateItem(index, 'qty', e.target.value)} placeholder="Qty" className="w-full text-right border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
- </div>
- <button onClick={() => setItems(prev => prev.length === 1 ? [emptyItem()] : prev.filter((_, i) => i !== index))} className="text-surface-400 hover:text-red-500 p-2">
- <HiOutlineTrash className="w-4 h-4" />
- </button>
- </div>
- );
- })}
- </div>
- </div>
+    <div className="bg-white rounded-2xl border border-surface-200 p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-semibold text-surface-600 uppercase tracking-wide">Items Dispatched</h2>
+      </div>
+      <div className="space-y-3">
+        {items.map((item, index) => {
+          if (!item.product_id) return null;
+          return (
+            <div key={index} className="flex items-center gap-3">
+              <div className="flex-1 border border-surface-200 rounded px-3 py-2 bg-surface-50">
+                <span className="text-sm font-medium text-surface-800 flex-1">{item.name}</span>
+                <span className="text-xs text-surface-400 ml-2">{item.unit}</span>
+              </div>
+              <div className="w-24">
+                <input type="number" min="1" value={item.qty} onChange={e => updateItem(index, 'qty', e.target.value)} placeholder="Qty" className="w-full text-right border border-surface-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 bg-white" />
+              </div>
+              <button onClick={() => setItems(prev => prev.length === 1 ? [emptyItem()] : prev.filter((_, i) => i !== index))} className="text-surface-400 hover:text-red-500 p-2">
+                <HiOutlineTrash className="w-4 h-4" />
+              </button>
+            </div>
+          );
+        })}
+        
+        <div 
+          onClick={() => setShowItemModal(true)}
+          className="w-full border-2 border-dashed border-[#4f46e5]/30 bg-[#4f46e5]/5 hover:bg-[#4f46e5]/10 text-[#4f46e5] font-bold text-[13px] py-3 flex items-center justify-center cursor-pointer rounded"
+        >
+          + Add Item
+        </div>
+      </div>
+    </div>
+    
+    {showItemModal && (
+      <AddItemsModal
+        products={products}
+        onAdd={handleAddItemFromModal}
+        onClose={() => setShowItemModal(false)}
+        customerId={customerId}
+        onProductCreated={async () => {
+          const { data: p } = await supabase.from('products').select('id, name, unit').order('name');
+          setProducts(p || []);
+        }}
+      />
+    )}
  </div>
  );
 }

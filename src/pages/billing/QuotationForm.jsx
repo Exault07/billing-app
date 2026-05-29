@@ -26,14 +26,15 @@ async function generateQuotationNo() {
 
 // â”€â”€â”€ Empty line-item template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const emptyItem = () => ({
- product_id: '',
- name: '',
- hsn: '',
- qty: 1,
- price: 0,
- discount: 0,
- tax: 0,
- total: 0,
+  product_id: '',
+  name: '',
+  hsn: '',
+  qty: 1,
+  price: 0,
+  discount: 0,
+  discount_type: '₹',
+  tax: 0,
+  total: 0,
 });
 
 export default function QuotationForm() {
@@ -50,8 +51,6 @@ export default function QuotationForm() {
  const [paymentTerms, setPaymentTerms] = useState('30');
  const [dueDate, setDueDate] = useState('');
  const [customerId, setCustomerId] = useState('');
- const [carpenterId, setCarpenterId] = useState('');
- const [commissionRate, setCommissionRate] = useState(0);
  
  const [items, setItems] = useState([emptyItem()]);
  
@@ -64,10 +63,17 @@ export default function QuotationForm() {
  const [amountReceived, setAmountReceived] = useState(0);
  const [isFullyPaid, setIsFullyPaid] = useState(false);
 
+ const [showNotes, setShowNotes] = useState(false);
+ const [showTerms, setShowTerms] = useState(true);
+ const [showBankAccount, setShowBankAccount] = useState(false);
+ const [showPaymentQr, setShowPaymentQr] = useState(false);
+ const [showAdditionalCharges, setShowAdditionalCharges] = useState(false);
+ const [showOverallDiscount, setShowOverallDiscount] = useState(false);
+ const [showItemModal, setShowItemModal] = useState(false);
+
  // â”€â”€ Data lists â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  const [customers, setCustomers] = useState([]);
  const [products, setProducts] = useState([]);
- const [carpenters, setCarpenters] = useState([]);
 
  // â”€â”€ UI state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  const [saving, setSaving] = useState(false);
@@ -106,18 +112,15 @@ export default function QuotationForm() {
  }, [date, paymentTerms]);
 
 
- // â”€â”€ Load customers. and products â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ // ——— Load customers and products —————————————————————————————————————
  useEffect(() => {
  const fetchData = async () => {
  try {
- const [{ data: custData }, { data: prodData }, { data: carpData }] = await Promise.all([
- supabase.from('parties').select('id, name, phone:mobile, balance:current_balance').in('party_type', ['customer', 'both']).order('name'),
- supabase.from('products').select('id, name, category, unit, selling_price, stock_qty').order('name'),
- supabase.from('carpenters').select('id, name, default_commission_rate').order('name')
- ]);
- setCustomers(custData || []);
- setProducts(prodData || []);
- setCarpenters(carpData || []);
+   const { data: customersData } = await supabase.from('parties').select('*').order('name');
+   setCustomers(customersData || []);
+   
+   const { data: productsData } = await supabase.from('products').select('*').order('name');
+   setProducts(productsData || []);
 
  if (!isEditing) {
  const bn = await generateQuotationNo();
@@ -132,7 +135,7 @@ export default function QuotationForm() {
  fetchData();
  }, [isEditing]);
 
- // â”€â”€ Load existing bill when editing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ // ——— Load existing bill when editing —————————————————————————————————
  useEffect(() => {
  if (!isEditing) return;
  const fetchBill = async () => {
@@ -145,9 +148,6 @@ export default function QuotationForm() {
  setDate(data.date);
  setDueDate(data.due_date || '');
  setCustomerId(data.customer_id || '');
- setCarpenterId(data.carpenter_id || '');
- setCommissionRate(data.commission_rate || 0);
- if (data.bill_type) setBillType(data.bill_type);
  
  // Map old items format to new format
  const loadedItems = (data.items || []).map(i => ({
@@ -188,8 +188,6 @@ export default function QuotationForm() {
          if (error) throw error;
          
          setCustomerId(data.customer_id || '');
-         setCarpenterId(data.carpenter_id || '');
-         setCommissionRate(data.commission_rate || 0);
          
          const loadedItems = (data.items || []).map(i => ({
            product_id: i.product_id,
@@ -198,6 +196,7 @@ export default function QuotationForm() {
            qty: i.qty,
            price: i.price,
            discount: i.discount || 0,
+           discount_type: i.discount_type || '₹',
            tax: i.tax || 0,
            total: i.total
          }));
@@ -231,13 +230,20 @@ export default function QuotationForm() {
  updated[index] = { ...updated[index], [field]: value };
  
  // Calculate total: (Qty * Price) - Discount + Tax%
- if (['qty', 'price', 'discount', 'tax'].includes(field)) {
- const q = Number(updated[index].qty || 0);
- const p = Number(updated[index].price || 0);
- const d = Number(updated[index].discount || 0);
- const base = (q * p) - d;
- const taxAmt = base * (Number(updated[index].tax || 0) / 100);
- updated[index].total = base + taxAmt;
+ if (['qty', 'price', 'discount', 'discount_type', 'tax'].includes(field)) {
+   const q = Number(updated[index].qty || 0);
+   const p = Number(updated[index].price || 0);
+   
+   let dAmt = 0;
+   if (updated[index].discount_type === '%') {
+     dAmt = (q * p) * (Number(updated[index].discount || 0) / 100);
+   } else {
+     dAmt = Number(updated[index].discount || 0);
+   }
+   
+   const base = (q * p) - dAmt;
+   const taxAmt = base * (Number(updated[index].tax || 0) / 100);
+   updated[index].total = base + taxAmt;
  }
  return updated;
  });
@@ -261,7 +267,7 @@ export default function QuotationForm() {
  setProductSearch(prev => ({ ...prev, [index]: '' }));
  };
 
- // â”€â”€ Save handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ // ——— Save handler —————————————————————————————————————————————————————————————————————
    const handleSave = async (e) => {
     e?.preventDefault();
     setError('');
@@ -284,12 +290,10 @@ export default function QuotationForm() {
         advance_paid: Number(amountReceived),
         balance_due: balanceDue,
         grand_total: grandTotal,
-        notes: `${notes}\n\nTerms:\n${terms}`,
+        notes: `${showNotes ? notes : ''}\n\nTerms:\n${showTerms ? terms : ''}`,
         status: 'draft',
         
         created_by: user?.id,
-        carpenter_id: carpenterId || null,
-        commission_rate: Number(commissionRate) || 0,
       };
 
       if (isEditing) {
@@ -386,14 +390,14 @@ export default function QuotationForm() {
  return (
  <div className="max-w-[1400px] mx-auto min-h-screen bg-white">
  
- {/* â”€â”€ Header â”€â”€ */}
+ {/* ——— Header ——— */}
  <div className="flex items-center justify-between px-6 py-3 border-b border-surface-200">
  <div className="flex items-center gap-4">
  <button onClick={() => navigate(-1)} className="text-surface-600 hover:text-surface-900">
  <HiOutlineArrowLeft className="w-5 h-5" />
  </button>
  <h1 className="text-[18px] font-bold text-surface-800">
- {isEditing ? `Edit $'Quotation'` : `Create $'Quotation'`}
+ {isEditing ? `Edit Quotation` : `Create Quotation`}
  </h1>
  </div>
  <div className="flex items-center gap-3">
@@ -416,26 +420,30 @@ export default function QuotationForm() {
  {error && <div className="m-6 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded">{error}</div>}
 
  <div className="p-6">
- {/* â”€â”€ Top Section: Party & Meta â”€â”€ */}
+ {/* ——— Top Section: Party & Meta ——— */}
  <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mb-8">
  
  {/* Bill To Box */}
  <div className="w-full lg:w-96 flex-shrink-0">
- <PartySelect
- label="Bill To"
- partyType="customer"
- parties={customers}
- selectedParty={selectedCustomer}
- onSelect={(p) => setCustomerId(p.id)}
- onClear={() => setCustomerId('')}
- />
+        <PartySelect 
+          label="Bill To" 
+          partyType="both"
+          parties={customers} 
+          selectedParty={customers.find(c => c.id === customerId)}
+          onSelect={(party) => setCustomerId(party.id)}
+          onClear={() => setCustomerId('')}
+          onPartyCreated={async () => {
+            const { data } = await supabase.from('parties').select('*').order('name');
+            setCustomers(data || []);
+          }}
+        />
  </div>
 
  {/* Right Meta Grid */}
  <div className="w-full lg:w-auto">
  <div className="flex gap-4 mb-4">
  <div>
- <label className="block text-[11px] font-medium text-surface-500 mb-1">'Quotation' No:</label>
+ <label className="block text-[11px] font-medium text-surface-500 mb-1">Quotation No:</label>
  <input 
  value={billNo} onChange={e => setBillNo(e.target.value)}
  className="w-32 px-3 py-1.5 border border-surface-200 rounded text-[13px] bg-surface-50"
@@ -515,7 +523,7 @@ export default function QuotationForm() {
  <th className="py-2.5 px-3 w-24">HSN/ SAC</th>
  <th className="py-2.5 px-3 w-20 text-right">QTY</th>
  <th className="py-2.5 px-3 w-28 text-right">PRICE/ ITEM (₹)</th>
- <th className="py-2.5 px-3 w-24 text-right">DISCOUNT</th>
+ <th className="py-2.5 px-3 w-32 text-right">DISCOUNT</th>
  <th className="py-2.5 px-3 w-24 text-right">TAX</th>
  <th className="py-2.5 px-3 w-28 text-right">AMOUNT (₹)</th>
  <th className="py-2.5 px-3 w-12 text-center"></th>
@@ -553,7 +561,19 @@ export default function QuotationForm() {
  <td className="py-2 px-3"><input value={item.hsn} onChange={e => updateItem(idx, 'hsn', e.target.value)} className="w-full bg-transparent outline-none text-surface-600" /></td>
  <td className="py-2 px-3"><input type="number" value={item.qty} onChange={e => updateItem(idx, 'qty', e.target.value)} className="w-full bg-transparent outline-none text-right font-medium" /></td>
  <td className="py-2 px-3"><input type="number" value={item.price} onChange={e => updateItem(idx, 'price', e.target.value)} className="w-full bg-transparent outline-none text-right" /></td>
- <td className="py-2 px-3"><input type="number" value={item.discount} onChange={e => updateItem(idx, 'discount', e.target.value)} className="w-full bg-transparent outline-none text-right" placeholder="0" /></td>
+ <td className="py-2 px-3">
+   <div className="flex items-center justify-end bg-white border border-surface-200 rounded px-2">
+     <input type="number" value={item.discount || ''} onChange={e => updateItem(idx, 'discount', e.target.value)} className="w-16 bg-transparent outline-none text-right py-1.5" placeholder="0" />
+     <select
+       value={item.discount_type || '₹'}
+       onChange={e => updateItem(idx, 'discount_type', e.target.value)}
+       className="bg-transparent text-surface-500 outline-none ml-1 text-[11px] font-bold cursor-pointer"
+     >
+       <option value="₹">₹</option>
+       <option value="%">%</option>
+     </select>
+   </div>
+ </td>
  <td className="py-2 px-3"><input type="number" value={item.tax} onChange={e => updateItem(idx, 'tax', e.target.value)} className="w-full bg-transparent outline-none text-right" placeholder="0%" /></td>
  <td className="py-2 px-3 text-right font-bold text-surface-800">{Number(item.total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
  <td className="py-2 px-3 text-center">
@@ -568,12 +588,12 @@ export default function QuotationForm() {
 
  {/* Add Item Row & Barcode */}
  <div className="flex">
- <div 
- onClick={addItem}
- className="flex-1 m-2 border-2 border-dashed border-blue-300 bg-blue-50/50 hover:bg-blue-50 text-blue-600 font-bold text-[13px] py-3 flex items-center justify-center cursor-pointer rounded"
- >
- + Add Item
- </div>
+  <div 
+  onClick={() => setShowItemModal(true)}
+  className="flex-1 m-2 border-2 border-dashed border-blue-300 bg-blue-50/50 hover:bg-blue-50 text-blue-600 font-bold text-[13px] py-3 flex items-center justify-center cursor-pointer rounded"
+  >
+  + Add Item
+  </div>
  <div 
  onClick={() => setShowBarcodeModal(true)}
  className="w-64 border-l border-surface-200 bg-surface-50 flex items-center justify-center cursor-pointer hover:bg-surface-100 transition-colors"
@@ -590,22 +610,57 @@ export default function QuotationForm() {
  
  {/* Left: Notes & Terms */}
  <div className="flex-1 space-y-4">
- <div className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Notes</div>
- 
- <div className="relative">
- <div className="flex items-center justify-between mb-1">
- <label className="text-[12px] font-bold text-surface-700">Terms and Conditions</label>
- <HiOutlineX className="w-3 h-3 text-surface-400 cursor-pointer" />
- </div>
- <textarea 
- value={terms}
- onChange={e => setTerms(e.target.value)}
- className="w-full h-20 bg-surface-100 border-none rounded p-3 text-[12px] text-surface-700 resize-none focus:ring-1 focus:ring-surface-300 outline-none"
- />
- </div>
- 
- <div className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Bank Account</div>
- <div className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Payment QR</div>
+   {!showNotes ? (
+     <div onClick={() => setShowNotes(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline inline-block">+ Add Notes</div>
+   ) : (
+     <div className="relative">
+       <div className="flex items-center justify-between mb-1">
+         <label className="text-[12px] font-bold text-surface-700">Notes</label>
+         <HiOutlineX className="w-3 h-3 text-surface-400 cursor-pointer" onClick={() => setShowNotes(false)} />
+       </div>
+       <textarea 
+         value={notes}
+         onChange={e => setNotes(e.target.value)}
+         className="w-full h-20 bg-surface-50 border border-surface-200 rounded p-3 text-[12px] text-surface-600 resize-none outline-none focus:ring-1 focus:ring-surface-300"
+       />
+     </div>
+   )}
+   
+   {!showTerms ? (
+     <div onClick={() => setShowTerms(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline inline-block">+ Add Terms</div>
+   ) : (
+     <div className="relative">
+       <div className="flex items-center justify-between mb-1">
+         <label className="text-[12px] font-bold text-surface-700">Terms and Conditions</label>
+         <HiOutlineX className="w-3 h-3 text-surface-400 cursor-pointer" onClick={() => setShowTerms(false)} />
+       </div>
+       <textarea 
+         value={terms}
+         onChange={e => setTerms(e.target.value)}
+         className="w-full h-20 bg-surface-50 border border-surface-200 rounded p-3 text-[12px] text-surface-600 resize-none outline-none focus:ring-1 focus:ring-surface-300"
+       />
+     </div>
+   )}
+
+   {!showBankAccount ? (
+     <div onClick={() => setShowBankAccount(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline block">+ Add Bank Account</div>
+   ) : (
+     <div className="bg-white border border-surface-200 rounded p-4 relative group">
+       <button onClick={() => setShowBankAccount(false)} className="absolute top-2 right-2 text-surface-400 hover:text-red-500 hidden group-hover:block"><HiOutlineX className="w-4 h-4" /></button>
+       <div className="text-[11px] font-bold text-surface-500 mb-2 uppercase tracking-wide">Bank Details</div>
+       <div className="text-surface-500 text-[12px]">Bank will be printed. Configure in Settings.</div>
+     </div>
+   )}
+
+   {!showPaymentQr ? (
+     <div onClick={() => setShowPaymentQr(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline block">+ Add Payment QR</div>
+   ) : (
+     <div className="bg-white border border-surface-200 rounded p-4 relative group w-max">
+       <button onClick={() => setShowPaymentQr(false)} className="absolute top-2 right-2 text-surface-400 hover:text-red-500 hidden group-hover:block"><HiOutlineX className="w-4 h-4" /></button>
+       <div className="text-[11px] font-bold text-surface-500 mb-2 uppercase tracking-wide text-center">Scan to Pay</div>
+       <div className="text-surface-500 text-[12px]">QR will be printed. Configure in Settings.</div>
+     </div>
+   )}
  </div>
 
  {/* Right: Calculations */}
@@ -617,26 +672,38 @@ export default function QuotationForm() {
  <span>₹ {subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
  </div>
  
- <div className="flex justify-between items-center text-blue-600 font-medium cursor-pointer">
- <span>+ Add Additional Charges</span>
- <input 
- type="number" value={additionalCharges || ''} onChange={e => setAdditionalCharges(e.target.value)} 
- className="w-24 text-right border-b border-blue-300 outline-none bg-transparent text-surface-800" placeholder="0"
- />
- </div>
+ {!showAdditionalCharges ? (
+   <div onClick={() => setShowAdditionalCharges(true)} className="flex justify-between items-center text-blue-600 font-medium cursor-pointer hover:underline">
+     <span>+ Add Additional Charges</span>
+   </div>
+ ) : (
+   <div className="flex justify-between items-center text-blue-600 font-medium relative group">
+     <span className="flex items-center gap-1">Additional Charges <HiOutlineX className="w-3 h-3 text-surface-400 cursor-pointer hidden group-hover:block" onClick={() => { setShowAdditionalCharges(false); setAdditionalCharges(0); }} /></span>
+     <input 
+     type="number" value={additionalCharges || ''} onChange={e => setAdditionalCharges(e.target.value)} 
+     className="w-24 text-right border-b border-blue-300 outline-none bg-transparent text-surface-800" placeholder="0"
+     />
+   </div>
+ )}
 
  <div className="flex justify-between items-center font-bold text-surface-700">
  <span>Taxable Amount</span>
  <span>₹ {taxableAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
  </div>
 
- <div className="flex justify-between items-center text-blue-600 font-medium cursor-pointer">
- <span>+ Add Discount</span>
- <input 
- type="number" value={overallDiscount || ''} onChange={e => setOverallDiscount(e.target.value)} 
- className="w-24 text-right border-b border-blue-300 outline-none bg-transparent text-surface-800" placeholder="0"
- />
- </div>
+ {!showOverallDiscount ? (
+   <div onClick={() => setShowOverallDiscount(true)} className="flex justify-between items-center text-blue-600 font-medium cursor-pointer hover:underline">
+     <span>+ Add Discount</span>
+   </div>
+ ) : (
+   <div className="flex justify-between items-center text-blue-600 font-medium relative group">
+     <span className="flex items-center gap-1">Discount <HiOutlineX className="w-3 h-3 text-surface-400 cursor-pointer hidden group-hover:block" onClick={() => { setShowOverallDiscount(false); setOverallDiscount(0); }} /></span>
+     <input 
+     type="number" value={overallDiscount || ''} onChange={e => setOverallDiscount(e.target.value)} 
+     className="w-24 text-right border-b border-blue-300 outline-none bg-transparent text-surface-800" placeholder="0"
+     />
+   </div>
+ )}
 
  <div className="flex justify-between items-center">
  <label className="flex items-center gap-2 cursor-pointer select-none text-surface-700">
@@ -725,6 +792,41 @@ export default function QuotationForm() {
  </div>
  </div>
  )}
+      {showItemModal && (
+        <AddItemsModal
+          products={products}
+          onAdd={(product, qty) => {
+            const q = Number(qty || 1);
+            const p = Number(product.selling_price || 0);
+            setItems(prev => {
+              const existing = prev.findIndex(i => i.product_id === product.id);
+              if (existing >= 0) {
+                const updated = [...prev];
+                updated[existing] = {
+                  ...updated[existing],
+                  qty: Number(updated[existing].qty) + q,
+                  total: (Number(updated[existing].qty) + q) * updated[existing].price,
+                };
+                return updated;
+              }
+              return [...prev, {
+                product_id: product.id,
+                name: product.name,
+                hsn: product.hsn || '',
+                unit: product.unit || 'PCS',
+                qty: q, price: p, discount: 0, discount_type: '₹', tax: 0,
+                total: q * p,
+              }];
+            });
+          }}
+          onClose={() => setShowItemModal(false)}
+          customerId={customerId}
+          onProductCreated={async () => {
+            const { data } = await supabase.from('products').select('*').order('name');
+            setProducts(data || []);
+          }}
+        />
+      )}
  </div>
  );
 }

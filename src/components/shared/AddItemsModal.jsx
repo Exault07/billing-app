@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { HiOutlineSearch, HiOutlineX } from 'react-icons/hi';
 import { supabase } from '../../supabaseClient';
+import ProductModal from '../inventory/ProductModal';
 
-export default function AddItemsModal({ products, onAdd, onClose, invoiceSettings = {}, customerId }) {
+export default function AddItemsModal({ products, onAdd, onClose, invoiceSettings = {}, customerId, onProductCreated }) {
   const [search, setSearch] = useState('');
   const [selectedQtys, setSelectedQtys] = useState({});
   const [priceHistory, setPriceHistory] = useState({});
+  const [showProductModal, setShowProductModal] = useState(false);
   const showPurchasePriceCol = invoiceSettings.showPurchasePrice !== false;
   const showPriceHistory = invoiceSettings.priceHistory !== false;
 
@@ -70,7 +72,7 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
           </select>
           <button
             type="button"
-            onClick={() => window.open('/inventory/new', '_blank')}
+            onClick={() => setShowProductModal(true)}
             className="px-4 py-2 bg-[#7c3aed] text-white text-[13px] font-bold rounded whitespace-nowrap hover:bg-[#6d28d9]"
           >
             Create New Item
@@ -211,6 +213,16 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
           </div>
         </div>
       </div>
+
+      {showProductModal && (
+        <ProductModal
+          onClose={() => setShowProductModal(false)}
+          onSaved={() => {
+            setShowProductModal(false);
+            if (onProductCreated) onProductCreated();
+          }}
+        />
+      )}
     </div>
   );
 }

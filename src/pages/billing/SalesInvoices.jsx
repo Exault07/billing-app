@@ -40,7 +40,7 @@ async function generateBillNo() {
 
 
 // ─── Create Invoice Form (Full Page) ────────────────────────────────────────
-function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, invoiceSettings = {}, shopSettings = {}, onOpenSettings }) {
+function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, invoiceSettings = {}, shopSettings = {}, onOpenSettings, onProductCreated }) {
   const { user } = useAuth();
 
   const [billNo, setBillNo] = useState('');
@@ -677,6 +677,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
           onClose={() => setShowItemModal(false)}
           invoiceSettings={invoiceSettings}
           customerId={customerId}
+          onProductCreated={onProductCreated}
         />
       )}
 
@@ -998,6 +999,7 @@ export default function SalesInvoices() {
           shopSettings={shopSettings}
           invoiceSettings={invoiceSettings}
           onOpenSettings={() => setShowSettings(true)}
+          onProductCreated={fetchAll}
         />
         {renderSettingsModal()}
       </div>
