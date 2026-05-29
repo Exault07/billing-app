@@ -479,39 +479,6 @@ export default function QuotationForm() {
  </div>
  </div>
 
- {/* â”€â”€ Referral Section â”€â”€ */}
- <div className="flex gap-6 mb-8 p-4 bg-purple-50/30 border border-purple-100 rounded-lg">
- <div>
- <label className="block text-[11px] font-medium text-surface-500 mb-1">Referred By (Carpenter / Worker):</label>
- <select 
- value={carpenterId} 
- onChange={(e) => {
- setCarpenterId(e.target.value);
- const selected = carpenters.find(c => c.id === e.target.value);
- if (selected) setCommissionRate(selected.default_commission_rate);
- }}
- className="w-64 px-3 py-1.5 border border-surface-200 rounded text-[13px] bg-white focus:outline-none focus:border-purple-300"
- >
- <option value="">-- No Referrer --</option>
- {carpenters.map(c => (
- <option key={c.id} value={c.id}>{c.name}</option>
- ))}
- </select>
- </div>
- {carpenterId && (
- <div>
- <label className="block text-[11px] font-medium text-surface-500 mb-1">Commission Rate (%):</label>
- <input 
- type="number"
- min="0"
- step="0.1"
- value={commissionRate} 
- onChange={e => setCommissionRate(e.target.value)}
- className="w-32 px-3 py-1.5 border border-surface-200 rounded text-[13px] bg-white focus:outline-none focus:border-purple-300"
- />
- </div>
- )}
- </div>
 
  {/* â”€â”€ Middle Section: Items Table â”€â”€ */}
  <div className="border border-surface-200 rounded mb-8">
