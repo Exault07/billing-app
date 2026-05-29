@@ -63,7 +63,14 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
   const [isFullyPaid, setIsFullyPaid] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-    
+  
+  // UI Toggles
+  const [showNotes, setShowNotes] = useState(false);
+  const [showTerms, setShowTerms] = useState(true);
+  const [showBankAccount, setShowBankAccount] = useState(false);
+  const [showPaymentQr, setShowPaymentQr] = useState(false);
+  const [showAdditionalCharges, setShowAdditionalCharges] = useState(false);
+  const [showOverallDiscount, setShowOverallDiscount] = useState(false);
   const subtotal = items.reduce((s, i) => s + Number(i.total || 0), 0);
   const taxableAmount = subtotal + Number(additionalCharges);
   const grandTotalRaw = taxableAmount - Number(overallDiscount);
@@ -101,7 +108,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
         name: product.name,
         hsn: product.hsn || '',
         unit: product.unit || 'PCS',
-        qty: q, price: p, discount: 0, tax: 0,
+        qty: q, price: p, discount: 0, discount_type: '₹', tax: 0,
         total: q * p,
       }];
     });
@@ -115,8 +122,15 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
       updated[idx] = { ...updated[idx], [field]: value };
       const q = Number(updated[idx].qty || 0);
       const p = Number(updated[idx].price || 0);
-      const d = Number(updated[idx].discount || 0);
-      const base = (q * p) - d;
+      
+      let dAmt = 0;
+      if (updated[idx].discount_type === '%') {
+        dAmt = (q * p) * (Number(updated[idx].discount || 0) / 100);
+      } else {
+        dAmt = Number(updated[idx].discount || 0);
+      }
+      
+      const base = (q * p) - dAmt;
       const taxAmt = base * (Number(updated[idx].tax || 0) / 100);
       updated[idx].total = base + taxAmt;
       return updated;
@@ -341,12 +355,22 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
                     </td>
                   )}
                   <td className="py-2 px-3">
-                    <input
-                      type="number" min="0"
-                      value={item.discount}
-                      onChange={e => updateItem(idx, 'discount', e.target.value)}
-                      className="w-full bg-transparent border-b border-transparent hover:border-surface-200 focus:border-blue-400 outline-none text-right"
-                    />
+                    <div className="flex items-center gap-1 justify-end">
+                      <input
+                        type="number" min="0"
+                        value={item.discount}
+                        onChange={e => updateItem(idx, 'discount', e.target.value)}
+                        className="w-16 bg-transparent border-b border-transparent hover:border-surface-200 focus:border-blue-400 outline-none text-right"
+                      />
+                      <select
+                        value={item.discount_type || '₹'}
+                        onChange={e => updateItem(idx, 'discount_type', e.target.value)}
+                        className="bg-surface-50 border border-surface-200 rounded px-1 text-[11px] outline-none cursor-pointer focus:border-blue-400"
+                      >
+                        <option value="₹">₹</option>
+                        <option value="%">%</option>
+                      </select>
+                    </div>
                   </td>
                   <td className="py-2 px-3">
                     <input
@@ -392,22 +416,60 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
         <div className="flex flex-col lg:flex-row gap-0 mt-2">
 
           {/* LEFT: Notes, Terms, Bank, QR */}
-          <div className="flex-1 pr-0 lg:pr-8 space-y-3 pt-4">
-            <div className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Notes</div>
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-[12px] font-semibold text-surface-700">Terms and Conditions</label>
-                <button className="text-surface-400 hover:text-surface-600"><HiOutlineCog className="w-3.5 h-3.5" /></button>
+          <div className="flex-1 pr-0 lg:pr-8 space-y-4 pt-4">
+            
+            {/* Notes */}
+            {!showNotes ? (
+              <div onClick={() => setShowNotes(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Notes</div>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[12px] font-semibold text-surface-700">Notes</label>
+                  <button onClick={() => { setShowNotes(false); setNotes(''); }} className="text-red-400 hover:text-red-600"><HiOutlineX className="w-4 h-4" /></button>
+                </div>
+                <textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  rows={2}
+                  placeholder="Additional notes for customer..."
+                  className="w-full bg-surface-50 border border-surface-200 rounded p-3 text-[12px] text-surface-600 resize-none outline-none focus:ring-1 focus:ring-surface-300"
+                />
               </div>
-              <textarea
-                value={terms}
-                onChange={e => setTerms(e.target.value)}
-                rows={4}
-                className="w-full bg-surface-50 border border-surface-200 rounded p-3 text-[12px] text-surface-600 resize-none outline-none focus:ring-1 focus:ring-surface-300"
-              />
+            )}
+
+            {/* Terms */}
+            {!showTerms ? (
+              <div onClick={() => setShowTerms(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Terms and Conditions</div>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[12px] font-semibold text-surface-700">Terms and Conditions</label>
+                  <div className="flex items-center gap-2">
+                    <button className="text-surface-400 hover:text-surface-600"><HiOutlineCog className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => { setShowTerms(false); setTerms(''); }} className="text-red-400 hover:text-red-600"><HiOutlineX className="w-4 h-4" /></button>
+                  </div>
+                </div>
+                <textarea
+                  value={terms}
+                  onChange={e => setTerms(e.target.value)}
+                  rows={4}
+                  className="w-full bg-surface-50 border border-surface-200 rounded p-3 text-[12px] text-surface-600 resize-none outline-none focus:ring-1 focus:ring-surface-300"
+                />
+              </div>
+            )}
+
+            {/* Bank Account */}
+            <div onClick={() => setShowBankAccount(!showBankAccount)} className="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" checked={showBankAccount} readOnly className="rounded accent-indigo-600 cursor-pointer" />
+              <span className="text-blue-600 font-medium text-[13px] hover:underline">Add Bank Account</span>
             </div>
-            <div className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Bank Account</div>
-            <div className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Payment QR</div>
+
+            {/* Payment QR */}
+            <div onClick={() => setShowPaymentQr(!showPaymentQr)} className="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" checked={showPaymentQr} readOnly className="rounded accent-indigo-600 cursor-pointer" />
+              <span className="text-blue-600 font-medium text-[13px] hover:underline">Add Payment QR</span>
+            </div>
+
           </div>
 
           {/* RIGHT: Charges + Total + Payment */}
@@ -415,17 +477,28 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
 
             {/* Additional Charges */}
             <div className="flex items-center justify-between py-2.5 border-b border-surface-100">
-              <span className="text-blue-600 font-medium cursor-pointer hover:underline">+ Add Additional Charges</span>
-              <div className="flex items-center gap-1">
-                <span className="text-surface-500 text-[12px]">₹</span>
-                <input
-                  type="number"
-                  value={additionalCharges || ''}
-                  onChange={e => setAdditionalCharges(e.target.value)}
-                  placeholder="0"
-                  className="w-20 text-right outline-none text-surface-700 bg-transparent text-[13px]"
-                />
-              </div>
+              {!showAdditionalCharges ? (
+                <span onClick={() => setShowAdditionalCharges(true)} className="text-blue-600 font-medium cursor-pointer hover:underline">+ Add Additional Charges</span>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { setShowAdditionalCharges(false); setAdditionalCharges(0); }} className="text-red-400 hover:text-red-600">
+                      <HiOutlineX className="w-4 h-4" />
+                    </button>
+                    <span className="font-semibold text-surface-700">Additional Charges</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-surface-500 text-[12px]">₹</span>
+                    <input
+                      type="number"
+                      value={additionalCharges || ''}
+                      onChange={e => setAdditionalCharges(e.target.value)}
+                      placeholder="0"
+                      className="w-20 text-right outline-none border-b border-surface-200 focus:border-indigo-500 text-surface-700 bg-transparent text-[13px]"
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Taxable Amount */}
@@ -436,17 +509,28 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
 
             {/* Discount */}
             <div className="flex items-center justify-between py-2.5 border-b border-surface-100">
-              <span className="text-blue-600 font-medium cursor-pointer hover:underline">+ Add Discount</span>
-              <div className="flex items-center gap-1">
-                <span className="text-surface-500 text-[12px]">₹</span>
-                <input
-                  type="number"
-                  value={overallDiscount || ''}
-                  onChange={e => setOverallDiscount(e.target.value)}
-                  placeholder="0"
-                  className="w-20 text-right outline-none text-surface-700 bg-transparent text-[13px]"
-                />
-              </div>
+              {!showOverallDiscount ? (
+                <span onClick={() => setShowOverallDiscount(true)} className="text-blue-600 font-medium cursor-pointer hover:underline">+ Add Discount</span>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { setShowOverallDiscount(false); setOverallDiscount(0); }} className="text-red-400 hover:text-red-600">
+                      <HiOutlineX className="w-4 h-4" />
+                    </button>
+                    <span className="font-semibold text-surface-700">Discount</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-surface-500 text-[12px]">₹</span>
+                    <input
+                      type="number"
+                      value={overallDiscount || ''}
+                      onChange={e => setOverallDiscount(e.target.value)}
+                      placeholder="0"
+                      className="w-20 text-right outline-none border-b border-surface-200 focus:border-indigo-500 text-surface-700 bg-transparent text-[13px]"
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Auto Round Off */}
