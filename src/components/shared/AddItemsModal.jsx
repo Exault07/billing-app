@@ -5,7 +5,6 @@ import { supabase } from '../../supabaseClient';
 export default function AddItemsModal({ products, onAdd, onClose, invoiceSettings = {}, customerId }) {
   const [search, setSearch] = useState('');
   const [selectedQtys, setSelectedQtys] = useState({});
-  const [addedIds, setAddedIds] = useState({});
   const [priceHistory, setPriceHistory] = useState({});
   const showPurchasePriceCol = invoiceSettings.showPurchasePrice !== false;
   const showPriceHistory = invoiceSettings.priceHistory !== false;
@@ -40,13 +39,7 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
     (p.category || '').toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAdd = (product) => {
-    const qty = Number(selectedQtys[product.id] || 1);
-    onAdd(product, qty);
-    setAddedIds(prev => ({ ...prev, [product.id]: true }));
-  };
-
-  const addedCount = Object.keys(addedIds).length;
+  const addedCount = Object.values(selectedQtys).filter(q => Number(q) > 0).length;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
@@ -110,11 +103,16 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
                     className="border-b border-surface-100 hover:bg-[#f5f3ff] transition-colors cursor-pointer"
                     onClick={(e) => {
                       if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
-                        handleAdd(p);
+                        setSelectedQtys(prev => ({ ...prev, [p.id]: (Number(prev[p.id]) || 0) + 1 }));
                       }
                     }}
                   >
-                    <td className="py-3 px-4 font-medium text-surface-800">{p.name}</td>
+                    <td className="py-3 px-4 font-medium text-surface-800">
+                      <div>{p.name}</div>
+                      {Number(selectedQtys[p.id] || 0) > Number(p.stock_qty || 0) && (
+                        <div className="text-[10px] text-red-500 font-normal mt-0.5 leading-tight">Insufficient stock</div>
+                      )}
+                    </td>
                     <td className="py-3 px-4 text-surface-500">{p.barcode || '-'}</td>
                     <td className="py-3 px-4">
                       <span className={Number(p.stock_qty) <= 0 ? 'text-red-500 font-medium' : 'text-surface-700'}>
@@ -136,27 +134,37 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
                       </td>
                     )}
                     <td className="py-3 px-4 text-right pr-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <input
-                          type="number" min="1"
-                          value={selectedQtys[p.id] || 1}
-                          onChange={e => setSelectedQtys(prev => ({ ...prev, [p.id]: e.target.value }))}
-                          onKeyDown={e => { if (e.key === 'Enter') handleAdd(p); }}
-                          className="w-16 border border-surface-200 rounded px-2 py-1 text-center text-[12px]"
-                        />
-                        {addedIds[p.id] ? (
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); handleAdd(p); }}
-                            className="bg-[#e9d5ff] text-[#7c3aed] font-bold px-3 py-1 rounded text-[12px] min-w-[64px]"
-                          >
-                            Added ✓
-                          </button>
+                      <div className="flex items-center justify-end gap-2 h-[28px]">
+                        {Number(selectedQtys[p.id] || 0) > 0 ? (
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setSelectedQtys(prev => ({ ...prev, [p.id]: Math.max(0, Number(prev[p.id] || 1) - 1) })); }}
+                              className="w-6 h-6 flex items-center justify-center bg-red-500 text-white font-bold hover:bg-red-600 rounded-sm text-[16px] leading-none"
+                            >
+                              -
+                            </button>
+                            <input
+                              type="number" min="0"
+                              value={selectedQtys[p.id]}
+                              onChange={e => setSelectedQtys(prev => ({ ...prev, [p.id]: e.target.value }))}
+                              onClick={e => e.stopPropagation()}
+                              className="w-10 border border-surface-200 rounded px-1 py-0.5 text-center text-[13px] text-blue-600 font-bold outline-none no-spinners"
+                            />
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setSelectedQtys(prev => ({ ...prev, [p.id]: Number(prev[p.id] || 1) + 1 })); }}
+                              className="w-6 h-6 flex items-center justify-center bg-red-500 text-white font-bold hover:bg-red-600 rounded-sm text-[16px] leading-none"
+                            >
+                              +
+                            </button>
+                            <span className="text-[11px] text-surface-500 font-medium ml-1 w-6 text-left">{p.unit || 'PCS'}</span>
+                          </div>
                         ) : (
                           <button
                             type="button"
-                            onClick={(e) => { e.stopPropagation(); handleAdd(p); }}
-                            className="border border-[#7c3aed] text-[#7c3aed] font-bold px-3 py-1 rounded text-[12px] hover:bg-[#7c3aed] hover:text-white transition-colors min-w-[64px]"
+                            onClick={(e) => { e.stopPropagation(); setSelectedQtys(prev => ({ ...prev, [p.id]: 1 })); }}
+                            className="bg-blue-50 text-blue-600 font-bold px-4 py-1.5 rounded text-[12px] hover:bg-blue-100 transition-colors min-w-[64px]"
                           >
                             + Add
                           </button>
@@ -187,9 +195,8 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
             <button 
               type="button" 
               onClick={() => {
-                // Add any items whose quantities were changed but haven't been added yet
-                const unadded = Object.keys(selectedQtys).filter(id => !addedIds[id]);
-                unadded.forEach(id => {
+                const selected = Object.keys(selectedQtys).filter(id => Number(selectedQtys[id]) > 0);
+                selected.forEach(id => {
                   const product = products.find(p => p.id === id);
                   if (product) {
                     onAdd(product, Number(selectedQtys[id]));
