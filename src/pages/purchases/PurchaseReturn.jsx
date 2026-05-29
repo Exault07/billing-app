@@ -207,59 +207,15 @@ function CreateReturnForm({ onClose, onSaved, suppliers, products, purchase_invo
         <div className="flex flex-col lg:flex-row justify-between items-start gap-10 mb-10">
           
           {/* Bill To Box */}
-          <div className="w-full lg:w-[420px] relative">
-            <label className="block text-[13px] font-bold text-surface-700 mb-2 uppercase tracking-wide">Return From Party</label>
-            {!selectedSupplier ? (
-              <div 
-                onClick={() => setShowPartyDropdown(true)}
-                className="w-full h-[110px] border-2 border-dashed border-[#4f46e5]/40 bg-[#4f46e5]/5 rounded-xl flex items-center justify-center cursor-pointer hover:bg-[#4f46e5]/10 text-[#4f46e5] font-bold text-[14px] transition-colors"
-              >
-                + Select Party
-              </div>
-            ) : (
-              <div className="w-full min-h-[110px] border border-surface-200 rounded-xl p-5 relative group bg-white shadow-sm hover:border-[#4f46e5] transition-colors">
-                <div className="font-bold text-[16px] text-surface-900">{selectedSupplier.name}</div>
-                {selectedSupplier.phone && <div className="text-[13px] text-surface-500 mt-1">{selectedSupplier.phone}</div>}
-                <button 
-                  onClick={() => { setSupplierId(''); setShowPartyDropdown(true); }}
-                  className="absolute top-4 right-4 text-[12px] font-bold text-surface-400 hover:text-[#4f46e5] transition-colors bg-surface-50 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100"
-                >
-                  Change
-                </button>
-              </div>
-            )}
-
-            {/* Custom Party Dropdown */}
-            {showPartyDropdown && (
-              <div className="absolute top-[140px] left-0 right-0 bg-white border border-[#4f46e5]/30 rounded-xl shadow-2xl z-50 overflow-hidden">
-                <div className="p-3 border-b border-surface-100 bg-surface-50/50">
-                  <div className="relative">
-                    <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 w-4 h-4" />
-                    <input 
-                      type="text" 
-                      autoFocus
-                      placeholder="Search party by name or number..." 
-                      value={partySearch}
-                      onChange={e => setPartySearch(e.target.value)}
-                      className="w-full outline-none text-[13px] pl-9 pr-3 py-2 bg-white border border-surface-200 rounded-lg focus:border-[#4f46e5]"
-                    />
-                  </div>
-                </div>
-                <div className="max-h-64 overflow-y-auto">
-                  {suppliers.filter(c => c.name.toLowerCase().includes(partySearch.toLowerCase())).map(c => (
-                    <div 
-                      key={c.id} 
-                      onClick={() => { setSupplierId(c.id); setShowPartyDropdown(false); setPartySearch(''); }}
-                      className="flex flex-col px-4 py-3 hover:bg-[#4f46e5]/5 cursor-pointer border-b border-surface-50 last:border-0"
-                    >
-                      <span className="font-bold text-surface-900 text-[13px]">{c.name}</span>
-                      {c.phone && <span className="text-surface-500 text-[11px] mt-0.5">{c.phone}</span>}
-                    </div>
-                  ))}
-                  {suppliers.length === 0 && <div className="p-6 text-center text-sm font-medium text-surface-400">No parties found matching search</div>}
-                </div>
-              </div>
-            )}
+          <div className="w-full lg:w-[420px] flex-shrink-0">
+            <PartySelect
+              label="Return From Party"
+              partyType="supplier"
+              parties={suppliers}
+              selectedParty={selectedSupplier}
+              onSelect={(p) => setSupplierId(p.id)}
+              onClear={() => setSupplierId('')}
+            />
           </div>
 
           {/* Right Meta Grid */}

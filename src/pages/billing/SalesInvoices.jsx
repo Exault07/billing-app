@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
+import PartySelect from '../../components/shared/PartySelect';
+import AddItemsModal from '../../components/shared/AddItemsModal';
+
 import { useAuth } from '../../context/AuthContext';
 import {
   HiOutlineArrowLeft,
@@ -34,195 +37,7 @@ async function generateBillNo() {
 }
 
 // ─── Add Items Modal ────────────────────────────────────────────────────────
-function AddItemsModal({ products, onAdd, onClose, invoiceSettings = {}, customerId }) {
-  const [search, setSearch] = useState('');
-  const [selectedQtys, setSelectedQtys] = useState({});
-  const [addedIds, setAddedIds] = useState({});
-  const [priceHistory, setPriceHistory] = useState({});
-  const showPurchasePriceCol = invoiceSettings.showPurchasePrice !== false;
-  const showPriceHistory = invoiceSettings.priceHistory !== false;
 
-  useEffect(() => {
-    if (showPriceHistory && customerId) {
-      // Fetch last 5 sale prices per product for this customer from bills
-      supabase
-        .from('bills')
-        .select('items, date')
-        .eq('customer_id', customerId)
-        .order('date', { ascending: false })
-        .limit(20)
-        .then(({ data }) => {
-          if (!data) return;
-          const history = {};
-          data.forEach(bill => {
-            (bill.items || []).forEach(item => {
-              if (!history[item.product_id]) history[item.product_id] = [];
-              if (history[item.product_id].length < 5) {
-                history[item.product_id].push({ price: item.price, date: bill.date });
-              }
-            });
-          });
-          setPriceHistory(history);
-        });
-    }
-  }, [customerId, showPriceHistory]);
-
-  const filtered = products.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase()) ||
-    (p.barcode || '').toLowerCase().includes(search.toLowerCase()) ||
-    (p.category || '').toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleAdd = (product) => {
-    const qty = Number(selectedQtys[product.id] || 1);
-    onAdd(product, qty);
-    setAddedIds(prev => ({ ...prev, [product.id]: true }));
-  };
-
-  const addedCount = Object.keys(addedIds).length;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl mx-4 flex flex-col" style={{ maxHeight: '90vh' }}>
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-surface-200">
-          <h2 className="text-[17px] font-bold text-surface-800">Add Items to Bill</h2>
-          <button onClick={onClose} className="text-surface-400 hover:text-surface-800">
-            <HiOutlineX className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Search Bar */}
-        <div className="px-4 pt-4 pb-2 flex items-center gap-3">
-          <div className="flex-1 flex items-center border-2 border-[#7c3aed] rounded px-3 py-2 gap-2">
-            <HiOutlineSearch className="w-4 h-4 text-[#7c3aed]" />
-            <input
-              autoFocus
-              type="text"
-              placeholder="Search by Item / Serial no. / HSN code / SKU / Custom Field / Category"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="flex-1 text-[13px] outline-none"
-            />
-          </div>
-          <select className="border border-surface-200 rounded px-3 py-2 text-[13px] text-surface-600 bg-white w-40">
-            <option>Select Category</option>
-          </select>
-          <button
-            onClick={() => window.open('/inventory/new', '_blank')}
-            className="px-4 py-2 bg-[#7c3aed] text-white text-[13px] font-bold rounded whitespace-nowrap hover:bg-[#6d28d9]"
-          >
-            Create New Item
-          </button>
-        </div>
-
-        {/* Items Table */}
-        <div className="overflow-y-auto flex-1">
-          <table className="w-full text-left border-collapse">
-            <thead className="sticky top-0 bg-white border-b border-surface-200 text-[12px] font-bold text-surface-600">
-              <tr>
-                <th className="py-2.5 px-4">Item Name</th>
-                <th className="py-2.5 px-4">Item Code</th>
-                <th className="py-2.5 px-4">Stock</th>
-                <th className="py-2.5 px-4">Sales Price</th>
-                {showPurchasePriceCol && <th className="py-2.5 px-4">Purchase Price</th>}
-                {showPriceHistory && customerId && <th className="py-2.5 px-4">Last Price</th>}
-                <th className="py-2.5 px-4 text-right pr-6">Quantity</th>
-              </tr>
-            </thead>
-            <tbody className="text-[13px]">
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={4 + (showPurchasePriceCol ? 1 : 0) + (showPriceHistory && customerId ? 1 : 0) + 1} className="py-12 text-center text-surface-400">No items found</td>
-                </tr>
-              ) : (
-                filtered.map(p => (
-                  <tr
-                    key={p.id}
-                    className="border-b border-surface-100 hover:bg-[#f5f3ff] transition-colors cursor-pointer"
-                    onClick={(e) => {
-                      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
-                        handleAdd(p);
-                      }
-                    }}
-                  >
-                    <td className="py-3 px-4 font-medium text-surface-800">{p.name}</td>
-                    <td className="py-3 px-4 text-surface-500">{p.barcode || '-'}</td>
-                    <td className="py-3 px-4">
-                      <span className={Number(p.stock_qty) <= 0 ? 'text-red-500 font-medium' : 'text-surface-700'}>
-                        {p.stock_qty} {p.unit}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">₹ {Number(p.selling_price).toLocaleString('en-IN')}</td>
-                    {showPurchasePriceCol && (
-                      <td className="py-3 px-4 text-surface-500">₹ {Number(p.purchase_price || 0).toLocaleString('en-IN')}</td>
-                    )}
-                    {showPriceHistory && customerId && (
-                      <td className="py-3 px-4">
-                        {priceHistory[p.id] && priceHistory[p.id].length > 0 ? (
-                          <div className="text-[11px]">
-                            <div className="font-bold text-indigo-600">₹ {Number(priceHistory[p.id][0].price).toLocaleString('en-IN')}</div>
-                            <div className="text-surface-400">{new Date(priceHistory[p.id][0].date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
-                          </div>
-                        ) : <span className="text-surface-400 text-[11px]">—</span>}
-                      </td>
-                    )}
-                    <td className="py-3 px-4 text-right pr-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <input
-                          type="number" min="1"
-                          value={selectedQtys[p.id] || 1}
-                          onChange={e => setSelectedQtys(prev => ({ ...prev, [p.id]: e.target.value }))}
-                          onKeyDown={e => { if (e.key === 'Enter') handleAdd(p); }}
-                          className="w-16 border border-surface-200 rounded px-2 py-1 text-center text-[12px]"
-                        />
-                        {addedIds[p.id] ? (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleAdd(p); }}
-                            className="bg-[#e9d5ff] text-[#7c3aed] font-bold px-3 py-1 rounded text-[12px] min-w-[64px]"
-                          >
-                            Added ✓
-                          </button>
-                        ) : (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleAdd(p); }}
-                            className="border border-[#7c3aed] text-[#7c3aed] font-bold px-3 py-1 rounded text-[12px] hover:bg-[#7c3aed] hover:text-white transition-colors min-w-[64px]"
-                          >
-                            + Add
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Modal Footer */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-surface-200 bg-surface-50">
-          <div className="text-[12px] text-surface-500 hidden md:flex items-center gap-2">
-            <span>Keyboard Shortcuts:</span>
-            <kbd className="bg-white border border-surface-200 rounded px-1.5 py-0.5 text-[11px]">Enter</kbd>
-            <kbd className="bg-white border border-surface-200 rounded px-1.5 py-0.5 text-[11px]">+ / -</kbd>
-          </div>
-          <div className="flex items-center gap-3 ml-auto">
-            <span className="text-blue-600 text-[13px] font-medium underline cursor-pointer">
-              Show {addedCount} Item(s) Selected
-            </span>
-            <button onClick={onClose} className="px-4 py-1.5 border border-surface-200 rounded text-[13px] font-medium text-surface-600 bg-white hover:bg-surface-50">
-              Cancel [ESC]
-            </button>
-            <button onClick={onClose} className="px-4 py-1.5 bg-[#7c3aed] text-white rounded text-[13px] font-bold hover:bg-[#6d28d9]">
-              Add to Bill [F7]
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ─── Create Invoice Form (Full Page) ────────────────────────────────────────
 function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, invoiceSettings = {}, onOpenSettings }) {
@@ -248,9 +63,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
   const [isFullyPaid, setIsFullyPaid] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [showPartyDropdown, setShowPartyDropdown] = useState(false);
-  const [partySearch, setPartySearch] = useState('');
-
+    
   const subtotal = items.reduce((s, i) => s + Number(i.total || 0), 0);
   const taxableAmount = subtotal + Number(additionalCharges);
   const grandTotalRaw = taxableAmount - Number(overallDiscount);

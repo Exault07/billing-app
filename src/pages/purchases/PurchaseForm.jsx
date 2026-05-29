@@ -63,19 +63,7 @@ export default function PurchaseForm() {
   const [error, setError] = useState('');
 
   // Dropdowns
-  const [showPartyDropdown, setShowPartyDropdown] = useState(false);
-  const supplierDropdownRef = useRef(null);
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (supplierDropdownRef.current && !supplierDropdownRef.current.contains(event.target)) {
-        setShowPartyDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-  const [partySearch, setPartySearch] = useState('');
-  const [productSearch, setProductSearch] = useState({});
+          const [productSearch, setProductSearch] = useState({});
 
   // Computed totals
   const subtotal = items.reduce((sum, item) => sum + Number(item.total || 0), 0);
@@ -341,38 +329,16 @@ export default function PurchaseForm() {
           {/* Top: Supplier + Meta */}
           <div className="flex flex-col lg:flex-row items-start gap-4 mb-4">
             {/* Bill To */}
-            <div className="w-full lg:w-[280px] relative flex-shrink-0">
-              <label className="block text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-1">Supplier</label>
-              {!selectedSupplier ? (
-                <div onClick={() => setShowPartyDropdown(true)} className="w-full h-16 border-2 border-dashed border-[#4f46e5]/40 bg-[#4f46e5]/5 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#4f46e5]/10 text-[#4f46e5] font-bold text-sm transition-colors">
-                  + Add Supplier
-                </div>
-              ) : (
-                <div className="w-full border border-surface-200 rounded-lg p-3 relative">
-                  <div className="font-bold text-[13px] text-surface-800">{selectedSupplier.name}</div>
-                  {selectedSupplier.phone && <div className="text-[11px] text-surface-500">{selectedSupplier.phone}</div>}
-                  <div className="text-[11px] text-surface-400">Bal: ₹ {selectedSupplier.current_balance || 0}</div>
-                  <button onClick={() => setSupplierId('')} className="absolute top-1.5 right-1.5 text-surface-300 hover:text-red-500">
-                    <HiOutlineX className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              )}
-
-              {showPartyDropdown && !selectedSupplier && (
-<div ref={supplierDropdownRef} className="absolute top-[52px] left-0 w-[320px] bg-white border-2 border-[#7c3aed] rounded shadow-2xl z-50">
-                  <div className="p-2 border-b border-surface-200">
-                    <input autoFocus placeholder="Search supplier..." value={partySearch} onChange={e => setPartySearch(e.target.value)} className="w-full outline-none text-[13px] px-2 py-1" />
-                  </div>
-                  <div className="max-h-48 overflow-y-auto">
-                    {suppliers.filter(c => c.name.toLowerCase().includes(partySearch.toLowerCase())).slice(0, 50).map(c => (
-                      <div key={c.id} onClick={() => { setSupplierId(c.id); setShowPartyDropdown(false); setPartySearch(''); }} className="flex justify-between px-3 py-2 hover:bg-[#f5f3ff] cursor-pointer border-b border-surface-100 text-[13px]">
-                        <span className="font-medium">{c.name}</span>
-                        <span className="text-surface-500">₹ {c.current_balance || 0}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <div className="w-full lg:w-[280px] flex-shrink-0">
+              <PartySelect
+                label="SUPPLIER"
+                partyType="supplier"
+                parties={suppliers}
+                selectedParty={selectedSupplier}
+                onSelect={(p) => setSupplierId(p.id)}
+                onClear={() => setSupplierId('')}
+                onPartyCreated={() => fetchSuppliers()}
+              />
             </div>
 
             <div className="flex-1 flex-shrink-0"></div>
@@ -646,19 +612,7 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
   const [isFullyPaid, setIsFullyPaid] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [showPartyDropdown, setShowPartyDropdown] = useState(false);
-  const supplierDropdownRef2 = useRef(null);
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (supplierDropdownRef2.current && !supplierDropdownRef2.current.contains(event.target)) {
-        setShowPartyDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-  const [partySearch, setPartySearch] = useState('');
-
+        
   const subtotal = items.reduce((s, i) => s + Number(i.total || 0), 0);
   const taxableAmount = subtotal + Number(additionalCharges);
   const grandTotalRaw = taxableAmount - Number(overallDiscount);

@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
+import PartySelect from '../../components/shared/PartySelect';
+import AddItemsModal from '../../components/shared/AddItemsModal';
+
 import { useAuth } from '../../context/AuthContext';
 import {
  HiOutlineArrowLeft,
@@ -73,21 +76,9 @@ export default function BillForm() {
  const [error, setError] = useState('');
  
  // Custom dropdown states
- const [showPartyDropdown, setShowPartyDropdown] = useState(false);
- const [partySearch, setPartySearch] = useState('');
- const [productSearch, setProductSearch] = useState({});
-  const partyDropdownRef = useRef(null);
-  
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (partyDropdownRef.current && !partyDropdownRef.current.contains(event.target)) {
-        setShowPartyDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-  
+   const [productSearch, setProductSearch] = useState({});
+    
+    
   useEffect(() => {
     const handleProductClickOutside = (event) => {
       if (!event.target.closest('.item-row')) {
@@ -99,13 +90,8 @@ export default function BillForm() {
   }, []);
 
  // Quick Create / Barcode state
- const [showQuickPartyModal, setShowQuickPartyModal] = useState(false);
- const [newPartyName, setNewPartyName] = useState('');
- const [newPartyMobile, setNewPartyMobile] = useState('');
- const [newPartyAddress, setNewPartyAddress] = useState('');
- const [newPartyType, setNewPartyType] = useState('customer');
- const [savingParty, setSavingParty] = useState(false);
- 
+    const [newPartyAddress, setNewPartyAddress] = useState('');
+   
  const [showBarcodeModal, setShowBarcodeModal] = useState(false);
  const [manualBarcode, setManualBarcode] = useState('');
 
@@ -405,31 +391,7 @@ export default function BillForm() {
  return () => document.removeEventListener('keydown', handleKeyDown);
  }, [products, items]);
 
-  const handleCreateParty = async () => {
-    if (!newPartyName.trim()) return setError('Party name is required.');
-    setSavingParty(true);
-    try {
-      const { data, error: err } = await supabase.from('parties').insert([{
-        name: newPartyName,
-        mobile: newPartyMobile,
-        billing_address: newPartyAddress,
-        party_type: newPartyType
-      }]).select().single();
-      if (err) throw err;
-      setCustomers(prev => [...prev, data]);
-      setCustomerId(data.id);
-      setShowQuickPartyModal(false);
-      setNewPartyName('');
-      setNewPartyMobile('');
-
- setNewPartyAddress('');
- } catch (err) {
- setError('Failed to create party: ' + err.message);
- } finally {
- setSavingParty(false);
- }
- };
-
+  
  const selectedCustomer = customers.find(c => c.id === customerId);
 
  if (loadingData) return <div className="p-10 text-center text-surface-500">Loading invoice...</div>;
