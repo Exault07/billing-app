@@ -218,7 +218,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="mt-4">
-          <div className="text-3xl font-bold tracking-tight">â‚¹ {fmt(amount)}</div>
+          <div className="text-3xl font-bold tracking-tight">₹ {fmt(amount)}</div>
         </div>
       </div>
       {/* Decorative Background Shapes */}
@@ -319,10 +319,10 @@ export default function Dashboard() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(val) => `â‚¹${val >= 1000 ? (val/1000)+'k' : val}`} dx={-10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(val) => `₹${val >= 1000 ? (val/1000)+'k' : val}`} dx={-10} />
                   <Tooltip 
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                    formatter={(value) => [`â‚¹ ${fmt(value)}`, 'Revenue']}
+                    formatter={(value) => [`₹ ${fmt(value)}`, 'Revenue']}
                   />
                   <Area type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                 </AreaChart>
@@ -409,7 +409,7 @@ export default function Dashboard() {
                         {txn.partyName}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 text-right">
-                        â‚¹ {fmt(txn.amount)}
+                        ₹ {fmt(txn.amount)}
                       </td>
                     </tr>
                   ))
