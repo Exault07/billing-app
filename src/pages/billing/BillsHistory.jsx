@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { 
@@ -199,7 +199,9 @@ export default function BillsHistory() {
  <thead className="bg-[#f9fafb] border-y border-surface-200">
  <tr className="text-[12px] font-bold text-surface-700">
  <th className="py-3 px-4 w-12 text-center"><input type="checkbox" className="rounded border-surface-300" /></th>
- <th className="py-3 px-4">Date <span className="text-[10px] text-surface-400">â†•</span></th>
+ <th className="py-3 px-4">
+ Date <span className="text-[10px] text-surface-400">↕</span>
+ </th>
  <th className="py-3 px-4">Invoice Number</th>
  <th className="py-3 px-4">Party Name</th>
  <th className="py-3 px-4">Due In</th>

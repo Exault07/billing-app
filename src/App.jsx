@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 // â”€â”€ Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -10,6 +10,12 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
+
+function LoginRoute() {
+  const { user } = useAuth();
+  return user ? <Navigate to="/" replace /> : <Login />;
+}
+
 
 // â”€â”€ Billing (Part 3) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import BillForm from './pages/billing/BillForm';
@@ -27,6 +33,7 @@ import SaleReturn from './pages/sales/SaleReturn';
 // â”€â”€ Purchases (Part 6) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import PurchaseList from './pages/purchases/PurchaseList';
 import PurchaseDetail from './pages/purchases/PurchaseDetail';
+
 import PurchaseForm from './pages/purchases/PurchaseForm';
 import PurchaseOrderForm from './pages/purchases/PurchaseOrderForm';
 import PurchaseReturn from './pages/purchases/PurchaseReturn';
@@ -35,6 +42,8 @@ import PaymentOutList from './pages/purchases/PaymentOut';
 // ── Expenses (Part 7) ──────────────────────────
 import ExpenseList from './pages/expenses/ExpenseList';
 import ExpenseForm from './pages/expenses/ExpenseForm';
+
+import NavigationBlocker from './components/NavigationBlocker';
 
 // 📈 Reports (Part 10) 📈
 import Reports from './pages/reports/Reports';
@@ -55,7 +64,7 @@ import CarpenterForm from './pages/carpenters/CarpenterForm';
 // ── Settings (Part 11) ──────────────────────────
 import Settings from './pages/settings/Settings';
 
-export default function App() {
+export function AppRoot() {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -70,11 +79,20 @@ export default function App() {
   }
 
   return (
-    <Routes>
+    <>
+      <NavigationBlocker />
+      <Outlet />
+    </>
+  );
+}
+
+export const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route element={<AppRoot />}>
       {/* Public Routes */}
       <Route
         path="/login"
-        element={user ? <Navigate to="/" replace /> : <Login />}
+        element={<LoginRoute />}
       />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
@@ -188,6 +206,7 @@ export default function App() {
 
       {/* Global Catch All */}
       <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-}
+    
+    </Route>
+  )
+);

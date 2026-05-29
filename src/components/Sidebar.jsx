@@ -16,6 +16,7 @@ import {
   HiOutlineBriefcase,
   HiOutlinePlus,
   HiOutlineChevronRight,
+  HiOutlineLogout
 } from 'react-icons/hi';
 
 const NAV_ITEMS = [

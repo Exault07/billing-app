@@ -116,7 +116,7 @@ export default function DeliveryChallan() {
  <div>
  <label className="block text-xs font-medium text-surface-600 mb-1">Customer *</label>
  <select value={customerId} onChange={e => setCustomerId(e.target.value)} className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
- <option value="">â€” Select Customer â€”</option>
+ <option value="">-- Select Customer --</option>
  {customers.map(c => <option key={c.id} value={c.id}>{c.name} {c.mobile ? `(${c.mobile})` : ''}</option>)}
  </select>
  </div>
@@ -147,7 +147,7 @@ export default function DeliveryChallan() {
  <div className="flex items-center gap-2 border border-surface-200 rounded-xl px-3 py-2">
  <span className="text-sm font-medium text-surface-800 flex-1">{item.name}</span>
  <span className="text-xs text-surface-400">{item.unit}</span>
- <button onClick={() => updateItem(index, 'product_id', '')} className="text-xs text-surface-400 hover:text-red-500">âœ•</button>
+ <button onClick={() => updateItem(index, 'product_id', '')} className="text-xs text-surface-400 hover:text-red-500">✕</button>
  </div>
  ) : (
  <div className="relative">

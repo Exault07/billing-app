@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { HiOutlinePlus, HiOutlineDocumentText, HiOutlineSearch, HiOutlineEye } from 'react-icons/hi';
@@ -119,7 +119,7 @@ export default function QuotationsHistory() {
  <td className="px-5 py-3.5 text-center"><span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${STATUS_STYLES[q.status] || ''}`}>{q.status}</span></td>
  <td className="px-5 py-3.5 text-center">
  {q.converted_to_bill_id ? (
- <Link to={`/billing/${q.converted_to_bill_id}`} className="text-xs text-green-600 hover:underline font-medium">View Bill â†’</Link>
+ <Link to={`/billing/${q.converted_to_bill_id}`} className="text-xs text-green-600 hover:underline font-medium">View Bill →</Link>
  ) : <span className="text-xs text-surface-400">-</span>}
  </td>
  <td className="px-5 py-3.5 text-center">

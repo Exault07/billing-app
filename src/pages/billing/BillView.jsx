@@ -4,6 +4,7 @@ import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import { logAudit, computeDiff } from '../../utils/auditLog';
 import ActionMenu from '../../components/ActionMenu';
+import InvoiceTemplate from '../../components/invoice-templates/InvoiceTemplate';
 import {
   HiOutlinePrinter,
   HiOutlinePencil,
@@ -330,6 +331,38 @@ export default function BillView() {
 
   const handlePrint = () => window.print();
 
+  const handleDownloadPdf = async () => {
+    try {
+      // Dynamic import to avoid blowing up initial bundle size
+      const { jsPDF } = await import('jspdf');
+      const html2canvas = (await import('html2canvas')).default;
+
+      const element = document.getElementById('printable-bill-wrapper');
+      if (!element) return;
+
+      const canvas = await html2canvas(element, { 
+        scale: 2, 
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+
+      const isA5 = shopSettings?.invoice_theme?.includes('a5');
+      const orientation = isA5 ? 'l' : 'p';
+      const format = isA5 ? 'a5' : 'a4';
+
+      const pdf = new jsPDF(orientation, 'pt', format);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${bill?.bill_no || 'Document'}.pdf`);
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+      alert('Failed to generate PDF. Make sure you are connected to the internet to load external resources if any.');
+    }
+  };
+
   const handleWhatsApp = () => {
     if (!customer?.mobile && !customer?.phone) return alert('No phone number found for this customer.');
     const phone = (customer.mobile || customer.phone).replace(/\D/g, '');
@@ -448,7 +481,7 @@ export default function BillView() {
       {/* Action Bar Sub-Header */}
       <div className="no-print flex flex-wrap items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-surface-200 rounded-lg text-sm font-medium text-surface-700 bg-white hover:bg-surface-50 shadow-sm transition-colors">
+          <button onClick={handleDownloadPdf} className="flex items-center gap-2 px-4 py-2 border border-surface-200 rounded-lg text-sm font-medium text-surface-700 bg-white hover:bg-surface-50 shadow-sm transition-colors">
             <HiOutlineDownload className="w-4 h-4" /> Download PDF <HiOutlineChevronDown className="w-3 h-3 text-surface-400" />
           </button>
           <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 border border-surface-200 rounded-lg text-sm font-medium text-surface-700 bg-white hover:bg-surface-50 shadow-sm transition-colors">
@@ -475,91 +508,10 @@ export default function BillView() {
       <div className="flex relative">
         
         {/* Bill Preview Container */}
-        <div className="flex-1 flex justify-center pb-12 transition-all" style={{ marginRight: showPaymentHistory ? '320px' : '0' }}>
-          <div id="printable-bill" className="bg-white rounded-lg shadow-sm border border-surface-200 p-10 w-full max-w-[850px] min-h-[1100px]">
-            {/* Standard A4 Bill Layout */}
-            
-            <div className="text-xs font-bold text-surface-500 uppercase tracking-widest mb-4">
-              BILL OF SUPPLY <span className="ml-2 font-normal border border-surface-300 px-1 py-0.5 rounded text-[10px]">ORIGINAL FOR RECIPIENT</span>
-            </div>
-
-            <div className="border border-black">
-              {/* Header Row */}
-              <div className="border-b border-black p-4 text-center">
-                <h1 className="text-xl font-bold text-black">{shopSettings?.shop_name || 'Om Namah Shivay'}</h1>
-                <p className="text-xs text-black mt-1">
-                  {shopSettings?.address_line1 || 'Estimate / Quotation, Odisha'}
-                  {shopSettings?.address_line2 ? `, ${shopSettings.address_line2}` : ''}
-                </p>
-              </div>
-
-              {/* Meta Row */}
-              <div className="flex border-b border-black">
-                <div className="flex-1 p-3 border-r border-black">
-                  <div className="text-[10px] font-bold uppercase mb-1">BILL TO</div>
-                  <div className="text-sm font-bold uppercase text-black">{customer?.name || 'ALM SECTION KUMBEPADA'}</div>
-                  {customer?.address && <div className="text-xs mt-1">{customer.address}</div>}
-                </div>
-                <div className="w-40 p-3 border-r border-black flex flex-col items-center justify-center text-center">
-                  <div className="text-[10px] font-bold uppercase mb-1">Invoice No.</div>
-                  <div className="text-sm">{bill.bill_no.replace('BILL-', '')}</div>
-                </div>
-                <div className="w-48 p-3 flex flex-col items-center justify-center text-center">
-                  <div className="text-[10px] font-bold uppercase mb-1">Invoice Date</div>
-                  <div className="text-sm">{new Date(bill.date).toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit' })}</div>
-                </div>
-              </div>
-
-              {/* Items Table */}
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-black">
-                    <th className="p-2 border-r border-black w-12 text-center">S.NO.</th>
-                    <th className="p-2 border-r border-black text-left">ITEMS</th>
-                    <th className="p-2 border-r border-black w-24 text-right">QTY.</th>
-                    <th className="p-2 border-r border-black w-24 text-right">RATE</th>
-                    <th className="p-2 w-32 text-right">AMOUNT</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(bill.items || []).map((item, i) => (
-                    <tr key={i}>
-                      <td className="p-2 border-r border-black text-center align-top">{i + 1}</td>
-                      <td className="p-2 border-r border-black align-top">{item.name}</td>
-                      <td className="p-2 border-r border-black text-right align-top">{item.qty} {item.unit || 'PCS'}</td>
-                      <td className="p-2 border-r border-black text-right align-top">{item.price}</td>
-                      <td className="p-2 text-right align-top">{fmt(item.total)}</td>
-                    </tr>
-                  ))}
-                  {/* Empty rows to stretch table */}
-                  <tr className="h-64"><td className="border-r border-black"></td><td className="border-r border-black"></td><td className="border-r border-black"></td><td className="border-r border-black"></td><td></td></tr>
-                </tbody>
-                <tfoot>
-                  <tr className="border-y border-black font-bold">
-                    <td colSpan="2" className="p-2 border-r border-black text-right">TOTAL</td>
-                    <td className="p-2 border-r border-black text-right">
-                      {(bill.items || []).reduce((s, i) => s + Number(i.qty), 0)}
-                    </td>
-                    <td className="border-r border-black"></td>
-                    <td className="p-2 text-right">₹ {fmt(bill.subtotal)}</td>
-                  </tr>
-                </tfoot>
-              </table>
-
-              {/* Totals Summary */}
-              <div className="flex border-b border-black text-xs font-bold">
-                <div className="flex-1 p-2 border-r border-black">Received Amount: ₹ {fmt(bill.advance_paid)}</div>
-                <div className="flex-1 p-2">Balance Amount: ₹ {fmt(bill.balance_due)}</div>
-              </div>
-
-              {/* Footer Terms */}
-              <div className="p-2 text-[10px]">
-                <div className="font-bold mb-1">Terms and Conditions</div>
-                <div>1. GST will be charged additionally as applicable.</div>
-                {bill.notes && <div>2. {bill.notes}</div>}
-              </div>
-            </div>
-
+        <div className="w-full flex justify-center pb-12 transition-all" style={{ marginRight: showPaymentHistory ? '320px' : '0' }}>
+          {/* The printable area needs to wrap tightly around the template for correct box-shadow in screen view, but the template handles print layout */}
+          <div id="printable-bill-wrapper" className="bg-white shadow-xl border border-surface-200 mt-2 print:shadow-none print:border-none print:mt-0 relative" style={{ width: '210mm', minHeight: '297mm' }}>
+            <InvoiceTemplate bill={{ ...bill, party: customer }} shop={shopSettings} settings={shopSettings} />
           </div>
         </div>
 

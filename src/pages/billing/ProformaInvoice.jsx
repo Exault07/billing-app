@@ -82,8 +82,8 @@ export default function ProformaInvoice() {
 
  const handleCreateProforma = () => {
  // Navigate to a dedicated creation page or use existing create form and pass bill_type
- // For simplicity we will navigate to /sales/new?type=proforma
- navigate('/sales/new?type=proforma');
+ // For simplicity we will navigate to /billing/new?type=proforma
+ navigate('/billing/new?type=proforma');
  };
 
  const filteredBills = bills.filter(b => 

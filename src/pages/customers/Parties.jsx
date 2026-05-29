@@ -372,7 +372,7 @@ export default function Parties() {
  <Link to={`/parties/${party.id}/edit`} className="flex items-center px-4 py-2 text-sm text-surface-700 hover:bg-surface-50">
  <HiOutlinePencil className="mr-3 w-4 h-4" /> Edit
  </Link>
- <Link to={`/sales/new?party=${party.id}`} className="flex items-center px-4 py-2 text-sm text-surface-700 hover:bg-surface-50">
+ <Link to={`/billing/new?party=${party.id}`} className="flex items-center px-4 py-2 text-sm text-surface-700 hover:bg-surface-50">
  <HiOutlineDocumentAdd className="mr-3 w-4 h-4" /> Create Bill
  </Link>
  <button onClick={() => handleDeleteSingle(party.id)} className="w-full text-left flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
