@@ -26,7 +26,11 @@ export default function ManageBusinessTab() {
     website: '',
     msme_number: '',
     logo_url: '',
-    signature_url: ''
+    signature_url: '',
+    bank_name: '',
+    account_number: '',
+    ifsc_code: '',
+    upi_id: ''
   });
 
   useEffect(() => {
@@ -57,6 +61,10 @@ export default function ManageBusinessTab() {
           msme_number: formData.msme_number,
           logo_url: formData.logo_url,
           signature_url: formData.signature_url,
+          bank_name: formData.bank_name,
+          account_number: formData.account_number,
+          ifsc_code: formData.ifsc_code,
+          upi_id: formData.upi_id,
           updated_at: new Date().toISOString()
         };
 
@@ -124,7 +132,11 @@ export default function ManageBusinessTab() {
           website: data.website || '',
           msme_number: data.msme_number || '',
           logo_url: data.logo_url || '',
-          signature_url: data.signature_url || ''
+          signature_url: data.signature_url || '',
+          bank_name: data.bank_name || '',
+          account_number: data.account_number || '',
+          ifsc_code: data.ifsc_code || '',
+          upi_id: data.upi_id || ''
         });
       }
     } catch (err) {
@@ -401,6 +413,57 @@ export default function ManageBusinessTab() {
               <button className="px-6 py-2 bg-[#4f46e5] text-white rounded text-sm font-bold shadow-sm hover:bg-[#4338ca] transition-colors">
                 Add
               </button>
+            </div>
+          </div>
+
+          <div className="mt-6 border border-surface-200 rounded p-4 bg-white shadow-sm">
+            <h4 className="text-sm font-bold text-[#4f46e5] mb-4">Bank & Payment Details</h4>
+            
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-[12px] font-bold text-surface-500">Bank Name</label>
+                <input 
+                  type="text"
+                  value={formData.bank_name}
+                  onChange={(e) => setFormData({...formData, bank_name: e.target.value})}
+                  className="w-full px-3 py-2 border border-surface-200 rounded text-sm outline-none focus:border-[#4f46e5] text-surface-900 font-medium"
+                  placeholder="e.g. HDFC Bank"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-[12px] font-bold text-surface-500">Account Number</label>
+                  <input 
+                    type="text"
+                    value={formData.account_number}
+                    onChange={(e) => setFormData({...formData, account_number: e.target.value})}
+                    className="w-full px-3 py-2 border border-surface-200 rounded text-sm outline-none focus:border-[#4f46e5] text-surface-900 font-medium"
+                    placeholder="Enter Account Number"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-[12px] font-bold text-surface-500">IFSC Code</label>
+                  <input 
+                    type="text"
+                    value={formData.ifsc_code}
+                    onChange={(e) => setFormData({...formData, ifsc_code: e.target.value})}
+                    className="w-full px-3 py-2 border border-surface-200 rounded text-sm outline-none focus:border-[#4f46e5] text-surface-900 font-medium uppercase"
+                    placeholder="e.g. HDFC0001234"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-1.5">
+                <label className="block text-[12px] font-bold text-surface-500">UPI ID for Payment QR</label>
+                <input 
+                  type="text"
+                  value={formData.upi_id}
+                  onChange={(e) => setFormData({...formData, upi_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-surface-200 rounded text-sm outline-none focus:border-[#4f46e5] text-surface-900 font-medium"
+                  placeholder="e.g. yourbusiness@okicici"
+                />
+              </div>
             </div>
           </div>
 
