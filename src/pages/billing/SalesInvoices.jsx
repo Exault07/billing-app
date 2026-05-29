@@ -205,55 +205,15 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
         <div className="flex flex-col lg:flex-row items-start gap-4 mb-4">
 
           {/* Bill To */}
-          <div className="w-full lg:w-[240px] relative flex-shrink-0">
-            <label className="block text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-1">Bill To</label>
-            {!selectedCustomer ? (
-              <div
-                onClick={() => setShowPartyDropdown(true)}
-                className="w-full h-16 border-2 border-dashed border-[#4f46e5]/40 bg-[#4f46e5]/5 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#4f46e5]/10 text-[#4f46e5] font-bold text-sm transition-colors"
-              >
-                + Add Party
-              </div>
-            ) : (
-              <div className="w-full border border-surface-200 rounded-lg p-3 relative">
-                <div className="font-bold text-[13px] text-surface-800">{selectedCustomer.name}</div>
-                {selectedCustomer.mobile && <div className="text-[11px] text-surface-500">{selectedCustomer.mobile}</div>}
-                <div className="text-[11px] text-surface-400">Bal: ₹ {selectedCustomer.current_balance || 0}</div>
-                <button onClick={() => setCustomerId('')} className="absolute top-1.5 right-1.5 text-surface-300 hover:text-red-500">
-                  <HiOutlineX className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-
-            {/* Party Search Dropdown */}
-            {showPartyDropdown && !selectedCustomer && (
-              <div className="absolute top-[52px] left-0 w-[320px] bg-white border-2 border-[#7c3aed] rounded shadow-2xl z-50">
-                <div className="p-2 border-b border-surface-200">
-                  <input
-                    autoFocus
-                    placeholder="Search party by name or number"
-                    value={partySearch}
-                    onChange={e => setPartySearch(e.target.value)}
-                    className="w-full outline-none text-[13px] px-2 py-1"
-                  />
-                </div>
-                <div className="flex justify-between px-3 py-1.5 bg-surface-50 text-[10px] font-bold text-surface-500 uppercase border-b">
-                  <span>Party Name</span><span>Balance</span>
-                </div>
-                <div className="max-h-48 overflow-y-auto">
-                  {customers.filter(c => c.name.toLowerCase().includes(partySearch.toLowerCase())).map(c => (
-                    <div key={c.id} onClick={() => { setCustomerId(c.id); setShowPartyDropdown(false); setPartySearch(''); }}
-                      className="flex justify-between px-3 py-2 hover:bg-[#f5f3ff] cursor-pointer border-b border-surface-100 text-[13px]">
-                      <span className="font-medium">{c.name}</span>
-                      <span className="text-surface-500">₹ {c.current_balance || 0}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="m-2 p-1.5 border-2 border-dashed border-blue-300 bg-blue-50/30 rounded text-center text-blue-600 font-bold text-[12px] cursor-pointer hover:bg-blue-50">
-                  + Create Party
-                </div>
-              </div>
-            )}
+          <div className="w-full lg:w-[240px] flex-shrink-0">
+            <PartySelect
+              label="Bill To"
+              partyType="customer"
+              parties={customers}
+              selectedParty={selectedCustomer}
+              onSelect={(p) => setCustomerId(p.id)}
+              onClear={() => setCustomerId('')}
+            />
           </div>
 
           {/* Referred By — inline between party and meta */}
