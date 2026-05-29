@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import PartySelect from '../../components/shared/PartySelect';
 import AddItemsModal from '../../components/shared/AddItemsModal';
-
+import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '../../context/AuthContext';
 import {
   HiOutlineArrowLeft,
@@ -40,7 +40,7 @@ async function generateBillNo() {
 
 
 // ─── Create Invoice Form (Full Page) ────────────────────────────────────────
-function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, invoiceSettings = {}, onOpenSettings }) {
+function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, invoiceSettings = {}, shopSettings = {}, onOpenSettings }) {
   const { user } = useAuth();
 
   const [billNo, setBillNo] = useState('');
@@ -459,16 +459,56 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
             )}
 
             {/* Bank Account */}
-            <div onClick={() => setShowBankAccount(!showBankAccount)} className="flex items-center gap-2 cursor-pointer select-none">
-              <input type="checkbox" checked={showBankAccount} readOnly className="rounded accent-indigo-600 cursor-pointer" />
-              <span className="text-blue-600 font-medium text-[13px] hover:underline">Add Bank Account</span>
-            </div>
+            {!showBankAccount ? (
+              <div onClick={() => setShowBankAccount(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Bank Account</div>
+            ) : (
+              <div className="bg-white border border-surface-200 rounded p-4 relative group">
+                <button onClick={() => setShowBankAccount(false)} className="absolute top-2 right-2 text-surface-400 hover:text-red-500 hidden group-hover:block"><HiOutlineX className="w-4 h-4" /></button>
+                <div className="text-[11px] font-bold text-surface-500 mb-2 uppercase tracking-wide">Bank Details</div>
+                {shopSettings?.bank_name ? (
+                  <div className="text-surface-700 text-[13px]">
+                    <div className="font-semibold">{shopSettings.bank_name}</div>
+                    <div>A/c: {shopSettings.account_number}</div>
+                    <div>IFSC: {shopSettings.ifsc_code}</div>
+                    <div className="text-blue-600 font-medium mt-2 text-[12px] cursor-pointer" onClick={() => onOpenSettings()}>Change Bank</div>
+                  </div>
+                ) : (
+                  <div className="text-surface-500 text-[12px]">
+                    No Bank Account setup. <span className="text-blue-600 cursor-pointer hover:underline" onClick={() => onOpenSettings()}>Add in Settings</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Payment QR */}
-            <div onClick={() => setShowPaymentQr(!showPaymentQr)} className="flex items-center gap-2 cursor-pointer select-none">
-              <input type="checkbox" checked={showPaymentQr} readOnly className="rounded accent-indigo-600 cursor-pointer" />
-              <span className="text-blue-600 font-medium text-[13px] hover:underline">Add Payment QR</span>
-            </div>
+            {!showPaymentQr ? (
+              <div onClick={() => setShowPaymentQr(true)} className="text-blue-600 font-medium text-[13px] cursor-pointer hover:underline">+ Add Payment QR</div>
+            ) : (
+              <div className="bg-white border border-surface-200 rounded p-4 relative group flex items-start gap-4">
+                <button onClick={() => setShowPaymentQr(false)} className="absolute top-2 right-2 text-surface-400 hover:text-red-500 hidden group-hover:block"><HiOutlineX className="w-4 h-4" /></button>
+                
+                {shopSettings?.upi_id ? (
+                  <>
+                    <div className="p-1 border border-surface-200 rounded bg-white shrink-0">
+                      <QRCodeSVG 
+                        value={`upi://pay?pa=${shopSettings.upi_id}&pn=${shopSettings.shop_name}&am=${grandTotal}&cu=INR`}
+                        size={80}
+                      />
+                    </div>
+                    <div className="flex flex-col justify-center text-[12px] text-surface-600 pt-1">
+                      <div className="font-bold text-surface-800 text-[13px]">Payment QR</div>
+                      <div className="font-medium">{shopSettings.upi_id}</div>
+                      <div className="mt-1">Customers can pay this invoice by scanning this QR</div>
+                      <div className="text-blue-600 font-medium mt-2 cursor-pointer hover:underline" onClick={() => onOpenSettings()}>Change QR Code</div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-surface-500 text-[12px]">
+                    No UPI ID setup. <span className="text-blue-600 cursor-pointer hover:underline" onClick={() => onOpenSettings()}>Add in Settings</span>
+                  </div>
+                )}
+              </div>
+            )}
 
           </div>
 
@@ -772,6 +812,7 @@ export default function SalesInvoices() {
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   const [carpenters, setCarpenters] = useState([]);
+  const [shopSettings, setShopSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -815,11 +856,12 @@ export default function SalesInvoices() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [{ data: billData }, { data: custData }, { data: prodData }, { data: carpData }] = await Promise.all([
+      const [{ data: billData }, { data: custData }, { data: prodData }, { data: carpData }, { data: shopSettingsData }] = await Promise.all([
         supabase.from('bills').select('*').order('date', { ascending: false }),
         supabase.from('parties').select('*').order('name'),
         supabase.from('products').select('*, units(name)').order('name'),
         supabase.from('carpenters').select('id, name, default_commission_rate').order('name'),
+        supabase.from('shop_settings').select('*').limit(1).maybeSingle(),
       ]);
 
       const processed = (billData || []).map(b => {
@@ -837,6 +879,7 @@ export default function SalesInvoices() {
       setCustomers(custData || []);
       setProducts(prodData || []);
       setCarpenters(carpData || []);
+      setShopSettings(shopSettingsData || {});
 
       let tS = 0, tP = 0, tU = 0;
       processed.forEach(b => {
@@ -952,6 +995,7 @@ export default function SalesInvoices() {
           carpenters={carpenters}
           onClose={() => setShowForm(false)}
           onSaved={() => { setShowForm(false); fetchAll(); }}
+          shopSettings={shopSettings}
           invoiceSettings={invoiceSettings}
           onOpenSettings={() => setShowSettings(true)}
         />
