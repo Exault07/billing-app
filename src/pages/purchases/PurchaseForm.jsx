@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
@@ -61,6 +61,16 @@ export default function PurchaseForm() {
 
   // Dropdowns
   const [showPartyDropdown, setShowPartyDropdown] = useState(false);
+  const supplierDropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (supplierDropdownRef.current && !supplierDropdownRef.current.contains(event.target)) {
+        setShowPartyDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const [partySearch, setPartySearch] = useState('');
   const [productSearch, setProductSearch] = useState({});
 
@@ -346,12 +356,12 @@ export default function PurchaseForm() {
               )}
 
               {showPartyDropdown && !selectedSupplier && (
-                <div className="absolute top-[52px] left-0 w-[320px] bg-white border-2 border-[#7c3aed] rounded shadow-2xl z-50">
+<div ref={supplierDropdownRef} className="absolute top-[52px] left-0 w-[320px] bg-white border-2 border-[#7c3aed] rounded shadow-2xl z-50">
                   <div className="p-2 border-b border-surface-200">
                     <input autoFocus placeholder="Search supplier..." value={partySearch} onChange={e => setPartySearch(e.target.value)} className="w-full outline-none text-[13px] px-2 py-1" />
                   </div>
                   <div className="max-h-48 overflow-y-auto">
-                    {suppliers.filter(c => c.name.toLowerCase().includes(partySearch.toLowerCase())).map(c => (
+                    {suppliers.filter(c => c.name.toLowerCase().includes(partySearch.toLowerCase())).slice(0, 50).map(c => (
                       <div key={c.id} onClick={() => { setSupplierId(c.id); setShowPartyDropdown(false); setPartySearch(''); }} className="flex justify-between px-3 py-2 hover:bg-[#f5f3ff] cursor-pointer border-b border-surface-100 text-[13px]">
                         <span className="font-medium">{c.name}</span>
                         <span className="text-surface-500">₹ {c.current_balance || 0}</span>
@@ -709,7 +719,7 @@ function AddItemsModal({ products, onAdd, onClose, invoiceSettings = {}, custome
                   <td colSpan={4 + (showPurchasePriceCol ? 1 : 0) + (showPriceHistory && customerId ? 1 : 0) + 1} className="py-12 text-center text-surface-400">No items found</td>
                 </tr>
               ) : (
-                filtered.map(p => (
+                filtered.slice(0, 50).map(p => (
                   <tr
                     key={p.id}
                     className="border-b border-surface-100 hover:bg-[#f5f3ff] transition-colors cursor-pointer"
@@ -822,6 +832,16 @@ function CreateInvoiceForm({ onClose, onSaved, customers, products, carpenters, 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [showPartyDropdown, setShowPartyDropdown] = useState(false);
+  const supplierDropdownRef2 = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (supplierDropdownRef2.current && !supplierDropdownRef2.current.contains(event.target)) {
+        setShowPartyDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const [partySearch, setPartySearch] = useState('');
 
   const subtotal = items.reduce((s, i) => s + Number(i.total || 0), 0);
