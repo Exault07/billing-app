@@ -75,14 +75,20 @@ export default function PurchaseForm() {
   const effectivePaid = isFullyPaid ? grandTotal : Number(amountPaid);
   const balanceDue = grandTotal - effectivePaid;
 
+  const fetchParties = async () => {
+    try {
+      const partiesRes = await supabase.from('parties').select('id, name, current_balance, party_type').order('name');
+      setSuppliers(partiesRes.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [partiesRes, productsRes] = await Promise.all([
-          supabase.from('parties').select('id, name, current_balance, party_type').order('name'),
-          supabase.from('products').select('*, units(name)').order('name'),
-        ]);
-        setSuppliers(partiesRes.data || []);
+        await fetchParties();
+        const productsRes = await supabase.from('products').select('*, units(name)').order('name');
         setProducts((productsRes.data || []).map(p => ({ ...p, unit: p.units?.name || '' })));
       } catch (err) {
         setError('Failed to load data. ' + err.message);
@@ -337,7 +343,7 @@ export default function PurchaseForm() {
                 selectedParty={selectedSupplier}
                 onSelect={(p) => setSupplierId(p.id)}
                 onClear={() => setSupplierId('')}
-                onPartyCreated={() => fetchSuppliers()}
+                onPartyCreated={() => fetchParties()}
               />
             </div>
 

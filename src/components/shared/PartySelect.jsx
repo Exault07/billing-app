@@ -31,7 +31,7 @@ export default function PartySelect({
     .slice(0, 50);
 
   return (
-    <div className="w-full lg:w-96 relative" ref={dropdownContainerRef}>
+    <div className="w-full relative" ref={dropdownContainerRef}>
       <label className="block text-[13px] font-bold text-surface-700 mb-2">{label}</label>
       
       {!selectedParty ? (
