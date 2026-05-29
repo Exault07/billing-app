@@ -54,7 +54,7 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
         {/* Modal Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-surface-200">
           <h2 className="text-[17px] font-bold text-surface-800">Add Items to Bill</h2>
-          <button onClick={onClose} className="text-surface-400 hover:text-surface-800">
+          <button type="button" onClick={onClose} className="text-surface-400 hover:text-surface-800">
             <HiOutlineX className="w-5 h-5" />
           </button>
         </div>
@@ -76,6 +76,7 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
             <option>Select Category</option>
           </select>
           <button
+            type="button"
             onClick={() => window.open('/inventory/new', '_blank')}
             className="px-4 py-2 bg-[#7c3aed] text-white text-[13px] font-bold rounded whitespace-nowrap hover:bg-[#6d28d9]"
           >
@@ -145,6 +146,7 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
                         />
                         {addedIds[p.id] ? (
                           <button
+                            type="button"
                             onClick={(e) => { e.stopPropagation(); handleAdd(p); }}
                             className="bg-[#e9d5ff] text-[#7c3aed] font-bold px-3 py-1 rounded text-[12px] min-w-[64px]"
                           >
@@ -152,6 +154,7 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
                           </button>
                         ) : (
                           <button
+                            type="button"
                             onClick={(e) => { e.stopPropagation(); handleAdd(p); }}
                             className="border border-[#7c3aed] text-[#7c3aed] font-bold px-3 py-1 rounded text-[12px] hover:bg-[#7c3aed] hover:text-white transition-colors min-w-[64px]"
                           >
@@ -178,10 +181,24 @@ export default function AddItemsModal({ products, onAdd, onClose, invoiceSetting
             <span className="text-blue-600 text-[13px] font-medium underline cursor-pointer">
               Show {addedCount} Item(s) Selected
             </span>
-            <button onClick={onClose} className="px-4 py-1.5 border border-surface-200 rounded text-[13px] font-medium text-surface-600 bg-white hover:bg-surface-50">
+            <button type="button" onClick={onClose} className="px-4 py-1.5 border border-surface-200 rounded text-[13px] font-medium text-surface-600 bg-white hover:bg-surface-50">
               Cancel [ESC]
             </button>
-            <button onClick={onClose} className="px-4 py-1.5 bg-[#7c3aed] text-white rounded text-[13px] font-bold hover:bg-[#6d28d9]">
+            <button 
+              type="button" 
+              onClick={() => {
+                // Add any items whose quantities were changed but haven't been added yet
+                const unadded = Object.keys(selectedQtys).filter(id => !addedIds[id]);
+                unadded.forEach(id => {
+                  const product = products.find(p => p.id === id);
+                  if (product) {
+                    onAdd(product, Number(selectedQtys[id]));
+                  }
+                });
+                onClose();
+              }} 
+              className="px-4 py-1.5 bg-[#7c3aed] text-white rounded text-[13px] font-bold hover:bg-[#6d28d9]"
+            >
               Add to Bill [F7]
             </button>
           </div>
