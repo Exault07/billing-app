@@ -76,6 +76,27 @@ export default function BillForm() {
  const [showPartyDropdown, setShowPartyDropdown] = useState(false);
  const [partySearch, setPartySearch] = useState('');
  const [productSearch, setProductSearch] = useState({});
+  const partyDropdownRef = useRef(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (partyDropdownRef.current && !partyDropdownRef.current.contains(event.target)) {
+        setShowPartyDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  
+  useEffect(() => {
+    const handleProductClickOutside = (event) => {
+      if (!event.target.closest('.item-row')) {
+        setProductSearch({});
+      }
+    };
+    document.addEventListener('mousedown', handleProductClickOutside);
+    return () => document.removeEventListener('mousedown', handleProductClickOutside);
+  }, []);
 
  // Quick Create / Barcode state
  const [showQuickPartyModal, setShowQuickPartyModal] = useState(false);
@@ -474,7 +495,7 @@ export default function BillForm() {
 
  {/* Custom Party Dropdown */}
  {showPartyDropdown && !selectedCustomer && (
- <div className="absolute top-[30px] left-0 w-[400px] bg-white border border-[#8b5cf6] rounded-md shadow-2xl z-50 overflow-hidden">
+  <div ref={partyDropdownRef} className="absolute top-[30px] left-0 w-[400px] bg-white border border-[#8b5cf6] rounded-md shadow-2xl z-50 overflow-hidden">
  <div className="p-2 border-b border-[#8b5cf6]">
  <input 
  type="text" 
@@ -490,7 +511,7 @@ export default function BillForm() {
  <span>Party Name</span>
  <span>Balance</span>
  </div>
- {customers.filter(c => c.name.toLowerCase().includes(partySearch.toLowerCase())).map(c => (
+ {customers.filter(c => c.name.toLowerCase().includes(partySearch.toLowerCase())).slice(0, 50).map(c => (
  <div 
  key={c.id} 
  onClick={() => { setCustomerId(c.id); setShowPartyDropdown(false); }}
@@ -603,7 +624,7 @@ export default function BillForm() {
  </thead>
  <tbody className="text-[13px]">
  {items.map((item, idx) => (
- <tr key={idx} className="border-b border-surface-100 group">
+ <tr key={idx} className="border-b border-surface-100 group item-row">
  <td className="py-2 px-3 text-center text-surface-400">{idx + 1}</td>
  <td className="py-2 px-3 relative">
  <input 
@@ -618,7 +639,7 @@ export default function BillForm() {
  {/* Auto-suggest */}
  {productSearch[idx] && (
  <div className="absolute z-10 top-full left-0 w-[300px] bg-white border border-surface-200 shadow-xl rounded max-h-48 overflow-y-auto">
- {products.filter(p => p.name.toLowerCase().includes(productSearch[idx].toLowerCase())).map(p => (
+ {products.filter(p => p.name.toLowerCase().includes(productSearch[idx].toLowerCase())).slice(0, 50).map(p => (
  <div 
  key={p.id} onClick={() => selectProduct(idx, p)}
  className="px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-surface-100 flex justify-between"
