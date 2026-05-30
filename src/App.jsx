@@ -96,6 +96,11 @@ export const router = createBrowserRouter(
       />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
+      
+      {/* ?? POS Billing (Standalone Immersive View) ?? */}
+      <Route path="sales/pos" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><POSBilling /></ProtectedRoute>} />
+      <Route path="billing/pos" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><POSBilling /></ProtectedRoute>} />
+      
       {/* Protected Routes (inside Layout shell) */}
       <Route
         element={
@@ -117,7 +122,7 @@ export const router = createBrowserRouter(
         <Route path="billing/:id" element={<BillView />} />
         
         {/* ── POS Billing (Part 4.5) ──────────────── */}
-        <Route path="sales/pos" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><POSBilling /></ProtectedRoute>} />
+        
 
         {/* ── Purchases (Part 6) ────────────────────── */}
         <Route path="purchases" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="invoices" /></ProtectedRoute>} />
@@ -181,7 +186,7 @@ export const router = createBrowserRouter(
         <Route path="/billing/quotations" element={<QuotationsHistory />} />
 
         <Route path="/billing/challan" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><DeliveryChallan /></ProtectedRoute>} />
-        <Route path="/billing/pos" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><POSBilling /></ProtectedRoute>} />
+        
         <Route path="/billing/payment-in" element={<ProtectedRoute allowedRoles={['owner', 'staff', 'accountant']}><PaymentIn /></ProtectedRoute>} />
         <Route path="/sales/returns" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><SaleReturn /></ProtectedRoute>} />
 
