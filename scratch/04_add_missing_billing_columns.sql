@@ -32,3 +32,6 @@ ALTER TABLE quotations
 
 -- Optionally refresh schema cache if you are using PostgREST / Supabase
 NOTIFY pgrst, 'reload schema';
+
+-- Add balance_due to quotations
+ALTER TABLE quotations ADD COLUMN IF NOT EXISTS balance_due NUMERIC DEFAULT 0;

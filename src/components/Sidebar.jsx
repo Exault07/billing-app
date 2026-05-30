@@ -130,14 +130,19 @@ export default function Sidebar({ isOpen, onClose }) {
   });
 
   useEffect(() => {
+    let found = false;
     NAV_ITEMS.forEach((item) => {
       if (item.type === 'group' && item.subItems) {
         const isActive = item.subItems.some(
           (sub) => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/')
         );
-        if (isActive) setActiveGroup((prev) => (prev !== item.label ? item.label : prev));
+        if (isActive) {
+          setActiveGroup((prev) => (prev !== item.label ? item.label : prev));
+          found = true;
+        }
       }
     });
+    if (!found) setActiveGroup(null);
   }, [location.pathname]);
 
   useEffect(() => {
