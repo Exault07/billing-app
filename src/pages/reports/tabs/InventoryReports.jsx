@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../supabaseClient';
 import ReportLayout from '../components/ReportLayout';
 import { format } from 'date-fns';
@@ -17,7 +17,7 @@ export default function InventoryReports({ dateRange }) {
  setData([]);
  try {
  if (subReport === 'summary' || subReport === 'low') {
- let query = supabase.from('products').select('*, item_categories(name), units(name)');
+ let query = supabase.from('products').select('*, item_categories(name)');
  
  if (subReport === 'low') {
  // Can't filter purely via Supabase if low_stock is dynamic compared to stock_qty in some complex ways,
@@ -126,9 +126,9 @@ export default function InventoryReports({ dateRange }) {
  const cols = [
  { header: 'Item Name', accessor: r => r.name },
  { header: 'Category', accessor: r => r.item_categories?.name || '-' },
- { header: 'Current Stock', accessor: r => `${r.stock_qty} ${r.units?.name || ''}` },
+ { header: 'Current Stock', accessor: r => `${r.stock_qty} ${r.unit || ''}` },
  { header: 'Alert Qty', accessor: r => r.low_stock_alert_qty || 0 },
- { header: 'Stock Value', accessor: r => `₹ ${(Number(r.stock_qty || 0) * Number(r.selling_price || 0)).toLocaleString('en-IN')}` },
+ { header: 'Stock Value', accessor: r => `? ${(Number(r.stock_qty || 0) * Number(r.selling_price || 0)).toLocaleString('en-IN')}` },
  { header: 'Status', accessor: r => {
  if (Number(r.stock_qty || 0) === 0) return 'Out of Stock';
  if (Number(r.stock_qty || 0) <= Number(r.low_stock_alert_qty || 0) && Number(r.low_stock_alert_qty || 0) > 0) return 'Low Stock';
@@ -145,7 +145,7 @@ export default function InventoryReports({ dateRange }) {
  columns={cols}
  summaryData={[
  { label: 'Total Items', value: data.length },
- { label: 'Total Stock Value', value: `₹ ${totalValue.toLocaleString('en-IN')}` },
+ { label: 'Total Stock Value', value: `? ${totalValue.toLocaleString('en-IN')}` },
  { label: 'Low Stock Items', value: lowStockCount },
  ]}
  />

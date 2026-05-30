@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabaseClient';
 import { HiOutlinePlus, HiOutlineTrash, HiOutlinePencil } from 'react-icons/hi';
 
@@ -18,7 +18,7 @@ export default function UnitsTab() {
  try {
  setLoading(true);
  
- const { data: unitData, error: unitError } = await supabase.from('item_units').select('*').order('name');
+ const { data: unitData, error: unitError } = await supabase.from('units').select('*').order('name');
  if (unitError) throw unitError;
 
  const { data: prodData, error: prodError } = await supabase.from('products').select('unit');
@@ -49,7 +49,7 @@ export default function UnitsTab() {
  if (!newUnit.trim()) return;
  
  try {
- const { error } = await supabase.from('item_units').insert({ name: newUnit.trim() });
+ const { error } = await supabase.from('units').insert({ name: newUnit.trim() });
  if (error) {
  if (error.code === '23505') alert('Unit already exists!');
  else throw error;
@@ -70,7 +70,7 @@ export default function UnitsTab() {
  }
  
  try {
- const { error } = await supabase.from('item_units').update({ name: editName.trim() }).eq('id', id);
+ const { error } = await supabase.from('units').update({ name: editName.trim() }).eq('id', id);
  if (error) throw error;
  
  await supabase.from('products').update({ unit: editName.trim() }).eq('unit', oldName);
@@ -92,7 +92,7 @@ export default function UnitsTab() {
  if (!window.confirm(`Are you sure you want to delete '${name}'?`)) return;
  
  try {
- const { error } = await supabase.from('item_units').delete().eq('id', id);
+ const { error } = await supabase.from('units').delete().eq('id', id);
  if (error) throw error;
  fetchUnits();
  } catch (err) {

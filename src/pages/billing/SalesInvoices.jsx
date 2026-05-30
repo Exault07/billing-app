@@ -860,7 +860,7 @@ export default function SalesInvoices() {
       const [{ data: billData }, { data: custData }, { data: prodData }, { data: carpData }, { data: shopSettingsData }] = await Promise.all([
         supabase.from('bills').select('*').order('date', { ascending: false }),
         supabase.from('parties').select('*').order('name'),
-        supabase.from('products').select('*, units(name)').order('name'),
+        supabase.from('products').select('*').order('name'),
         supabase.from('carpenters').select('id, name, default_commission_rate').order('name'),
         supabase.from('shop_settings').select('*').limit(1).maybeSingle(),
       ]);

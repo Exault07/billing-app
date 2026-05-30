@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
 import { supabase } from '../../supabaseClient';
 import { 
@@ -26,7 +26,7 @@ export default function ProductModal({ item, onClose, onSaved }) {
     item_type: 'product',
     name: '',
     category_id: '',
-    unit_id: '',
+    unit: '',
     barcode: '',
     stock_qty: 0,
     opening_date: new Date().toISOString().split('T')[0],
@@ -46,7 +46,7 @@ export default function ProductModal({ item, onClose, onSaved }) {
         item_type: item.item_type || 'product',
         name: item.name || '',
         category_id: item.category_id || '',
-        unit_id: item.unit_id || '',
+        unit: item.unit || '',
         barcode: item.barcode || '',
         stock_qty: Number(item.stock_qty || 0),
         opening_date: new Date().toISOString().split('T')[0], // existing items usually don't need a new opening date, but we keep it
@@ -101,7 +101,7 @@ export default function ProductModal({ item, onClose, onSaved }) {
     const { data, error } = await supabase.from('units').insert({ name: newUnitName.trim().toUpperCase() }).select().single();
     if (!error && data) {
       setUnits([...units, data].sort((a,b) => a.name.localeCompare(b.name)));
-      setForm({ ...form, unit_id: data.id });
+      setForm({ ...form, unit: data.name });
       setNewUnitName('');
     } else {
       alert("Error adding unit: " + (error?.message || 'Unknown error'));
@@ -139,7 +139,7 @@ export default function ProductModal({ item, onClose, onSaved }) {
         item_type: form.item_type,
         name: form.name,
         category_id: form.category_id || null,
-        unit_id: form.unit_id || null,
+        unit: form.unit || null,
         barcode: form.barcode,
         stock_qty: Number(form.stock_qty),
         low_stock_alert_qty: Number(form.low_stock_alert_qty),
@@ -246,9 +246,9 @@ export default function ProductModal({ item, onClose, onSaved }) {
                   <div>
                     <label className="block text-sm font-medium text-surface-700 mb-1">Unit</label>
                     <div className="flex gap-2">
-                      <select value={form.unit_id} onChange={e => setForm({...form, unit_id: e.target.value})} className="flex-1 border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                      <select value={form.unit} onChange={e => setForm({...form, unit: e.target.value})} className="flex-1 border border-surface-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
                         <option value="">- Select Unit -</option>
-                        {units.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                        {units.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
                       </select>
                       <div className="flex items-center border border-surface-200 rounded-xl overflow-hidden focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500">
                         <input type="text" value={newUnitName} onChange={e => setNewUnitName(e.target.value)} placeholder="New..." className="w-20 px-2 py-2 text-sm outline-none" />
@@ -260,7 +260,7 @@ export default function ProductModal({ item, onClose, onSaved }) {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-surface-700 mb-1">Sales Price (₹)</label>
+                    <label className="block text-sm font-medium text-surface-700 mb-1">Sales Price (?)</label>
                     <input type="number" min="0" step="0.01" value={form.selling_price} onChange={e => setForm({...form, selling_price: e.target.value})} className="w-full border border-surface-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500" />
                   </div>
                   <div>
@@ -323,11 +323,11 @@ export default function ProductModal({ item, onClose, onSaved }) {
                 
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-surface-700 mb-1">Purchase Price (₹)</label>
+                    <label className="block text-sm font-medium text-surface-700 mb-1">Purchase Price (?)</label>
                     <input type="number" min="0" step="0.01" value={form.purchase_price} onChange={e => setForm({...form, purchase_price: e.target.value})} className="w-full border border-surface-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-surface-700 mb-1">Sales Price (₹)</label>
+                    <label className="block text-sm font-medium text-surface-700 mb-1">Sales Price (?)</label>
                     <input type="number" min="0" step="0.01" value={form.selling_price} onChange={e => setForm({...form, selling_price: e.target.value})} className="w-full border border-surface-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500" />
                   </div>
                 </div>

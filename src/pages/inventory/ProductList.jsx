@@ -77,7 +77,7 @@ export default function ProductList() {
       while (true) {
         const { data, error: fetchError } = await supabase
           .from('products')
-          .select('*, units(name), item_categories(name)')
+          .select('*, item_categories(name)')
           .range(from, from + chunkSize - 1)
           .order('name');
 
@@ -86,7 +86,7 @@ export default function ProductList() {
 
         const mappedData = data.map(p => ({
           ...p,
-          unit: p.units?.name || '',
+          unit: p.unit || '',
           category: p.item_categories?.name || ''
         }));
 

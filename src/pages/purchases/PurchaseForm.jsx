@@ -94,8 +94,8 @@ export default function PurchaseForm() {
     const fetchData = async () => {
       try {
         await fetchParties();
-        const productsRes = await supabase.from('products').select('*, units(name)').order('name');
-        setProducts((productsRes.data || []).map(p => ({ ...p, unit: p.units?.name || '' })));
+        const productsRes = await supabase.from('products').select('*').order('name');
+        setProducts((productsRes.data || []).map(p => ({ ...p, unit: p.unit || '' })));
       } catch (err) {
         setError('Failed to load data. ' + err.message);
       } finally {
@@ -589,8 +589,8 @@ export default function PurchaseForm() {
           onClose={() => setShowItemModal(false)} 
           onAdd={handleAddItemFromModal} 
           onProductCreated={async () => {
-            const productsRes = await supabase.from('products').select('*, units(name)').order('name');
-            setProducts((productsRes.data || []).map(p => ({ ...p, unit: p.units?.name || '' })));
+            const productsRes = await supabase.from('products').select('*').order('name');
+            setProducts((productsRes.data || []).map(p => ({ ...p, unit: p.unit || '' })));
           }}
         />
       )}
