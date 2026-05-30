@@ -155,8 +155,8 @@ export default function Sidebar({ isOpen, onClose }) {
   }, []);
 
   const handleGroupClick = (item) => {
-    setActiveGroup(item.label);
-    if (item.path) navigate(item.path);
+    setActiveGroup(prev => prev === item.label ? null : item.label);
+    if (item.path && activeGroup !== item.label) navigate(item.path);
   };
 
   const checkIsActive = (path) => {
