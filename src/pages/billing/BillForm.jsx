@@ -641,14 +641,7 @@ export default function BillForm() {
  >
  + Add Item
  </div>
- <div 
- onClick={() => setShowBarcodeModal(true)}
- className="w-64 border-l border-surface-200 bg-surface-50 flex items-center justify-center cursor-pointer hover:bg-surface-100 transition-colors"
- >
- <div className="flex items-center gap-2 font-bold text-[14px] text-surface-800">
- <HiOutlineQrcode className="w-6 h-6 text-surface-600" /> Scan Barcode
- </div>
- </div>
+
  </div>
  </div>
 
