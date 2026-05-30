@@ -128,6 +128,12 @@ export default function Sidebar({ isOpen, onClose }) {
       return isSub && !isOtherModule;
     }
     
+    if (path === '/purchase') {
+      const isSub = location.pathname.startsWith('/purchase/');
+      const isOtherModule = ['/purchase/returns', '/purchase/payment-out'].some(p => location.pathname.startsWith(p));
+      return isSub && !isOtherModule;
+    }
+    
     return location.pathname.startsWith(`${path}/`);
   };
 
