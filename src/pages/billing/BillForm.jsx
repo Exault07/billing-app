@@ -91,6 +91,10 @@ export default function BillForm() {
 
  // Quick Create / Barcode state
     const [newPartyAddress, setNewPartyAddress] = useState('');
+ const [showPartyDropdown, setShowPartyDropdown] = useState(false);
+ const [partySearch, setPartySearch] = useState('');
+ const [showQuickPartyModal, setShowQuickPartyModal] = useState(false);
+ const partyDropdownRef = useRef(null);
    
  const [showBarcodeModal, setShowBarcodeModal] = useState(false);
  const [manualBarcode, setManualBarcode] = useState('');

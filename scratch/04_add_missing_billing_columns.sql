@@ -35,3 +35,6 @@ NOTIFY pgrst, 'reload schema';
 
 -- Add balance_due to quotations
 ALTER TABLE quotations ADD COLUMN IF NOT EXISTS balance_due NUMERIC DEFAULT 0;
+
+-- Add created_by to quotations
+ALTER TABLE quotations ADD COLUMN IF NOT EXISTS created_by UUID;
