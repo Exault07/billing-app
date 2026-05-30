@@ -24,7 +24,7 @@ export default function ThermalTemplate({ bill, shop, settings }) {
       <div className="mb-2">
         <div>Invoice Number: {bill?.bill_no}</div>
         <div>Invoice Date: {bill?.date}</div>
-        <div>Place of Supply: {bill?.party?.address || 'N/A'}</div>
+        <div>Place of Supply: {bill?.party?.billing_address || 'N/A'}</div>
         <div>Bill To: {bill?.party?.name || 'Cash Sale'}</div>
       </div>
 

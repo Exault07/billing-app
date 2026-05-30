@@ -88,7 +88,7 @@ function StandardLayout({ bill, shop, s, isA5 }) {
         <div className="flex-1 p-3 border-r border-black">
           <div className="font-bold uppercase text-surface-500 mb-1 text-[9px]">BILL TO</div>
           <div className="font-bold uppercase text-[12px]">{bill.party?.name || 'CASH'}</div>
-          {s.inv_party_show_address && <div>{bill.party?.address}</div>}
+          {s.inv_party_show_address && <div>{bill.party?.billing_address}</div>}
           {s.inv_party_show_mobile && <div>Mob: {bill.party?.mobile || bill.party?.phone}</div>}
           {s.inv_party_show_gstin && <div>GSTIN: {bill.party?.gstin}</div>}
         </div>
@@ -225,7 +225,7 @@ function LuxuryLayout({ bill, shop, s, accent, isA5 }) {
         <div className="flex-1">
           <div className={`font-bold uppercase tracking-widest text-surface-400 mb-2 ${isA5 ? 'text-[8px]' : 'text-[10px]'}`} style={{ color: accent }}>BILLED TO</div>
           <div className={`font-black ${pSize} text-lg`}>{bill.party?.name || 'CASH'}</div>
-          {s.inv_party_show_address && <div className={`${pSize} text-surface-600 mt-1`}>{bill.party?.address}</div>}
+          {s.inv_party_show_address && <div className={`${pSize} text-surface-600 mt-1`}>{bill.party?.billing_address}</div>}
           {s.inv_party_show_mobile && <div className={`${pSize} text-surface-600 mt-0.5`}>Mob: {bill.party?.mobile || bill.party?.phone}</div>}
           {s.inv_party_show_gstin && <div className={`${pSize} text-surface-600 mt-0.5 font-bold`}>GSTIN: {bill.party?.gstin}</div>}
         </div>
@@ -343,7 +343,7 @@ function StylishLayout({ bill, shop, s, accent, isA5 }) {
         <div className="flex-1 bg-surface-50 p-4 rounded-r-xl border-l-4" style={{ borderColor: accent }}>
           <div className={`font-bold uppercase tracking-widest text-surface-400 mb-2 ${isA5 ? 'text-[8px]' : 'text-[10px]'}`}>BILL TO</div>
           <div className={`font-black ${pSize} text-lg text-surface-900`}>{bill.party?.name || 'CASH'}</div>
-          {s.inv_party_show_address && <div className={`${pSize} text-surface-600 mt-1 font-medium`}>{bill.party?.address}</div>}
+          {s.inv_party_show_address && <div className={`${pSize} text-surface-600 mt-1 font-medium`}>{bill.party?.billing_address}</div>}
           {s.inv_party_show_mobile && <div className={`${pSize} text-surface-600 mt-0.5 font-medium`}>Mob: {bill.party?.mobile || bill.party?.phone}</div>}
           {s.inv_party_show_gstin && <div className={`${pSize} text-surface-600 mt-1 font-bold`}>GSTIN: {bill.party?.gstin}</div>}
         </div>
@@ -458,7 +458,7 @@ function ModernLayout({ bill, shop, s, accent, isA5 }) {
         <div className="flex-1">
           <div className={`font-medium uppercase tracking-[0.2em] text-surface-300 mb-4 ${isA5 ? 'text-[8px]' : 'text-[10px]'}`}>BILLED TO</div>
           <div className={`font-normal ${pSize} text-lg text-surface-800`}>{bill.party?.name || 'CASH'}</div>
-          {s.inv_party_show_address && <div className={`${pSize} text-surface-400 mt-2 font-light`}>{bill.party?.address}</div>}
+          {s.inv_party_show_address && <div className={`${pSize} text-surface-400 mt-2 font-light`}>{bill.party?.billing_address}</div>}
           {s.inv_party_show_mobile && <div className={`${pSize} text-surface-400 mt-1 font-light`}>Mob: {bill.party?.mobile || bill.party?.phone}</div>}
           {s.inv_party_show_gstin && <div className={`${pSize} text-surface-800 mt-2 font-medium`}>GSTIN: {bill.party?.gstin}</div>}
         </div>
@@ -571,7 +571,7 @@ function TallyLayout({ bill, shop, s, isA5 }) {
           <div className="w-1/2 p-2 border-r-2 border-black">
             <div className={`text-surface-600 ${pSize}`}>Buyer (Bill to)</div>
             <div className={`font-bold ${isA5 ? 'text-[10px]' : 'text-[12px]'}`}>{bill.party?.name || 'CASH'}</div>
-            {s.inv_party_show_address && <div className={pSize}>{bill.party?.address}</div>}
+            {s.inv_party_show_address && <div className={pSize}>{bill.party?.billing_address}</div>}
             {s.inv_party_show_mobile && <div className={pSize}>Mob: {bill.party?.mobile || bill.party?.phone}</div>}
             {s.inv_party_show_gstin && <div className={`${pSize} font-bold mt-1`}>GSTIN/UIN: {bill.party?.gstin}</div>}
           </div>
@@ -706,7 +706,7 @@ function SimpleLayout({ bill, shop, s, isA5 }) {
         <div>
           <div className={`font-bold uppercase text-surface-400 mb-1 ${isA5 ? 'text-[8px]' : 'text-[10px]'}`}>BILL TO</div>
           <div className={`font-bold ${isA5 ? 'text-xs' : 'text-sm'}`}>{bill.party?.name || 'CASH'}</div>
-          {s.inv_party_show_address && <div className={`${pSize} text-surface-700 mt-1`}>{bill.party?.address}</div>}
+          {s.inv_party_show_address && <div className={`${pSize} text-surface-700 mt-1`}>{bill.party?.billing_address}</div>}
           {s.inv_party_show_mobile && <div className={`${pSize} text-surface-700 mt-0.5`}>Mob: {bill.party?.mobile || bill.party?.phone}</div>}
         </div>
         <div className="text-right">

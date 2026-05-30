@@ -109,7 +109,7 @@ const PurchaseDetail = () => {
  <div>
  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Supplier Details</h3>
  <p className="font-bold text-lg">{invoice.suppliers?.name || '-'}</p>
- <p className="text-gray-600">{invoice.suppliers?.billing_address || invoice.suppliers?.address || ''}</p>
+ <p className="text-gray-600">{invoice.suppliers?.billing_address || ''}</p>
  <p className="text-gray-600">{invoice.suppliers?.mobile || invoice.suppliers?.phone || ''}</p>
  </div>
  <div className="text-right">

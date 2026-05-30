@@ -310,7 +310,7 @@ export default function BillView() {
       setBill(billData);
 
       if (billData.customer_id) {
-        const { data: custData } = await supabase.from('parties').select('name, phone, mobile, address').eq('id', billData.customer_id).single();
+        const { data: custData } = await supabase.from('parties').select('name, phone, mobile, billing_address').eq('id', billData.customer_id).single();
         setCustomer(custData);
       }
 
