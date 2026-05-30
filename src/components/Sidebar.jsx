@@ -35,7 +35,7 @@ const NAV_ITEMS = [
     type: 'group',
     subItems: [
       { label: 'Sale Invoices', path: '/billing', roles: ['owner', 'staff'] },
-      { label: 'Quotations', path: '/billing/quotations', roles: ['owner', 'staff'] },
+      { label: 'Quotations', path: '/billing/quotations', activePrefixes: ['/quotations'], roles: ['owner', 'staff'] },
 
       { label: 'Delivery Challan', path: '/billing/challan', roles: ['owner', 'staff'] },
       { label: 'POS Billing', path: '/billing/pos', roles: ['owner', 'staff'] },
@@ -116,13 +116,26 @@ export default function Sidebar({ isOpen, onClose }) {
   const [shopName, setShopName] = useState('My Shop');
   const [shopPhone, setShopPhone] = useState('');
 
+  const checkIsActive = (sub) => {
+    const path = typeof sub === 'string' ? sub : sub.path;
+    if (path === '/') return location.pathname === '/';
+    if (location.pathname === path) return true;
+    if (sub.activePrefixes && sub.activePrefixes.some(p => location.pathname.startsWith(p))) return true;
+
+    if (path === '/billing') {
+      const isSub = location.pathname.startsWith('/billing/');
+      const isOtherModule = ['/billing/quotations', '/billing/challan', '/billing/pos', '/billing/payment-in'].some(p => location.pathname.startsWith(p));
+      return isSub && !isOtherModule;
+    }
+    
+    return location.pathname.startsWith(`${path}/`);
+  };
+
   const [activeGroup, setActiveGroup] = useState(() => {
     let initial = null;
     NAV_ITEMS.forEach((item) => {
       if (item.type === 'group' && item.subItems) {
-        const isActive = item.subItems.some(
-          (sub) => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/')
-        );
+        const isActive = item.subItems.some((sub) => checkIsActive(sub));
         if (isActive) initial = item.label;
       }
     });
@@ -133,9 +146,7 @@ export default function Sidebar({ isOpen, onClose }) {
     let found = false;
     NAV_ITEMS.forEach((item) => {
       if (item.type === 'group' && item.subItems) {
-        const isActive = item.subItems.some(
-          (sub) => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/')
-        );
+        const isActive = item.subItems.some((sub) => checkIsActive(sub));
         if (isActive) {
           setActiveGroup((prev) => (prev !== item.label ? item.label : prev));
           found = true;
@@ -164,10 +175,7 @@ export default function Sidebar({ isOpen, onClose }) {
     if (item.path && activeGroup !== item.label) navigate(item.path);
   };
 
-  const checkIsActive = (path) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname === path || location.pathname.startsWith(`${path}/`);
-  };
+
 
   const visibleItems = role
     ? NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(role))
