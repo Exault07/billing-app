@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import PartySelect from '../../components/shared/PartySelect';
 import AddItemsModal from '../../components/shared/AddItemsModal';
@@ -817,7 +817,12 @@ export default function SalesInvoices() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showForm, setShowForm] = useState(false);
+  const location = useLocation();
+  const [showForm, setShowForm] = useState(location.search.includes('new=true'));
+
+  useEffect(() => {
+    if (location.search.includes('new=true')) setShowForm(true);
+  }, [location.search]);
   const [totalSales, setTotalSales] = useState(0);
   const [totalPaid, setTotalPaid] = useState(0);
   const [totalUnpaid, setTotalUnpaid] = useState(0);

@@ -225,7 +225,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* ── Create Invoice button ── */}
         <div className="px-3 pb-4 flex-shrink-0">
           <button
-            onClick={() => { navigate('/billing/new'); window.innerWidth < 1024 && onClose(); }}
+            onClick={() => { navigate('/billing?new=true'); window.innerWidth < 1024 && onClose(); }}
             className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors"
             style={{ background: '#2d3550', color: '#e2e8f0' }}
             onMouseEnter={e => e.currentTarget.style.background = '#374166'}
@@ -233,9 +233,8 @@ export default function Sidebar({ isOpen, onClose }) {
           >
             <span className="flex items-center gap-2">
               <HiOutlinePlus className="w-4 h-4" />
-              Create Invoice
+              Create Sales Invoice
             </span>
-            <HiOutlineChevronDown className="w-4 h-4 opacity-60" />
           </button>
         </div>
 

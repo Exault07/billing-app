@@ -683,7 +683,6 @@ export default function QuotationForm() {
  </div>
 
   {/* Payment Reception (Removed for Quotations) */}
-  </div>
 
  </div>
  </div>
