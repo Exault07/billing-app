@@ -322,7 +322,7 @@ export default function QuotationForm() {
  }
  }
  }
- navigate('/billing/history');
+ navigate('/billing/quotations');
  } catch (err) {
  setError('Failed to save invoice: ' + err.message);
  } finally {
@@ -689,35 +689,8 @@ export default function QuotationForm() {
  </div>
  </div>
 
- {/* Payment Reception */}
- <div className="p-4 space-y-4">
- <div className="flex justify-end">
- <label className="flex items-center gap-2 text-[12px] text-surface-600 cursor-pointer">
- Mark as fully paid
- <input type="checkbox" checked={isFullyPaid} onChange={e => setIsFullyPaid(e.target.checked)} className="rounded" />
- </label>
- </div>
-
- <div className="flex justify-between items-center">
- <span className="font-bold text-surface-700">Amount Received</span>
- <div className="flex border border-surface-300 rounded overflow-hidden w-40">
- <span className="bg-surface-100 px-2 py-1.5 text-surface-500">₹</span>
- <input 
- type="number" 
- value={amountReceived} 
- onChange={e => { setAmountReceived(e.target.value); setIsFullyPaid(false); }}
- className="w-full text-right px-2 py-1.5 outline-none font-bold"
- />
- </div>
- </div>
-
- <div className="flex justify-between items-center pt-2 text-[15px]">
- <span className="font-bold text-surface-500">Balance Amount</span>
- <span className={`font-bold ${balanceDue > 0 ? 'text-red-600' : 'text-green-600'}`}>
- ₹ {balanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
- </span>
- </div>
- </div>
+  {/* Payment Reception (Removed for Quotations) */}
+  </div>
 
  </div>
  </div>
