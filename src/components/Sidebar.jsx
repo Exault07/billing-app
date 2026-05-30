@@ -36,7 +36,7 @@ const NAV_ITEMS = [
     subItems: [
       { label: 'Sale Invoices', path: '/billing', roles: ['owner', 'staff'] },
       { label: 'Quotations', path: '/billing/quotations', roles: ['owner', 'staff'] },
-      { label: 'Proforma Invoice', path: '/billing/proforma', roles: ['owner', 'staff'] },
+
       { label: 'Delivery Challan', path: '/billing/challan', roles: ['owner', 'staff'] },
       { label: 'POS Billing', path: '/billing/pos', roles: ['owner', 'staff'] },
       { label: 'Sale Returns', path: '/sales/returns', roles: ['owner', 'staff'] },
@@ -51,7 +51,7 @@ const NAV_ITEMS = [
     type: 'group',
     subItems: [
       { label: 'Purchase Invoices', path: '/purchase', roles: ['owner', 'staff'] },
-      { label: 'Purchase Orders', path: '/purchase/orders', roles: ['owner', 'staff'] },
+
       { label: 'Purchase Returns', path: '/purchase/returns', roles: ['owner', 'staff'] },
       { label: 'Payment Out', path: '/purchase/payment-out', roles: ['owner', 'accountant'] },
     ],

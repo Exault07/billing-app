@@ -27,7 +27,7 @@ import QuotationsHistory from './pages/billing/QuotationsHistory';
 import DeliveryChallan from './pages/billing/DeliveryChallan';
 import POSBilling from './pages/billing/POSBilling';
 import PaymentIn from './pages/billing/PaymentIn';
-import ProformaInvoice from './pages/billing/ProformaInvoice';
+
 import SaleReturn from './pages/sales/SaleReturn';
 
 // â”€â”€ Purchases (Part 6) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -35,7 +35,7 @@ import PurchaseList from './pages/purchases/PurchaseList';
 import PurchaseDetail from './pages/purchases/PurchaseDetail';
 
 import PurchaseForm from './pages/purchases/PurchaseForm';
-import PurchaseOrderForm from './pages/purchases/PurchaseOrderForm';
+
 import PurchaseReturn from './pages/purchases/PurchaseReturn';
 import PaymentOutList from './pages/purchases/PaymentOut';
 
@@ -110,7 +110,7 @@ export const router = createBrowserRouter(
         {/* ── Sales Invoices (unified list + form) ── */}
         <Route path="sales/invoices" element={<SalesInvoices />} />
         <Route path="sales/payment-in" element={<ProtectedRoute allowedRoles={['owner', 'staff', 'accountant']}><PaymentIn /></ProtectedRoute>} />
-        <Route path="sales/proforma" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><ProformaInvoice /></ProtectedRoute>} />
+
         <Route path="billing/history" element={<Navigate to="/sales/invoices" replace />} />
         <Route path="billing/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><BillForm /></ProtectedRoute>} />
         <Route path="billing/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><BillForm /></ProtectedRoute>} />
@@ -125,9 +125,9 @@ export const router = createBrowserRouter(
         <Route path="purchases/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseForm /></ProtectedRoute>} />
         <Route path="purchases/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseForm /></ProtectedRoute>} />
         <Route path="purchases/:id" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseDetail /></ProtectedRoute>} />
-        <Route path="purchases/orders" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="orders" /></ProtectedRoute>} />
-        <Route path="purchases/orders/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseOrderForm /></ProtectedRoute>} />
-        <Route path="purchases/orders/:id/edit" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseOrderForm /></ProtectedRoute>} />
+
+
+
         <Route path="purchases/returns" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseList tab="returns" /></ProtectedRoute>} />
         <Route path="purchases/returns/new" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><PurchaseReturn /></ProtectedRoute>} />
         <Route path="purchases/payment-out" element={<ProtectedRoute allowedRoles={['owner', 'accountant']}><PaymentOutList /></ProtectedRoute>} />
@@ -179,7 +179,7 @@ export const router = createBrowserRouter(
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
         <Route path="/billing" element={<SalesInvoices />} />
         <Route path="/billing/quotations" element={<QuotationsHistory />} />
-        <Route path="/billing/proforma" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><ProformaInvoice /></ProtectedRoute>} />
+
         <Route path="/billing/challan" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><DeliveryChallan /></ProtectedRoute>} />
         <Route path="/billing/pos" element={<ProtectedRoute allowedRoles={['owner', 'staff']}><POSBilling /></ProtectedRoute>} />
         <Route path="/billing/payment-in" element={<ProtectedRoute allowedRoles={['owner', 'staff', 'accountant']}><PaymentIn /></ProtectedRoute>} />

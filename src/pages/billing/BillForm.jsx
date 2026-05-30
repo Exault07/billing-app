@@ -406,7 +406,7 @@ export default function BillForm() {
  <HiOutlineArrowLeft className="w-5 h-5" />
  </button>
  <h1 className="text-[18px] font-bold text-surface-800">
- {isEditing ? `Edit ${billType === 'proforma' ? 'Proforma Invoice' : 'Sales Invoice'}` : `Create ${billType === 'proforma' ? 'Proforma Invoice' : 'Sales Invoice'}`}
+ {isEditing ? 'Edit Sales Invoice' : 'Create Sales Invoice'}
  </h1>
  </div>
  <div className="flex items-center gap-3">
@@ -498,14 +498,14 @@ export default function BillForm() {
  <div className="w-full lg:w-auto">
  <div className="flex gap-4 mb-4">
  <div>
- <label className="block text-[11px] font-medium text-surface-500 mb-1">{billType === 'proforma' ? 'Proforma' : 'Sales Invoice'} No:</label>
+ <label className="block text-[11px] font-medium text-surface-500 mb-1">Sales Invoice No:</label>
  <input 
  value={billNo} onChange={e => setBillNo(e.target.value)}
  className="w-32 px-3 py-1.5 border border-surface-200 rounded text-[13px] bg-surface-50"
  />
  </div>
  <div>
- <label className="block text-[11px] font-medium text-surface-500 mb-1">{billType === 'proforma' ? 'Proforma' : 'Sales Invoice'} Date:</label>
+ <label className="block text-[11px] font-medium text-surface-500 mb-1">Sales Invoice Date:</label>
  <input 
  type="date" value={date} onChange={e => setDate(e.target.value)}
  className="w-36 px-3 py-1.5 border border-surface-200 rounded text-[13px]"

@@ -423,7 +423,7 @@ export default function BillView() {
   if (error || !bill) return <div className="text-center py-16"><p className="text-red-500">{error || 'Bill not found.'}</p><Link to="/sales/invoices" className="text-[#4f46e5] text-sm mt-2 inline-block">Back to Sales Invoices</Link></div>;
 
   const grandTotal = bill.grand_total || (Number(bill.subtotal) - Number(bill.discount) + Number(bill.labour_charges) + Number(bill.transport_charges));
-  const billHeader = bill.bill_type === 'proforma' ? 'PROFORMA INVOICE' : 'INVOICE';
+  const billHeader = 'INVOICE';
   const isPaid = Number(bill.balance_due) <= 0;
   
   const statusColors = {
